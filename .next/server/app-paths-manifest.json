@@ -1,19 +1,8 @@
 {
-  "/attendance/filter/page": "app/attendance/filter/page.js",
-  "/_not-found": "app/_not-found.js",
-  "/attendance/page": "app/attendance/page.js",
-  "/favicon.ico/route": "app/favicon.ico/route.js",
-  "/fees/page": "app/fees/page.js",
-  "/dashboard/page": "app/dashboard/page.js",
-  "/fees/payments/page": "app/fees/payments/page.js",
-  "/fees/structure/page": "app/fees/structure/page.js",
-  "/fees/pending/page": "app/fees/pending/page.js",
   "/login/page": "app/login/page.js",
   "/page": "app/page.js",
-  "/results/page": "app/results/page.js",
-  "/results/view/page": "app/results/view/page.js",
-  "/students/[id]/edit/page": "app/students/[id]/edit/page.js",
-  "/students/[id]/page": "app/students/[id]/page.js",
+  "/not-found": "app/not-found.js",
   "/students/page": "app/students/page.js",
-  "/students/add/page": "app/students/add/page.js"
+  "/results/page": "app/results/page.js",
+  "/dashboard/page": "app/dashboard/page.js"
 }
