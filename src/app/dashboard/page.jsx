@@ -1,8 +1,13 @@
 "use client";
 
+import dynamic from "next/dynamic";
+
+const ChartComponent = dynamic(
+    () => import("./ChartComponent"),
+    { ssr: false }
+);
 import { useEffect, useState } from "react";
 import axios from "@/utils/axios";
-import { Bar, Doughnut } from "react-chartjs-2";
 import {
     Chart as ChartJS,
     BarElement,
@@ -111,11 +116,11 @@ export default function Dashboard() {
             {/* CHARTS */}
             <div className="grid md:grid-cols-2 gap-6 mt-8">
                 <Card title="Class Wise Students">
-                    <Bar data={classWiseData} height={140} />
+                    <ChartComponent type="bar" data={classWiseData} />
                 </Card>
 
                 <Card title="Fees Distribution">
-                    <Doughnut data={feesDonut} />
+                    <ChartComponent type="doughnut" data={feesDonut} />
                 </Card>
             </div>
 
