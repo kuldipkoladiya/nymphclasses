@@ -5,7 +5,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { MdArrowBack } from "react-icons/md";
 
-const API = axios.create({ baseURL: "http://localhost:5000/api" });
+const API = axios.create({ baseURL: "nymph-be.vercel.app/api" });
 API.interceptors.request.use((c) => {
     const t = localStorage.getItem("token");
     if (t) c.headers.Authorization = `Bearer ${t}`;

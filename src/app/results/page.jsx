@@ -9,7 +9,7 @@ import Popup from "@/components/Popup";
    API INSTANCE (TOKEN SUPPORT)
 ============================= */
 const API = axios.create({
-    baseURL: "http://localhost:5000/api",
+    baseURL: "nymph-be.vercel.app/api",
 });
 
 API.interceptors.request.use((config) => {
