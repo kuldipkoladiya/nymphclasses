@@ -37,6 +37,9 @@ function useTheme() {
     return { dark, toggle };
 }
 
+/* =====================
+   SIDEBAR
+===================== */
 export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
     const [isDesktop, setIsDesktop] = useState(false);
     const { dark, toggle } = useTheme();
@@ -52,7 +55,11 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
     if (isDesktop) {
         return (
             <aside className="fixed top-0 left-0 h-screen w-64 bg-white dark:bg-slate-900 border-r border-gray-200 dark:border-slate-700 flex flex-col">
-                <SidebarContent dark={dark} toggle={toggle} />
+                <SidebarContent
+                    dark={dark}
+                    toggle={toggle}
+                    setSidebarOpen={setSidebarOpen}
+                />
             </aside>
         );
     }
@@ -60,6 +67,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
     /* MOBILE */
     return (
         <>
+            {/* BACKDROP */}
             <AnimatePresence>
                 {sidebarOpen && (
                     <motion.div
@@ -72,6 +80,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
                 )}
             </AnimatePresence>
 
+            {/* SIDEBAR */}
             <AnimatePresence>
                 {sidebarOpen && (
                     <motion.aside
@@ -81,7 +90,11 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
                         transition={{ type: "spring", stiffness: 260, damping: 26 }}
                         className="fixed top-0 left-0 z-50 h-screen w-64 bg-white dark:bg-slate-900 border-r border-gray-200 dark:border-slate-700 flex flex-col"
                     >
-                        <SidebarContent dark={dark} toggle={toggle} />
+                        <SidebarContent
+                            dark={dark}
+                            toggle={toggle}
+                            setSidebarOpen={setSidebarOpen}
+                        />
                     </motion.aside>
                 )}
             </AnimatePresence>
@@ -92,7 +105,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 /* =====================
    SIDEBAR CONTENT
 ===================== */
-function SidebarContent({ dark, toggle }) {
+function SidebarContent({ dark, toggle, setSidebarOpen }) {
     return (
         <>
             {/* LOGO */}
@@ -112,11 +125,36 @@ function SidebarContent({ dark, toggle }) {
 
             {/* NAV */}
             <nav className="flex-1 px-3 py-6 space-y-1">
-                <NavItem href="/dashboard" icon={MdDashboard} label="Dashboard" />
-                <NavItem href="/students" icon={MdPeople} label="Students" />
-                <NavItem href="/results" icon={MdSchool} label="Results" />
-                <NavItem href="/fees" icon={MdMoney} label="Fees" />
-                <NavItem href="/attendance" icon={MdList} label="Attendance" />
+                <NavItem
+                    href="/dashboard"
+                    icon={MdDashboard}
+                    label="Dashboard"
+                    setSidebarOpen={setSidebarOpen}
+                />
+                <NavItem
+                    href="/students"
+                    icon={MdPeople}
+                    label="Students"
+                    setSidebarOpen={setSidebarOpen}
+                />
+                <NavItem
+                    href="/results"
+                    icon={MdSchool}
+                    label="Results"
+                    setSidebarOpen={setSidebarOpen}
+                />
+                <NavItem
+                    href="/fees"
+                    icon={MdMoney}
+                    label="Fees"
+                    setSidebarOpen={setSidebarOpen}
+                />
+                <NavItem
+                    href="/attendance"
+                    icon={MdList}
+                    label="Attendance"
+                    setSidebarOpen={setSidebarOpen}
+                />
             </nav>
 
             {/* FOOTER */}
@@ -128,52 +166,60 @@ function SidebarContent({ dark, toggle }) {
 }
 
 /* =====================
-   NAV ITEM WITH ICON ANIMATION
+   NAV ITEM
 ===================== */
-const NavItem = ({ href, icon: Icon, label }) => (
-    <Link href={href} className="block">
-        <motion.div
-            whileHover="hover"
-            initial="rest"
-            animate="rest"
-            variants={{
-                rest: { backgroundColor: "rgba(0,0,0,0)" },
-                hover: { backgroundColor: "rgba(99,102,241,0.08)" },
-            }}
-            className="relative flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer overflow-hidden"
-        >
-            {/* LEFT ACTIVE BAR */}
-            <motion.span
-                variants={{
-                    rest: { scaleY: 0 },
-                    hover: { scaleY: 1 },
-                }}
-                transition={{ duration: 0.25 }}
-                className="absolute left-0 top-0 h-full w-1 bg-indigo-500 origin-top"
-            />
+const NavItem = ({ href, icon: Icon, label, setSidebarOpen }) => {
+    const handleClick = () => {
+        if (window.innerWidth < 768) {
+            setSidebarOpen(false);
+        }
+    };
 
-            {/* ICON */}
+    return (
+        <Link href={href} className="block" onClick={handleClick}>
             <motion.div
+                whileHover="hover"
+                initial="rest"
+                animate="rest"
                 variants={{
-                    rest: { scale: 1, rotate: 0 },
-                    hover: { scale: 1.15, rotate: -5 },
+                    rest: { backgroundColor: "rgba(0,0,0,0)" },
+                    hover: { backgroundColor: "rgba(99,102,241,0.08)" },
                 }}
-                transition={{ type: "spring", stiffness: 300 }}
-                className="text-indigo-500 dark:text-indigo-400"
+                className="relative flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer overflow-hidden"
             >
-                <Icon size={22} />
-            </motion.div>
+                {/* ACTIVE BAR */}
+                <motion.span
+                    variants={{
+                        rest: { scaleY: 0 },
+                        hover: { scaleY: 1 },
+                    }}
+                    transition={{ duration: 0.25 }}
+                    className="absolute left-0 top-0 h-full w-1 bg-indigo-500 origin-top"
+                />
 
-            {/* LABEL */}
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-        {label}
-      </span>
-        </motion.div>
-    </Link>
-);
+                {/* ICON */}
+                <motion.div
+                    variants={{
+                        rest: { scale: 1, rotate: 0 },
+                        hover: { scale: 1.15, rotate: -5 },
+                    }}
+                    transition={{ type: "spring", stiffness: 300 }}
+                    className="text-indigo-500 dark:text-indigo-400"
+                >
+                    <Icon size={22} />
+                </motion.div>
+
+                {/* LABEL */}
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          {label}
+        </span>
+            </motion.div>
+        </Link>
+    );
+};
 
 /* =====================
-   PREMIUM THEME SWITCH
+   THEME SWITCH
 ===================== */
 const ThemeSwitch = ({ dark, toggle }) => (
     <div className="flex items-center justify-between">
