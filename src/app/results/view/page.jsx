@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
    API INSTANCE (TOKEN SUPPORT)
 ============================= */
 const API = axios.create({
-    baseURL: "nymph-be.vercel.app/api",
+    baseURL: "https://nymph-be.vercel.app/api",
 });
 
 API.interceptors.request.use((config) => {

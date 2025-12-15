@@ -11,7 +11,7 @@ import {
 } from "react-icons/md";
 
 const API = axios.create({
-    baseURL: "nymph-be.vercel.app/api",
+    baseURL: "https://nymph-be.vercel.app/api",
 });
 
 API.interceptors.request.use((config) => {
