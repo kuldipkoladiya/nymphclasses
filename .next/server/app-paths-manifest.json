@@ -1,0 +1,9 @@
+{
+  "/fees/structure/page": "app/fees/structure/page.js",
+  "/fees/payments/page": "app/fees/payments/page.js",
+  "/attendance/page": "app/attendance/page.js",
+  "/dashboard/page": "app/dashboard/page.js",
+  "/login/page": "app/login/page.js",
+  "/favicon.ico/route": "app/favicon.ico/route.js",
+  "/not-found": "app/not-found.js"
+}

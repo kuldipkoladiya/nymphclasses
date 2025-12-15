@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+    font-family: "Inter", sans-serif;
+}
+
+/* LIGHT MODE */
+body {
+    background: #f9fafb;
+}
+
+/* DARK MODE */
+.dark body {
+    background: #0f172a;
+}
