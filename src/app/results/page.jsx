@@ -27,22 +27,11 @@ export default function CreateResultPage() {
     const [saving, setSaving] = useState(false);
 
     const SUBJECT_OPTIONS = [
-        "Maths",
-        "Science",
-        "English",
-        "Gujarati",
-        "Hindi",
-        "Social Science",
-        "Computer",
-        "Sanskrit"
+        "Maths", "Science", "English", "Gujarati", "Hindi", "Social Science", "Computer", "Sanskrit"
     ];
 
-    /* =============================
-       Sync marks when subjects change
-    ============================= */
     useEffect(() => {
         if (!students.length) return;
-
         setMarks((prev) => {
             const updated = {};
             students.forEach((stu) => {
@@ -57,58 +46,30 @@ export default function CreateResultPage() {
         });
     }, [selectedSubjects, students, totalMaximum]);
 
-    /* =============================
-       Load students
-    ============================= */
     const loadStudents = async () => {
-        if (!standard) {
-            toast.error("Standard parameter missing.");
-            return;
-        }
-        if (!selectedSubjects.length) {
-            toast.error("Select at least one syllabus node.");
-            return;
-        }
+        if (!standard) return toast.error("Select Class first.");
+        if (!selectedSubjects.length) return toast.error("Select at least one subject.");
 
         setLoading(true);
         try {
             const res = await axios.get(`/students/by-standard/${standard}`);
             const list = res.data?.students || res.data || [];
-
             if (!list.length) {
-                toast.error(`No entities found in Class ${standard}`);
+                toast.error(`No students found in Class ${standard}`);
                 setStudents([]);
-                setMarks({});
             } else {
                 setStudents(list);
-                toast.success(`Connected ${list.length} units`);
-
-                const init = {};
-                list.forEach((stu) => {
-                    init[stu._id] = selectedSubjects.map((s) => ({
-                        name: s,
-                        marksObtained: "",
-                        totalMarks: totalMaximum,
-                    }));
-                });
-                setMarks(init);
+                toast.success(`Loaded ${list.length} student records`);
             }
         } catch {
-            toast.error("Telemetry failed. Retry sequence.");
-            setStudents([]);
+            toast.error("Failed to load students.");
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     };
 
-    /* =============================
-       Save results
-    ============================= */
     const saveAllResults = async () => {
-        if (!examName || !examDate) {
-            toast.error("Missing Exam ID or Timestamp.");
-            return;
-        }
-
+        if (!examName || !examDate) return toast.error("Missing exam details.");
         setSaving(true);
         try {
             const savePromises = students.map((stu) =>
@@ -120,117 +81,62 @@ export default function CreateResultPage() {
                     subjects: marks[stu._id],
                 })
             );
-
             await Promise.all(savePromises);
-            toast.success("Metrics published successfully!");
-            setTimeout(() => router.push("/results/view"), 1500);
+            toast.success("All results published!");
+            router.push("/results/view");
         } catch {
-            toast.error("Upload error. Verify grid inputs.");
+            toast.error("Error saving results.");
+        } finally {
+            setSaving(false);
         }
-        setSaving(false);
     };
 
     return (
-        <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="max-w-[1200px] mx-auto space-y-6"
-        >
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-[1400px] mx-auto space-y-8 pb-20 px-4 md:px-0">
             {/* HEADER */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 cyber-panel p-6 shadow-sm">
+            <div className="glass-card p-10 flex flex-col md:flex-row justify-between items-center bg-white dark:bg-slate-900/40 border-l-[12px] border-l-blue-600">
                 <div>
-                    <h1 className="text-2xl font-display font-bold text-secondary-900 dark:text-white tracking-tight uppercase">
-                        Metrics Ingestion
-                    </h1>
-                    <p className="font-sans text-sm font-semibold text-secondary-500 mt-1 uppercase tracking-widest">
-                        Batch process performance data streams.
-                    </p>
+                    <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tightest uppercase">Metrics Ingestion</h1>
+                    <div className="flex items-center gap-2 mt-2">
+                        <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
+                        <p className="text-blue-600 dark:text-blue-400 font-black uppercase tracking-[0.2em] text-[10px]">Academic Performance System</p>
+                    </div>
                 </div>
-                <button
-                    onClick={() => router.push("/results/view")}
-                    className="
-                        px-5 py-2.5 rounded-xl font-bold font-display text-sm tracking-wide uppercase
-                        bg-secondary-100 dark:bg-darkCard text-secondary-700 dark:text-secondary-300
-                        hover:bg-primary-500 hover:text-white border border-secondary-200 dark:border-darkBorder hover:border-primary-500 transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)]
-                        flex items-center gap-2 group
-                    "
-                >
-                    <MdLibraryBooks size={18} className="group-hover:animate-pulse" /> Access Registry
+                <button onClick={() => router.push("/results/view")} className="mt-6 md:mt-0 px-8 py-3.5 rounded-2xl bg-slate-900 dark:bg-blue-600/10 text-white dark:text-blue-400 font-black text-xs uppercase tracking-widest flex items-center gap-3 hover:scale-105 transition-all shadow-lg border border-transparent dark:border-blue-600/20">
+                    <MdLibraryBooks size={20} /> Result Registry
                 </button>
             </div>
 
-            {/* FORM CONFIG */}
-            <div className="cyber-panel p-6 md:p-8 space-y-8 shadow-[0_4px_20px_rgba(0,0,0,0.02)] border border-secondary-200 dark:border-darkBorder">
-                {/* BASIC INFO */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <InputWrapper label="Level Config" icon={<MdClass />}>
-                        <div className="relative">
-                            <select
-                                value={standard}
-                                onChange={(e) => setStandard(e.target.value)}
-                                className="styled-input appearance-none cursor-pointer pr-8 uppercase"
-                            >
-                                <option value="">Target Level</option>
-                                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((s) => (
-                                    <option key={s} value={s}>Class {s}</option>
-                                ))}
-                            </select>
-                        </div>
+            {/* CONFIG PANEL */}
+            <div className="glass-card p-10 bg-white dark:bg-slate-900/40 border border-slate-100 dark:border-white/5">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <InputWrapper label="Standard" icon={<MdClass />}>
+                        <select value={standard} onChange={(e) => setStandard(e.target.value)} className="w-full pl-12 pr-4 py-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:ring-4 focus:ring-blue-600/10 focus:border-blue-600 transition-all outline-none font-bold text-slate-900 dark:text-white appearance-none cursor-pointer">
+                            <option value="">Select Level</option>
+                            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(s => <option key={s} value={s}>Standard {s}</option>)}
+                        </select>
                     </InputWrapper>
 
-                    <InputWrapper label="Evaluation ID" icon={<MdEditDocument />}>
-                        <input
-                            placeholder="e.g. ALPHA-TEST-1"
-                            value={examName}
-                            onChange={(e) => setExamName(e.target.value)}
-                            className="styled-input"
-                        />
+                    <InputWrapper label="Exam Name" icon={<MdEditDocument />}>
+                        <input placeholder="e.g. First Terminal" value={examName} onChange={(e) => setExamName(e.target.value)} className="w-full pl-12 pr-4 py-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:ring-4 focus:ring-blue-600/10 focus:border-blue-600 transition-all outline-none font-bold text-slate-900 dark:text-white placeholder-slate-400" />
                     </InputWrapper>
 
-                    <InputWrapper label="Timestamp" icon={<MdDateRange />}>
-                        <input
-                            type="date"
-                            value={examDate}
-                            onChange={(e) => setExamDate(e.target.value)}
-                            className="styled-input uppercase"
-                        />
+                    <InputWrapper label="Date" icon={<MdDateRange />}>
+                        <input type="date" value={examDate} onChange={(e) => setExamDate(e.target.value)} className="w-full pl-12 pr-4 py-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:ring-4 focus:ring-blue-600/10 focus:border-blue-600 transition-all outline-none font-bold text-slate-900 dark:text-white uppercase" />
                     </InputWrapper>
 
-                    <InputWrapper label="Max Value Threshold" icon={<MdScore />}>
-                        <input
-                            type="number"
-                            min="1"
-                            value={totalMaximum}
-                            onChange={(e) => setTotalMaximum(+e.target.value)}
-                            className="styled-input font-bold text-primary-500 bg-primary-50/10 focus:ring-primary-500"
-                        />
+                    <InputWrapper label="Max Marks" icon={<MdScore />}>
+                        <input type="number" value={totalMaximum} onChange={(e) => setTotalMaximum(+e.target.value)} className="w-full pl-12 pr-4 py-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:ring-4 focus:ring-blue-600/10 focus:border-blue-600 transition-all outline-none font-bold text-blue-600 dark:text-blue-400" />
                     </InputWrapper>
                 </div>
 
-                {/* SUBJECTS */}
-                <div className="pt-4 border-t border-secondary-100 dark:border-darkBorder">
-                    <div className="flex items-center gap-2 mb-4">
-                        <MdLibraryBooks className="text-primary-500" size={20} />
-                        <h3 className="text-[10px] font-bold text-secondary-800 dark:text-secondary-200 uppercase tracking-[0.2em]">
-                            Syllabus Nodes
-                        </h3>
-                    </div>
-
+                <div className="mt-10 pt-10 border-t border-slate-100 dark:border-white/5">
+                    <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-6">Subject Nodes Selection</h3>
                     <div className="flex flex-wrap gap-3">
-                        {SUBJECT_OPTIONS.map((sub) => {
-                            const isSelected = selectedSubjects.includes(sub);
+                        {SUBJECT_OPTIONS.map(sub => {
+                            const active = selectedSubjects.includes(sub);
                             return (
-                                <button
-                                    key={sub}
-                                    onClick={() => setSelectedSubjects((p) => p.includes(sub) ? p.filter((x) => x !== sub) : [...p, sub])}
-                                    className={`
-                                        relative px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all duration-300 flex items-center gap-2 border
-                                        ${isSelected
-                                            ? "bg-primary-500/10 border-primary-500 text-primary-500 shadow-[0_0_15px_rgba(6,182,212,0.3)] scale-[1.02]"
-                                            : "bg-white dark:bg-[#131C31] border-secondary-200 dark:border-darkBorder text-secondary-500 dark:text-secondary-400 hover:border-primary-500/50"}
-                                    `}
-                                >
-                                    {isSelected && <MdCheckCircle size={14} className="animate-pulse" />}
+                                <button key={sub} onClick={() => setSelectedSubjects(p => active ? p.filter(x => x !== sub) : [...p, sub])} className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border ${active ? 'bg-blue-600 border-blue-600 text-white shadow-lg shadow-blue-600/30' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-500 hover:border-blue-600'}`}>
                                     {sub}
                                 </button>
                             );
@@ -238,155 +144,79 @@ export default function CreateResultPage() {
                     </div>
                 </div>
 
-                {/* LOAD ACTION */}
-                <div className="flex justify-end pt-5 border-t border-secondary-100 dark:border-darkBorder">
-                    <button
-                        onClick={loadStudents}
-                        disabled={loading}
-                        className="
-                            px-8 py-3 rounded-xl font-bold font-display tracking-wide text-sm flex items-center gap-2
-                            bg-primary-500 hover:bg-primary-400 text-white uppercase
-                            shadow-neon hover:shadow-neon-intense hover:-translate-y-0.5
-                            transition-all disabled:opacity-50 disabled:shadow-none disabled:hover:translate-y-0 disabled:cursor-not-allowed
-                        "
-                    >
-                        {loading ? (
-                            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                        ) : (
-                            <><MdGroup size={20} /> Connect Class {standard || "?"} Grid</>
-                        )}
+                <div className="mt-10 flex justify-end">
+                    <button onClick={loadStudents} disabled={loading} className="px-10 py-4 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-black text-sm uppercase tracking-widest shadow-xl shadow-blue-600/30 flex items-center gap-3 transition-all active:scale-95 disabled:opacity-50">
+                        {loading ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <><MdGroup size={22} /> Load Class {standard || "?"} Grid</>}
                     </button>
                 </div>
             </div>
 
-            {/* MARKS ENTRY GRID */}
+            {/* MARKS GRID */}
             <AnimatePresence>
                 {students.length > 0 && (
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, height: 0 }}
-                        className="cyber-panel overflow-hidden border border-secondary-200 dark:border-darkBorder p-0 shadow-none"
-                    >
-                        <div className="p-4 sm:p-6 bg-secondary-50 dark:bg-darkBg border-b border-secondary-200 dark:border-darkBorder flex justify-between items-center">
-                            <h3 className="text-sm font-bold text-secondary-800 dark:text-white flex items-center gap-2 uppercase tracking-widest">
-                                <MdScore className="text-primary-500" size={20} /> Data Matrix
-                            </h3>
-                            <span className="text-[10px] font-black tracking-[0.2em] px-3 py-1 bg-primary-500/10 text-primary-500 rounded-md border border-primary-500/30 uppercase">
-                                {students.length} Units Active
-                            </span>
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="glass-card overflow-hidden bg-white dark:bg-slate-900/40 border border-slate-100 dark:border-white/5">
+                        <div className="p-8 bg-slate-50/50 dark:bg-white/[0.02] border-b border-slate-100 dark:border-white/5 flex justify-between items-center">
+                            <h3 className="text-lg font-black text-slate-900 dark:text-white uppercase tracking-widest flex items-center gap-3"><MdScore className="text-blue-600" /> Assessment Matrix</h3>
+                            <span className="text-[10px] font-black tracking-widest px-4 py-1.5 bg-blue-600/10 text-blue-600 rounded-full border border-blue-600/20 uppercase">{students.length} Records</span>
                         </div>
 
-                        <div className="overflow-x-auto p-0">
-                            <table className="w-full text-sm border-collapse">
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-left border-collapse">
                                 <thead>
-                                    <tr>
-                                        <th className="p-4 text-left font-bold text-[10px] text-secondary-500 dark:text-secondary-400 tracking-[0.2em] uppercase sticky left-0 bg-secondary-50 dark:bg-darkBg z-10 border-b border-secondary-200 dark:border-darkBorder min-w-[150px]">
-                                            Identity
-                                        </th>
-                                        {selectedSubjects.map((sub) => (
-                                            <th key={sub} className="p-4 text-center font-bold text-[10px] text-primary-600 dark:text-primary-400 uppercase tracking-[0.2em] bg-primary-50/30 dark:bg-primary-900/10 border-b border-secondary-200 dark:border-darkBorder border-l border-secondary-100 dark:border-darkBorder min-w-[120px]">
-                                                {sub} <br /> <span className="text-[9px] font-medium text-secondary-400 tracking-wider">MAX: {totalMaximum}</span>
+                                    <tr className="bg-slate-50/30 dark:bg-white/[0.01]">
+                                        <th className="p-6 text-[11px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 dark:border-white/5 sticky left-0 bg-slate-50 dark:bg-slate-900 z-10">Personnel Identity</th>
+                                        {selectedSubjects.map(sub => (
+                                            <th key={sub} className="p-6 text-center text-[11px] font-black text-blue-600 uppercase tracking-widest border-b border-slate-100 dark:border-white/5 border-l border-slate-100 dark:border-white/5 min-w-[140px]">
+                                                {sub} <div className="text-[9px] text-slate-400 font-bold mt-1">/ {totalMaximum}</div>
                                             </th>
                                         ))}
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {students.map((stu, i) => (
-                                        <motion.tr
-                                            initial={{ opacity: 0, x: -10 }}
-                                            animate={{ opacity: 1, x: 0 }}
-                                            transition={{ delay: i * 0.05 }}
-                                            key={stu._id}
-                                            className="group border-b border-secondary-100 dark:border-darkBorder hover:bg-primary-500/5 dark:hover:bg-primary-900/10 transition-colors"
-                                        >
-                                            <td className="p-4 font-bold text-secondary-800 dark:text-secondary-200 sticky left-0 bg-white dark:bg-[#131C31] group-hover:bg-secondary-50 dark:group-hover:bg-darkBg transition-colors">
-                                                {stu.name}
-                                                <div className="text-[10px] font-bold text-secondary-400 uppercase tracking-widest mt-1">UID: {stu.rollNumber}</div>
+                                        <tr key={stu._id} className="border-b border-slate-50 dark:border-white/5 hover:bg-blue-600/[0.02] transition-colors group">
+                                            <td className="p-6 sticky left-0 bg-white dark:bg-slate-900 group-hover:bg-slate-50 dark:group-hover:bg-slate-800 transition-colors">
+                                                <p className="font-bold text-slate-900 dark:text-white">{stu.name}</p>
+                                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-0.5">UID: {stu.rollNumber}</p>
                                             </td>
-
                                             {marks[stu._id]?.map((m, idx) => (
-                                                <td key={idx} className="p-3 border-l border-secondary-50 dark:border-white/5">
+                                                <td key={idx} className="p-4 border-l border-slate-50 dark:border-white/5">
                                                     <div className="flex justify-center">
-                                                        <input
-                                                            type="number"
-                                                            min="0"
-                                                            max={totalMaximum}
-                                                            value={m.marksObtained}
-                                                            onChange={(e) => {
-                                                                const val = e.target.value;
-                                                                if (val > totalMaximum) {
-                                                                    toast.error(`Value exceeds threshold (${totalMaximum})`);
-                                                                    return;
-                                                                }
-                                                                setMarks((p) => ({
-                                                                    ...p,
-                                                                    [stu._id]: p[stu._id].map((x, subIdx) =>
-                                                                        subIdx === idx ? { ...x, marksObtained: val } : x
-                                                                    ),
-                                                                }))
-                                                            }}
-                                                            className="
-                                                                w-24 text-center py-2 px-1 rounded-md font-bold font-display bg-white dark:bg-darkCard 
-                                                                border border-secondary-300 dark:border-darkBorder focus:border-primary-500 focus:shadow-[inset_0_0_10px_rgba(6,182,212,0.1)]
-                                                                text-secondary-900 dark:text-white transition-all outline-none shadow-sm
-                                                            "
-                                                            placeholder="000"
-                                                        />
+                                                        <input type="number" max={totalMaximum} value={m.marksObtained} onChange={(e) => {
+                                                            const val = e.target.value;
+                                                            if (+val > totalMaximum) return toast.error(`Max is ${totalMaximum}`);
+                                                            setMarks(p => ({
+                                                                ...p,
+                                                                [stu._id]: p[stu._id].map((x, subIdx) => subIdx === idx ? { ...x, marksObtained: val } : x)
+                                                            }));
+                                                        }} className="w-24 text-center py-3 rounded-xl font-black bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:border-blue-600 transition-all outline-none text-slate-900 dark:text-white" placeholder="---" />
                                                     </div>
                                                 </td>
                                             ))}
-                                        </motion.tr>
+                                        </tr>
                                     ))}
                                 </tbody>
                             </table>
                         </div>
 
-                        <div className="p-6 bg-secondary-50 dark:bg-darkBg border-t border-secondary-200 dark:border-darkBorder flex justify-end">
-                            <button
-                                disabled={saving}
-                                onClick={saveAllResults}
-                                className="
-                                    px-10 py-3.5 rounded-xl font-bold font-display uppercase tracking-wide text-sm flex items-center justify-center gap-3 w-full sm:w-auto
-                                    bg-primary-500 hover:bg-primary-400 text-white
-                                    shadow-neon hover:shadow-neon-intense hover:-translate-y-0.5
-                                    transition-all disabled:opacity-50 disabled:shadow-none disabled:hover:translate-y-0 disabled:cursor-not-allowed
-                                "
-                            >
-                                {saving ? (
-                                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                                ) : (
-                                    <><MdSave size={20} /> Publish Matrix</>
-                                )}
+                        <div className="p-8 bg-slate-50/50 dark:bg-white/[0.02] border-t border-slate-100 dark:border-white/5 flex justify-end">
+                            <button onClick={saveAllResults} disabled={saving} className="px-12 py-4 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-black text-sm uppercase tracking-widest shadow-xl shadow-blue-600/30 flex items-center gap-3 transition-all active:scale-95 disabled:opacity-50">
+                                {saving ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <><MdSave size={22} /> Publish All Results</>}
                             </button>
                         </div>
                     </motion.div>
                 )}
             </AnimatePresence>
-
-            {/* INLINE STYLES FOR INPUTS */}
-            <style jsx global>{`
-                .styled-input {
-                    @apply w-full pl-10 pr-4 py-3 rounded-xl bg-white dark:bg-darkCard border border-secondary-200 dark:border-darkBorder text-secondary-800 dark:text-secondary-100 focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500 transition-all font-bold tracking-wide shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)];
-                }
-            `}</style>
         </motion.div>
     );
 }
 
-/* =============================
-   INPUT WRAPPER
-============================= */
 function InputWrapper({ label, icon, children }) {
     return (
-        <div className="flex flex-col space-y-2 relative group">
-            <label className="text-[10px] font-bold text-secondary-500 dark:text-secondary-400 uppercase tracking-[0.2em] pl-1">
-                {label}
-            </label>
+        <div className="space-y-2 group">
+            <label className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] pl-1">{label}</label>
             <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-secondary-400 group-focus-within:text-primary-500 transition-colors z-10">
-                    {icon}
-                </div>
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-600 transition-colors z-10">{icon}</div>
                 {children}
             </div>
         </div>

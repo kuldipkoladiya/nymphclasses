@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import axios from "axios";
+import axios from "@/utils/axios";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import {
@@ -15,23 +15,13 @@ import {
     MdWarning
 } from "react-icons/md";
 
-const API = axios.create({
-    baseURL: "https://nymph-be.vercel.app/api",
-});
-
-API.interceptors.request.use((config) => {
-    const token = typeof window !== "undefined" ? localStorage.getItem("token") : "";
-    if (token) config.headers.Authorization = `Bearer ${token}`;
-    return config;
-});
-
 export default function FeesDashboard() {
     const router = useRouter();
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        API.get("/fees/analytics")
+        axios.get("/fees/analytics")
             .then((res) => {
                 setData(res.data);
                 setLoading(false);
@@ -56,19 +46,21 @@ export default function FeesDashboard() {
 
     return (
         <motion.div 
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="max-w-[1200px] mx-auto space-y-8"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="max-w-[1400px] mx-auto space-y-10 pb-20 px-4 md:px-0"
         >
             {/* HEADER */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 cyber-panel p-6 shadow-sm">
+            <div className="glass-card p-10 flex flex-col md:flex-row justify-between items-center bg-white dark:bg-slate-900/40 border-l-[12px] border-l-blue-600">
                 <div>
-                    <h1 className="text-3xl font-display font-bold text-secondary-900 dark:text-white tracking-tight uppercase">
-                        Financial Command
-                    </h1>
-                    <p className="font-sans text-sm font-semibold text-secondary-500 mt-1 uppercase tracking-widest">
-                        Oversight of allocations, credits, and deficits.
-                    </p>
+                    <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tightest uppercase">Financial Hub</h1>
+                    <div className="flex items-center gap-2 mt-2">
+                        <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
+                        <p className="text-blue-600 dark:text-blue-400 font-black uppercase tracking-[0.2em] text-[10px]">Real-time Capital Management</p>
+                    </div>
+                </div>
+                <div className="hidden md:block text-right">
+                    <p className="text-slate-400 dark:text-slate-500 text-[10px] font-black uppercase tracking-[0.2em]">Authorized Access Only</p>
                 </div>
             </div>
 
@@ -77,60 +69,55 @@ export default function FeesDashboard() {
                 variants={containerVariants}
                 initial="hidden"
                 animate="show"
-                className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5"
+                className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6"
             >
                 <ActionCard
                     variants={itemVariants}
                     icon={<MdAccountBalance size={28} />}
-                    title="Structure Config"
-                    subtitle="Define baseline fees"
-                    color="primary"
-                    bgAcc="bg-primary-500/10 text-primary-500"
+                    title="Fee Config"
+                    subtitle="BASELINE STRUCTURE"
+                    color="blue"
                     onClick={() => router.push("/fees/structure")}
                 />
                 <ActionCard
                     variants={itemVariants}
                     icon={<MdPayments size={28} />}
-                    title="Credit Registry"
-                    subtitle="Process transactions"
-                    color="primary"
-                    bgAcc="bg-primary-500/10 text-primary-500"
+                    title="Collection"
+                    subtitle="CREDIT REGISTRY"
+                    color="blue"
                     onClick={() => router.push("/fees/payments")}
                 />
                 <ActionCard
                     variants={itemVariants}
                     icon={<MdPendingActions size={28} />}
-                    title="Deficit Tracking"
-                    subtitle="Monitor unpaid units"
-                    color="pink"
-                    bgAcc="bg-pink-500/10 text-pink-500"
+                    title="Deficits"
+                    subtitle="PENDING OVERSIGHT"
+                    color="rose"
                     onClick={() => router.push("/fees/pending")}
                 />
                 <ActionCard
                     variants={itemVariants}
                     icon={<MdInsights size={28} />}
-                    title="Data Telemetry"
-                    subtitle="Advanced revenue metrics"
-                    color="purple"
-                    bgAcc="bg-purple-500/10 text-purple-500"
+                    title="Telemetry"
+                    subtitle="REVENUE ANALYSIS"
+                    color="slate"
                     onClick={() => {}}
                 />
             </motion.div>
 
-            {/* STATS SECTION TITLE */}
-            <div className="pt-4">
-                <h2 className="text-xl font-display font-bold text-secondary-900 dark:text-white mb-6 flex items-center gap-2 uppercase tracking-wide">
-                    <MdMonetizationOn className="text-primary-500" size={24} /> 
-                    Current Cycle Telemetry
-                </h2>
+            {/* STATS SECTION */}
+            <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                    <h2 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tightest flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white"><MdMonetizationOn size={18} /></div> 
+                        Operational Metrics
+                    </h2>
+                </div>
                 
                 {loading ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                         {[1, 2, 3, 4].map((i) => (
-                            <div key={i} className="cyber-panel p-6 h-[140px] animate-pulse">
-                                <div className="h-4 w-24 bg-secondary-200 dark:bg-darkBorder rounded mb-4"></div>
-                                <div className="h-8 w-32 bg-secondary-200 dark:bg-darkBorder rounded"></div>
-                            </div>
+                            <div key={i} className="glass-card p-8 h-[160px] animate-pulse bg-white dark:bg-white/5" />
                         ))}
                     </div>
                 ) : data ? (
@@ -138,44 +125,41 @@ export default function FeesDashboard() {
                         variants={containerVariants}
                         initial="hidden"
                         animate="show"
-                        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5"
+                        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
                     >
                         <StatCard 
                             variants={itemVariants}
                             title="Active Units" 
                             val={data.totalStudents} 
                             icon={<MdPeopleAlt />} 
-                            trend="Active" 
+                            color="blue" 
                         />
                         <StatCard 
                             variants={itemVariants}
-                            title="Target Revenue" 
+                            title="Target Assets" 
                             val={`₹${data.totalYearlyFees?.toLocaleString() || 0}`} 
                             icon={<MdMonetizationOn />} 
-                            trend="Yearly" 
-                            color="cyan"
+                            color="blue"
                         />
                         <StatCard 
                             variants={itemVariants}
-                            title="Secured Funds" 
+                            title="Secured Capital" 
                             val={`₹${data.totalCollected?.toLocaleString() || 0}`} 
                             icon={<MdCheckCircle />} 
-                            trend="Safe" 
-                            color="green"
+                            color="emerald"
                         />
                         <StatCard 
                             variants={itemVariants}
                             title="Deficit Volume" 
                             val={`₹${data.totalPending?.toLocaleString() || 0}`} 
                             icon={<MdWarning />} 
-                            trend="At Risk" 
                             color="rose"
                         />
                     </motion.div>
                 ) : (
-                    <div className="cyber-panel p-12 text-center flex flex-col items-center justify-center border-dashed border-secondary-300 dark:border-secondary-700">
-                        <MdWarning className="text-orange-500 mb-2 drop-shadow-[0_0_8px_rgba(249,115,22,0.6)]" size={32} />
-                        <p className="text-secondary-500 dark:text-secondary-400 font-bold uppercase tracking-wider text-sm">Target telemetry unreachable</p>
+                    <div className="glass-card p-20 text-center flex flex-col items-center justify-center border-dashed bg-white dark:bg-white/5">
+                        <MdWarning className="text-rose-500 mb-4" size={48} />
+                        <p className="text-slate-400 font-black uppercase tracking-widest text-xs">Data Stream Interrupted</p>
                     </div>
                 )}
             </div>
@@ -183,80 +167,55 @@ export default function FeesDashboard() {
     );
 }
 
-/* ================= COMPONENTS ================= */
-
-const ActionCard = ({ icon, title, subtitle, color, bgAcc, onClick, variants }) => {
-    const colorClasses = {
-        primary: "from-primary-500 to-primary-600 shadow-[0_0_15px_rgba(6,182,212,0.5)]",
-        pink: "from-pink-500 to-rose-600 shadow-[0_0_15px_rgba(236,72,153,0.5)]",
-        purple: "from-purple-500 to-indigo-600 shadow-[0_0_15px_rgba(168,85,247,0.5)]"
+const ActionCard = ({ icon, title, subtitle, color, onClick, variants }) => {
+    const colorStyles = {
+        blue: "bg-blue-600 text-white shadow-blue-600/30 hover:bg-blue-500",
+        rose: "bg-rose-500 text-white shadow-rose-500/30 hover:bg-rose-400",
+        slate: "bg-slate-900 text-white shadow-slate-900/30 hover:bg-slate-800",
     };
 
     return (
         <motion.button
             variants={variants}
-            whileHover={{ y: -6, scale: 1.02 }}
+            whileHover={{ y: -8, scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={onClick}
-            className="
-                relative group w-full text-left rounded-xl p-6
-                cyber-panel
-                hover:border-transparent transition-all duration-300 overflow-hidden
-            "
+            className="group relative glass-card p-8 bg-white dark:bg-slate-900/40 text-left border-transparent hover:border-blue-600/20"
         >
-            {/* Glow effect on hover */}
-            <div className={`absolute inset-0 bg-gradient-to-br ${colorClasses[color]?.split(' ')[0]} opacity-0 group-hover:opacity-[0.05] dark:group-hover:opacity-[0.15] transition-opacity duration-500`}></div>
-            
-            {/* Top accent line */}
-            <div className={`absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r ${colorClasses[color]?.split(' ')[0]} opacity-0 group-hover:opacity-100 group-hover:${colorClasses[color]?.split(' ')[1]} transition-all duration-300`}></div>
-
-            <div className="relative z-10 flex flex-col h-full">
-                <div className={`
-                    w-12 h-12 rounded-lg flex items-center justify-center mb-5
-                    ${bgAcc} shadow-sm group-hover:shadow-[0_0_10px_currentColor] transition-all border border-current
-                `}>
-                    {icon}
-                </div>
-                <h3 className="text-lg font-display font-bold text-secondary-900 dark:text-white tracking-tight leading-tight mb-1">
-                    {title}
-                </h3>
-                <p className="text-[10px] uppercase tracking-widest font-bold text-secondary-500 dark:text-secondary-400">
-                    {subtitle}
-                </p>
+            <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 shadow-xl transition-all ${colorStyles[color]}`}>
+                {icon}
             </div>
+            <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tightest leading-tight mb-2">
+                {title}
+            </h3>
+            <p className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400 dark:text-slate-500">
+                {subtitle}
+            </p>
+            <div className="absolute top-4 right-4 w-2 h-2 rounded-full bg-slate-100 dark:bg-white/5 group-hover:bg-blue-600 transition-colors" />
         </motion.button>
     );
 };
 
-const StatCard = ({ title, val, icon, color = "gray", variants }) => {
-    const colorMap = {
-        cyan: "text-primary-500 bg-primary-500/10 border-primary-500/30",
-        green: "text-green-500 bg-green-500/10 border-green-500/30",
-        rose: "text-rose-500 bg-rose-500/10 border-rose-500/30",
-        gray: "text-secondary-500 bg-secondary-100 dark:bg-secondary-800 border-secondary-300 dark:border-secondary-700"
+const StatCard = ({ title, val, icon, color, variants }) => {
+    const colorStyles = {
+        blue: "text-blue-600 bg-blue-600/10",
+        emerald: "text-emerald-500 bg-emerald-500/10",
+        rose: "text-rose-500 bg-rose-500/10",
     };
 
     return (
-        <motion.div
-            variants={variants}
-            className="
-                relative rounded-xl p-6 overflow-hidden
-                cyber-panel
-            "
-        >
-            <div className="flex items-center justify-between mb-4">
-                <p className="text-[10px] font-bold text-secondary-500 dark:text-secondary-400 tracking-[0.2em] uppercase">
+        <motion.div variants={variants} className="glass-card p-8 bg-white dark:bg-slate-900/40 border border-slate-100 dark:border-white/5 group hover:border-blue-600/10 transition-all">
+            <div className="flex items-center justify-between mb-6">
+                <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 tracking-[0.2em] uppercase">
                     {title}
                 </p>
-                <div className={`p-2 rounded-lg border ${colorMap[color]}`}>
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${colorStyles[color] || 'bg-slate-100 dark:bg-white/5'}`}>
                     {icon}
                 </div>
             </div>
-            <div className="relative z-10">
-                <p className="text-3xl font-display font-bold text-secondary-900 dark:text-white tracking-tighter">
-                    {val}
-                </p>
-            </div>
+            <p className="text-3xl font-black text-slate-900 dark:text-white tracking-tightest">
+                {val}
+            </p>
         </motion.div>
     );
 };

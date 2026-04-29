@@ -33,10 +33,11 @@ export default function AttendancePage() {
                 setStudents(list);
 
                 try {
-                    const aRes = await axios.get(`/attendance/by-standard/${standard}?date=${date}`);
+                    const aRes = await axios.get(`/attendance/filter?standard=${standard}&date=${date}`);
                     const map = {};
-                    aRes.data?.attendance?.forEach((a) => {
-                        map[a.studentId] = a.status;
+                    const attendanceData = aRes.data?.attendance || aRes.data || [];
+                    attendanceData.forEach((a) => {
+                        map[a.studentId?._id || a.studentId] = a.status;
                     });
                     setAttendance(map);
                     setAttendanceExists(Object.keys(map).length > 0);
@@ -47,11 +48,11 @@ export default function AttendancePage() {
             } catch {
                 setStudents([]);
                 setAttendance({});
-                toast.error("Failed to fetch students for the selected class.");
+                toast.error("Failed to load records.");
+            } finally {
+                setLoading(false);
             }
-            setLoading(false);
         };
-
         loadData();
     }, [standard, date]);
 
@@ -78,114 +79,100 @@ export default function AttendancePage() {
                 students.map((s) => axios.post("/attendance", { studentId: s._id, date, status: attendance[s._id] || "Absent" }))
             );
             setAttendanceExists(true);
-            toast.success("Attendance directives saved!");
+            toast.success("Attendance committed successfully!");
         } catch {
-            toast.error("Failed to save records.");
+            toast.error("Error saving records.");
+        } finally {
+            setSaving(false);
         }
-        setSaving(false);
     };
 
     return (
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="w-full space-y-6">
-
-            {/* HEROCARD HEADER */}
-            <div className="saas-panel p-6 shadow-glass flex flex-col md:flex-row justify-between items-center bg-gradient-to-r from-primary-500/10 to-transparent border-l-4 border-l-primary-500">
-                <div className="flex gap-4 items-center">
-                    <div className="w-16 h-16 bg-white dark:bg-black/20 rounded-2xl flex items-center justify-center shadow-inner">
-                        <MdCalendarMonth className="text-primary-500" size={32} />
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-[1400px] mx-auto space-y-10 pb-20 px-4 md:px-0">
+            {/* HEADER */}
+            <div className="glass-card p-10 flex flex-col md:flex-row justify-between items-center bg-white dark:bg-slate-900/40 border-l-[12px] border-l-blue-600">
+                <div className="flex items-center gap-6">
+                    <div className="w-16 h-16 bg-blue-600 text-white rounded-3xl flex items-center justify-center shadow-2xl shadow-blue-600/40">
+                        <MdCalendarMonth size={32} />
                     </div>
                     <div>
-                        <h1 className="text-3xl font-display font-black text-secondary-900 dark:text-white tracking-tight">Active Roster Log</h1>
-                        <p className="font-sans text-sm font-semibold text-secondary-500 mt-1 uppercase tracking-widest">Mark daily presence and absence</p>
+                        <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tightest uppercase">Roster Control</h1>
+                        <p className="text-blue-600 dark:text-blue-400 font-black uppercase tracking-[0.2em] text-[10px] mt-1">Personnel Presence Tracking</p>
                     </div>
                 </div>
 
-                <div className="mt-4 md:mt-0 flex gap-3">
-                    <button
-                        onClick={save} disabled={saving || students.length === 0}
-                        className="px-8 py-3.5 rounded-2xl font-bold text-sm tracking-wide bg-gradient-to-r from-primary-500 to-secondary-500 text-white shadow-glow hover:shadow-glass disabled:opacity-50 flex items-center gap-2 transition-all hover:-translate-y-1"
-                    >
-                        {saving ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div> : <MdSave size={22} />}
-                        {saving ? "Processing..." : attendanceExists ? "Override Status" : "Commit File"}
+                <div className="mt-6 md:mt-0">
+                    <button onClick={save} disabled={saving || students.length === 0} className="px-10 py-4 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-black text-sm uppercase tracking-widest shadow-xl shadow-blue-600/30 flex items-center gap-3 transition-all active:scale-95 disabled:opacity-50">
+                        {saving ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <MdSave size={22} />}
+                        {saving ? "SAVING..." : attendanceExists ? "OVERRIDE" : "COMMIT LOG"}
                     </button>
                 </div>
             </div>
 
-            {/* CONTROL PANEL */}
+            {/* CONTROLS */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="saas-panel flex items-center px-4 overflow-hidden focus-within:shadow-md transition-shadow dark:bg-darkCard/80 backdrop-blur-md">
-                    <div className="text-primary-500"><MdClass size={22} /></div>
-                    <select className="w-full bg-transparent px-3 py-4 outline-none font-bold text-secondary-800 dark:text-white appearance-none cursor-pointer" value={standard} onChange={(e) => setStandard(e.target.value)}>
-                        <option value="" disabled>Select Grade Level</option>
-                        {["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"].map((s) => <option key={s} value={s}>Grade {s}</option>)}
+                <div className="glass-card px-8 py-2 bg-white dark:bg-slate-900/40 flex items-center gap-4 border border-slate-100 dark:border-white/5">
+                    <MdClass className="text-blue-600" size={24} />
+                    <select className="w-full py-5 bg-transparent outline-none font-bold text-slate-900 dark:text-white appearance-none cursor-pointer" value={standard} onChange={(e) => setStandard(e.target.value)}>
+                        <option value="">Academic Level</option>
+                        {["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"].map(s => <option key={s} value={s}>Grade {s}</option>)}
                     </select>
                 </div>
 
-                <div className="saas-panel flex items-center px-4 overflow-hidden focus-within:shadow-md transition-shadow dark:bg-darkCard/80 backdrop-blur-md">
-                    <div className="text-primary-500"><MdCalendarMonth size={22} /></div>
-                    <input type="date" className="w-full bg-transparent px-3 py-4 outline-none font-bold text-secondary-800 dark:text-white" value={date} onChange={(e) => setDate(e.target.value)} />
+                <div className="glass-card px-8 py-2 bg-white dark:bg-slate-900/40 flex items-center gap-4 border border-slate-100 dark:border-white/5">
+                    <MdCalendarMonth className="text-blue-600" size={24} />
+                    <input type="date" className="w-full py-5 bg-transparent outline-none font-bold text-slate-900 dark:text-white" value={date} onChange={(e) => setDate(e.target.value)} />
                 </div>
 
-                <div className="saas-panel flex items-center px-4 overflow-hidden focus-within:shadow-md transition-shadow dark:bg-darkCard/80 backdrop-blur-md">
-                    <div className="text-primary-500"><MdSearch size={22} /></div>
-                    <input className="w-full bg-transparent px-3 py-4 outline-none font-medium text-secondary-800 dark:text-white placeholder-secondary-400" placeholder="Filter roster..." value={search} onChange={(e) => setSearch(e.target.value)} />
+                <div className="glass-card px-8 py-2 bg-white dark:bg-slate-900/40 flex items-center gap-4 border border-slate-100 dark:border-white/5">
+                    <MdSearch className="text-blue-600" size={24} />
+                    <input className="w-full py-5 bg-transparent outline-none font-bold text-slate-900 dark:text-white placeholder-slate-400" placeholder="Filter Roster..." value={search} onChange={(e) => setSearch(e.target.value)} />
                 </div>
             </div>
 
             {/* BATCH ACTIONS */}
             {filtered.length > 0 && (
                 <div className="flex gap-4 justify-end">
-                    <button onClick={() => bulk("Present")} className="px-6 py-2 rounded-xl text-sm font-bold border border-emerald-500/30 bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500 hover:text-white transition-all">Mark All Present</button>
-                    <button onClick={() => bulk("Absent")} className="px-6 py-2 rounded-xl text-sm font-bold border border-rose-500/30 bg-rose-500/10 text-rose-600 hover:bg-rose-500 hover:text-white transition-all">Mark All Absent</button>
+                    <button onClick={() => bulk("Present")} className="px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 hover:bg-emerald-500 hover:text-white transition-all">All Present</button>
+                    <button onClick={() => bulk("Absent")} className="px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest bg-rose-500/10 text-rose-600 border border-rose-500/20 hover:bg-rose-500 hover:text-white transition-all">All Absent</button>
                 </div>
             )}
 
-            {/* MASONRY/GRID CARD LAYOUT FOR ATTENDANCE */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {/* ROSTER GRID */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {loading ? (
                     Array.from({ length: 8 }).map((_, i) => (
-                        <div key={i} className="saas-panel p-6 h-[140px] flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-full bg-white/40 animate-pulse"></div>
-                            <div className="space-y-3 flex-1"><div className="h-4 bg-white/40 animate-pulse w-full rounded"></div><div className="h-4 bg-white/40 animate-pulse w-1/2 rounded"></div></div>
-                        </div>
+                        <div key={i} className="glass-card p-8 h-[180px] animate-pulse bg-white dark:bg-white/5" />
                     ))
                 ) : !standard ? (
-                    <div className="col-span-full saas-panel p-16 text-center">
-                        <MdClass className="mx-auto text-secondary-400 mb-4" size={48} />
-                        <h3 className="text-xl font-bold">Select Grade Level</h3>
-                        <p className="text-secondary-500 mt-2">Please select a class to load the student roster.</p>
+                    <div className="col-span-full glass-card p-24 text-center bg-white dark:bg-white/5">
+                        <MdClass className="mx-auto text-slate-300 mb-6" size={64} />
+                        <h3 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-widest">Select Level</h3>
+                        <p className="text-slate-400 mt-2 font-bold uppercase tracking-widest text-[10px]">Awaiting grade configuration...</p>
                     </div>
                 ) : filtered.length === 0 ? (
-                    <div className="col-span-full saas-panel p-16 text-center">
-                        <h3 className="text-xl font-bold">No Records Found</h3>
-                        <p className="text-secondary-500 mt-2">Adjust your search or check class allocations.</p>
+                    <div className="col-span-full glass-card p-24 text-center bg-white dark:bg-white/5">
+                        <h3 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-widest">No Personnel Found</h3>
+                        <p className="text-slate-400 mt-2 font-bold uppercase tracking-widest text-[10px]">Zero records discovered in this sector.</p>
                     </div>
                 ) : (
                     filtered.map((s) => {
-                        const status = attendance[s._id] || "Absent";
-                        const isPresent = status === "Present";
-
+                        const isPresent = (attendance[s._id] || "Absent") === "Present";
                         return (
-                            <motion.div key={s._id} layout className={`saas-panel p-5 flex flex-col justify-between transition-all duration-300 ${isPresent ? 'border-emerald-500/50 shadow-[0_0_15px_rgba(16,185,129,0.1)]' : 'border-rose-500/50 shadow-[0_0_15px_rgba(244,63,94,0.1)]'}`}>
-                                <div className="flex justify-between items-start mb-4">
-                                    <div>
-                                        <p className="font-bold text-secondary-900 dark:text-white text-lg truncate pr-2">{s.name}</p>
-                                        <p className="text-xs font-black uppercase text-secondary-500 tracking-widest mt-1">TAG: {s.rollNumber}</p>
+                            <motion.div key={s._id} layout className={`glass-card p-8 flex flex-col justify-between transition-all duration-500 border-2 ${isPresent ? 'border-emerald-500/20 bg-emerald-500/[0.02]' : 'border-rose-500/20 bg-rose-500/[0.02]'}`}>
+                                <div className="flex justify-between items-start mb-6">
+                                    <div className="overflow-hidden">
+                                        <p className="font-black text-slate-900 dark:text-white text-lg tracking-tightest truncate">{s.name}</p>
+                                        <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest mt-1">ID: {s.rollNumber}</p>
                                     </div>
-                                    <div className={`w-8 h-8 flex flex-shrink-0 items-center justify-center rounded-full text-white ${isPresent ? 'bg-emerald-500' : 'bg-rose-500'}`}>
-                                        {isPresent ? <MdCheckCircle size={18} /> : <MdCancel size={18} />}
+                                    <div className={`w-10 h-10 flex flex-shrink-0 items-center justify-center rounded-2xl text-white shadow-lg ${isPresent ? 'bg-emerald-500 shadow-emerald-500/30' : 'bg-rose-500 shadow-rose-500/30'}`}>
+                                        {isPresent ? <MdCheckCircle size={22} /> : <MdCancel size={22} />}
                                     </div>
                                 </div>
 
-                                <div className="flex rounded-xl overflow-hidden shadow-inner border border-white/20 dark:border-black/50 bg-secondary-100 dark:bg-black/20 p-1 gap-1">
-                                    <button
-                                        onClick={() => setStatus(s._id, "Present")}
-                                        className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${isPresent ? 'bg-emerald-500 text-white shadow-md' : 'text-secondary-500 hover:bg-white dark:hover:bg-white/10'}`}
-                                    >Present</button>
-                                    <button
-                                        onClick={() => setStatus(s._id, "Absent")}
-                                        className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${!isPresent ? 'bg-rose-500 text-white shadow-md' : 'text-secondary-500 hover:bg-white dark:hover:bg-white/10'}`}
-                                    >Absent</button>
+                                <div className="flex rounded-2xl overflow-hidden bg-slate-50 dark:bg-slate-950 p-1.5 gap-1.5 border border-slate-100 dark:border-white/5">
+                                    <button onClick={() => setStatus(s._id, "Present")} className={`flex-1 py-3 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${isPresent ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20' : 'text-slate-400 hover:bg-white dark:hover:bg-white/5'}`}>Present</button>
+                                    <button onClick={() => setStatus(s._id, "Absent")} className={`flex-1 py-3 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${!isPresent ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/20' : 'text-slate-400 hover:bg-white dark:hover:bg-white/5'}`}>Absent</button>
                                 </div>
                             </motion.div>
                         );

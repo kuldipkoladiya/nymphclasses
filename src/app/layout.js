@@ -6,6 +6,17 @@ import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
 import { Toaster } from "react-hot-toast";
 import { usePathname } from "next/navigation";
+import { Plus_Jakarta_Sans, Outfit } from "next/font/google";
+
+const sans = Plus_Jakarta_Sans({ 
+  subsets: ["latin"],
+  variable: "--font-sans",
+});
+
+const display = Outfit({
+  subsets: ["latin"],
+  variable: "--font-display",
+});
 
 export default function RootLayout({ children }) {
     const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -15,8 +26,8 @@ export default function RootLayout({ children }) {
     const isPublicRoute = pathname === "/" || pathname === "/login";
 
     return (
-        <html lang="en">
-        <body className="min-h-screen flex text-gray-800 transition-colors duration-300 relative">
+        <html lang="en" className={`${sans.variable} ${display.variable}`}>
+        <body className="min-h-screen flex text-slate-800 dark:text-slate-100 font-sans selection:bg-blue-500/30">
             <Toaster position="top-center" />
             
             {/* AMBIENT BACKGROUND */}

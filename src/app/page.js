@@ -29,8 +29,8 @@ const FeatureCard = ({ icon: Icon, title, description, delay }) => {
         const mouseX = e.clientX;
         const mouseY = e.clientY;
         
-        setRotateY((mouseX - centerX) / 20);
-        setRotateX((centerY - mouseY) / 20);
+        setRotateY((mouseX - centerX) / 25);
+        setRotateX((centerY - mouseY) / 25);
     };
 
     const handleMouseLeave = () => {
@@ -53,22 +53,22 @@ const FeatureCard = ({ icon: Icon, title, description, delay }) => {
                 rotateY,
                 transformStyle: "preserve-3d"
             }}
-            className="glass-card p-8 group relative overflow-hidden border border-white/10 dark:border-white/5 bg-white/40 dark:bg-slate-900/40 backdrop-blur-xl"
+            className="glass-card p-10 group relative overflow-hidden border border-slate-200 dark:border-slate-800 bg-white/60 dark:bg-slate-900/60 backdrop-blur-2xl hover:shadow-premium transition-all duration-500"
         >
-            <div style={{ transform: "translateZ(50px)" }} className="relative z-10">
-                <div className="w-14 h-14 rounded-2xl bg-indigo-500/10 dark:bg-indigo-500/20 border border-indigo-500/20 flex items-center justify-center mb-6 group-hover:shadow-[0_0_20px_rgba(99,102,241,0.4)] transition-all duration-500">
-                    <Icon size={28} className="text-indigo-600 dark:text-indigo-400" />
+            <div style={{ transform: "translateZ(60px)" }} className="relative z-10">
+                <div className="w-16 h-16 rounded-2xl bg-blue-600/10 dark:bg-blue-600/20 border border-blue-600/20 flex items-center justify-center mb-8 group-hover:shadow-[0_0_25px_rgba(37,99,235,0.3)] transition-all duration-500">
+                    <Icon size={32} className="text-blue-600 dark:text-blue-400" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3 tracking-tight">
+                <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-4 tracking-tight">
                     {title}
                 </h3>
-                <p className="text-gray-600 dark:text-slate-400 leading-relaxed text-sm font-medium">
+                <p className="text-slate-600 dark:text-slate-400 leading-relaxed font-medium">
                     {description}
                 </p>
             </div>
             
-            {/* Decorative background element */}
-            <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-indigo-600/5 blur-3xl rounded-full group-hover:bg-indigo-600/10 transition-colors"></div>
+            {/* Subtle Gradient Glow */}
+            <div className="absolute -top-20 -right-20 w-40 h-40 bg-blue-600/5 blur-3xl rounded-full group-hover:bg-blue-600/10 transition-colors"></div>
         </motion.div>
     );
 };
@@ -76,33 +76,29 @@ const FeatureCard = ({ icon: Icon, title, description, delay }) => {
 export default function LandingPage() {
     const containerRef = useRef(null);
     const { scrollYProgress } = useScroll();
-    const heroY = useTransform(scrollYProgress, [0, 0.3], [0, -50]);
+    const heroY = useTransform(scrollYProgress, [0, 0.3], [0, -60]);
+    const opacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
 
     return (
-        <div ref={containerRef} className="min-h-screen selection:bg-indigo-500/30 font-sans overflow-hidden relative bg-[#fdfdff] dark:bg-[#030712]">
+        <div ref={containerRef} className="min-h-screen selection:bg-blue-600/30 font-sans overflow-hidden relative">
             
-            {/* AMBIENT BACKGROUND ELEMENTS */}
-            <div className="fixed top-[-10%] left-[-10%] w-[60%] h-[60%] bg-indigo-500/10 dark:bg-indigo-600/5 blur-[120px] rounded-full pointer-events-none"></div>
-            <div className="fixed bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-purple-500/10 dark:bg-purple-600/5 blur-[120px] rounded-full pointer-events-none"></div>
-
-            {/* GRID OVERLAY */}
-            <div className="fixed inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-[0.03] dark:opacity-[0.05] pointer-events-none"></div>
+            <div className="purple-blobs-bg" />
 
             {/* NAVBAR */}
-            <nav className="fixed top-0 left-0 right-0 z-50 px-4 md:px-6 py-6">
-                <div className="max-w-7xl mx-auto flex items-center justify-between bg-white/70 dark:bg-slate-900/70 backdrop-blur-2xl px-6 py-4 rounded-3xl border border-white/20 dark:border-white/5 shadow-2xl">
-                    <div className="flex items-center gap-3 group cursor-pointer">
-                        <div className="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-500/30">
-                            <Image src={Logo} alt="Logo" width={24} height={24} className="invert brightness-0" priority />
+            <nav className="fixed top-0 left-0 right-0 z-50 px-6 py-8">
+                <div className="max-w-7xl mx-auto flex items-center justify-between bg-white/80 dark:bg-slate-950/80 backdrop-blur-2xl px-8 py-5 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 shadow-premium">
+                    <div className="flex items-center gap-4 group cursor-pointer">
+                        <div className="w-12 h-12 rounded-2xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-600/40 transform group-hover:rotate-6 transition-transform">
+                            <Image src={Logo} alt="Logo" width={28} height={28} className="invert brightness-0" priority />
                         </div>
-                        <span className="text-xl font-bold tracking-tighter text-gray-900 dark:text-white">
-                            Nymph<span className="text-indigo-600">Classes</span>
+                        <span className="text-2xl font-black tracking-tightest text-slate-900 dark:text-white">
+                            Nymph<span className="text-blue-600">Classes</span>
                         </span>
                     </div>
                     
-                    <div className="hidden md:flex items-center gap-8">
-                        {["Features", "Dashboard"].map((item) => (
-                            <a key={item} href={item === "Dashboard" ? "/dashboard" : `#${item.toLowerCase()}`} className="text-sm font-bold text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-white transition-colors uppercase tracking-widest">
+                    <div className="hidden lg:flex items-center gap-12">
+                        {["Features", "Dashboard", "Analytics"].map((item) => (
+                            <a key={item} href={item === "Dashboard" ? "/dashboard" : `#${item.toLowerCase()}`} className="text-xs font-black text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-white transition-colors uppercase tracking-[0.25em]">
                                 {item}
                             </a>
                         ))}
@@ -110,11 +106,11 @@ export default function LandingPage() {
 
                     <Link href="/login">
                         <motion.button 
-                            whileHover={{ scale: 1.05 }}
+                            whileHover={{ scale: 1.05, y: -2 }}
                             whileTap={{ scale: 0.95 }}
-                            className="px-6 py-2.5 rounded-2xl bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-bold text-sm shadow-xl flex items-center gap-2"
+                            className="px-8 py-3.5 rounded-2xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-black text-sm shadow-2xl flex items-center gap-3"
                         >
-                            <MdLogin size={18} /> Admin Access
+                            <MdLogin size={20} /> Portal Login
                         </motion.button>
                     </Link>
                 </div>
@@ -123,29 +119,25 @@ export default function LandingPage() {
             <main className="relative z-10">
                 
                 {/* HERO SECTION */}
-                <motion.section style={{ y: heroY }} className="max-w-7xl mx-auto px-6 pt-40 pb-20 md:pt-56 md:pb-32 flex flex-col items-center text-center">
+                <motion.section style={{ y: heroY }} className="max-w-7xl mx-auto px-6 pt-48 pb-24 md:pt-64 md:pb-40 flex flex-col items-center text-center">
                     <motion.div
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 0.6, type: 'spring' }}
-                        className="inline-flex items-center gap-2 px-5 py-2 rounded-full border border-indigo-500/20 bg-indigo-500/5 text-indigo-600 dark:text-indigo-400 font-bold text-xs mb-10 tracking-[0.2em] uppercase"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="inline-flex items-center gap-3 px-6 py-2.5 rounded-full border border-blue-600/20 bg-blue-600/5 text-blue-600 dark:text-blue-400 font-black text-[11px] mb-12 tracking-[0.3em] uppercase shadow-sm"
                     >
-                        <span className="relative flex h-2 w-2 mr-1">
-                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
-                          <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
-                        </span>
-                        Enterprise School Engine V2.0
+                        <div className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" />
+                        Next-Generation Academic OS
                     </motion.div>
 
                     <motion.h1 
-                        initial={{ opacity: 0, y: 30 }}
+                        initial={{ opacity: 0, y: 40 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8, delay: 0.1 }}
-                        className="text-6xl md:text-8xl lg:text-9xl font-black text-gray-900 dark:text-white tracking-tightest leading-[0.9] max-w-6xl"
+                        transition={{ duration: 0.8, cubicBezier: [0.16, 1, 0.3, 1] }}
+                        className="text-7xl md:text-9xl font-black text-slate-900 dark:text-white tracking-tightest leading-[0.85] max-w-6xl mb-12"
                     >
-                        Precision <br className="hidden md:block"/>
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-600 animate-gradient-x">
-                            Management.
+                        Manage with <br className="hidden md:block"/>
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-emerald-500 to-blue-500 animate-gradient-x">
+                            Total Clarity.
                         </span>
                     </motion.h1>
 
@@ -153,91 +145,84 @@ export default function LandingPage() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8, delay: 0.2 }}
-                        className="mt-10 text-lg md:text-2xl text-gray-500 dark:text-slate-400 max-w-3xl font-medium leading-relaxed"
+                        className="text-xl md:text-3xl text-slate-500 dark:text-slate-400 max-w-4xl font-medium leading-relaxed mb-16"
                     >
-                        A high-velocity administrative dashboard built for clarity, speed, and precision record-keeping.
+                        An industrial-grade administrative ecosystem designed for high-performance student records and financial tracking.
                     </motion.p>
 
                     <motion.div 
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8, delay: 0.3 }}
-                        className="mt-14 flex flex-col sm:flex-row items-center gap-5"
+                        transition={{ duration: 0.8, delay: 0.4 }}
+                        className="flex flex-col sm:flex-row items-center gap-6"
                     >
                         <Link href="/login">
-                            <button className="px-10 py-5 rounded-3xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xl shadow-2xl shadow-indigo-500/40 hover:-translate-y-1.5 transition-all flex items-center gap-3 group">
-                                Open Workspace 
-                                <MdArrowForward className="group-hover:translate-x-2 transition-transform duration-300" />
+                            <button className="px-12 py-6 rounded-[2rem] bg-blue-600 hover:bg-blue-500 text-white font-black text-xl shadow-[0_20px_50px_rgba(37,99,235,0.3)] hover:-translate-y-2 transition-all flex items-center gap-4 group">
+                                Initialize System 
+                                <MdArrowForward className="group-hover:translate-x-3 transition-transform duration-500" />
                             </button>
                         </Link>
-                        <a href="#features" className="px-10 py-5 rounded-3xl bg-white dark:bg-slate-900 text-gray-900 dark:text-white font-bold text-xl hover:border-indigo-500 transition-all border border-gray-200 dark:border-white/10 shadow-sm">
-                            System Features
+                        <a href="#features" className="px-12 py-6 rounded-[2rem] bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-black text-xl hover:border-blue-600 transition-all border border-slate-200 dark:border-slate-800 shadow-premium">
+                            Explore Core
                         </a>
                     </motion.div>
                 </motion.section>
 
-                {/* 3D FLOATING ELEMENTS (Optional decorative) */}
-                <div className="absolute top-1/2 left-0 w-full h-full pointer-events-none overflow-hidden hidden lg:block">
-                     <motion.div 
-                        animate={{ y: [0, -30, 0], rotate: [0, 10, 0] }}
-                        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-                        className="absolute top-20 left-20 w-40 h-40 bg-indigo-500/5 border border-indigo-500/10 rounded-[40px] backdrop-blur-3xl"
-                     />
-                     <motion.div 
-                        animate={{ y: [0, 40, 0], rotate: [0, -15, 0] }}
-                        transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
-                        className="absolute top-80 right-40 w-32 h-32 bg-purple-500/5 border border-purple-500/10 rounded-full backdrop-blur-3xl"
-                     />
-                </div>
-
                 {/* FEATURE SHOWCASE */}
-                <section id="features" className="max-w-7xl mx-auto px-6 py-24 md:py-40">
-                    <div className="flex flex-col md:flex-row md:items-end justify-between mb-20 gap-8">
-                        <div className="max-w-2xl">
-                            <h2 className="text-4xl md:text-6xl font-black text-gray-900 dark:text-white tracking-tighter mb-6">
-                                Integrated <span className="text-indigo-600">Core Modules.</span>
+                <section id="features" className="max-w-7xl mx-auto px-6 py-32 md:py-48 border-t border-slate-100 dark:border-slate-900">
+                    <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-24 gap-12">
+                        <div className="max-w-3xl">
+                            <h2 className="text-5xl md:text-7xl font-black text-slate-900 dark:text-white tracking-tightest mb-8">
+                                Engineering the <br/> <span className="text-blue-600">Administrative Future.</span>
                             </h2>
-                            <p className="text-lg md:text-xl text-gray-500 dark:text-slate-400 font-medium leading-relaxed">
-                                Experience a unified architecture designed to eliminate friction in academic administration.
+                            <p className="text-xl text-slate-500 dark:text-slate-400 font-medium leading-relaxed">
+                                Our integrated modules provide a seamless data flow, ensuring every record is precise and every action is immediate.
                             </p>
+                        </div>
+                        <div className="hidden lg:block pb-4">
+                            <div className="flex gap-4">
+                                <div className="w-12 h-1 bg-blue-600 rounded-full" />
+                                <div className="w-4 h-1 bg-slate-200 dark:bg-slate-800 rounded-full" />
+                                <div className="w-4 h-1 bg-slate-200 dark:bg-slate-800 rounded-full" />
+                            </div>
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 md:gap-12">
                         <FeatureCard 
                             icon={MdAutoGraph}
-                            title="Analytics Dashboard"
-                            description="Real-time data visualization of attendance trends, fee collections, and student performance metrics."
+                            title="Analytics Matrix"
+                            description="Deep-dive into performance metrics and financial trends with our real-time visualization engine."
                             delay={0.1}
                         />
                         <FeatureCard 
                             icon={MdSecurity}
-                            title="Secure Access"
-                            description="Role-based authentication ensures administrative data remains private and protected at all times."
+                            title="Enterprise Shield"
+                            description="Military-grade session management ensuring your administrative data remains strictly confidential."
                             delay={0.2}
                         />
                         <FeatureCard 
                             icon={MdSpeed}
-                            title="Rapid Engine"
-                            description="Built with Next.js 14 and optimized backend queries for sub-second response times across the app."
+                            title="Instant Core"
+                            description="Sub-second API response times powered by our optimized MongoDB aggregation layer."
                             delay={0.3}
                         />
                         <FeatureCard 
                             icon={MdGroups}
-                            title="Student Roster"
-                            description="Efficiently manage thousands of records with advanced filtering, searching, and batch operations."
+                            title="Roster Control"
+                            description="Advanced student management with high-speed filtering and batch operational capabilities."
                             delay={0.4}
                         />
                         <FeatureCard 
                             icon={MdCheckCircle}
                             title="Smart Attendance"
-                            description="One-tap attendance marking with historical tracking and automated summary generation."
+                            description="Precision roll-call with automated historical tracking and identifying attendance patterns."
                             delay={0.5}
                         />
                         <FeatureCard 
                             icon={MdAssuredWorkload}
-                            title="Fee Management"
-                            description="Streamlined payment tracking, standard-wise billing, and automated balance calculations."
+                            title="Financial Hub"
+                            description="Streamlined fee processing, automated billing cycles, and precise balance reconciliations."
                             delay={0.6}
                         />
                     </div>
@@ -245,17 +230,21 @@ export default function LandingPage() {
             </main>
 
             {/* FOOTER */}
-            <footer className="max-w-7xl mx-auto px-6 py-12 border-t border-gray-100 dark:border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
-                <p className="text-gray-400 dark:text-slate-500 font-medium text-sm italic">
-                    Designed for high-performance academic management.
-                </p>
-                <div className="flex gap-8">
-                    <span className="text-gray-400 dark:text-slate-500 font-bold text-xs uppercase tracking-widest">Privacy</span>
-                    <span className="text-gray-400 dark:text-slate-500 font-bold text-xs uppercase tracking-widest">Security</span>
-                    <span className="text-gray-400 dark:text-slate-500 font-bold text-xs uppercase tracking-widest">v2.0.4</span>
+            <footer className="max-w-7xl mx-auto px-6 py-20 border-t border-slate-100 dark:border-slate-900 flex flex-col md:flex-row justify-between items-center gap-12">
+                <div className="flex items-center gap-4 opacity-50 grayscale hover:grayscale-0 transition-all cursor-crosshair">
+                     <Image src={Logo} alt="Logo" width={24} height={24} className="dark:invert" />
+                     <span className="font-black tracking-widest text-[10px] uppercase">Operational Excellence v2.1.0</span>
+                </div>
+                <div className="flex gap-12">
+                    {["Protocol", "Infrastructure", "Compliance"].map(item => (
+                        <span key={item} className="text-slate-400 dark:text-slate-600 font-black text-[10px] uppercase tracking-[0.3em] hover:text-blue-600 cursor-pointer transition-colors">
+                            {item}
+                        </span>
+                    ))}
                 </div>
             </footer>
         </div>
     );
 }
+
 
