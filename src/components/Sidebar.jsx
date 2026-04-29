@@ -112,28 +112,25 @@ function SidebarContent({ dark, toggle, setSidebarOpen }) {
     return (
         <>
             {/* LOGO */}
-            <div className="px-8 py-10 border-b border-slate-100 dark:border-slate-800 relative overflow-hidden group">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-blue-600/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:bg-blue-600/10 transition-colors duration-500"></div>
-                <div className="flex items-center gap-4 relative z-10 w-full justify-center flex-col text-center">
-                    <div className="w-16 h-16 rounded-[1.25rem] bg-white dark:bg-slate-900 flex items-center justify-center border border-slate-200 dark:border-slate-800 p-2 shadow-sm group-hover:shadow-premium group-hover:scale-105 transition-all duration-500">
-                        <Image src={Logo} alt="Logo" width={48} height={48} className="object-contain" priority />
+            <div className="px-6 py-10 relative overflow-hidden group">
+                <div className="flex flex-col items-center text-center gap-4 relative z-10">
+                    <div className="w-20 h-20 rounded-2xl bg-white dark:bg-slate-900 flex items-center justify-center border border-slate-200 dark:border-slate-800 p-3 shadow-sm group-hover:shadow-md transition-all duration-500">
+                        <Image src={Logo} alt="Logo" width={56} height={56} className="object-contain" priority />
                     </div>
                     <div>
-                        <p className="font-display font-black text-xl text-slate-900 dark:text-white tracking-tightest leading-tight mt-4">
+                        <h1 className="font-display font-black text-xl text-slate-900 dark:text-white tracking-tightest leading-tight">
                             Nymph Classes
+                        </h1>
+                        <p className="font-sans text-[9px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-[0.3em] mt-1.5 flex items-center justify-center gap-2">
+                             <span className="w-1 h-1 rounded-full bg-emerald-500"></span>
+                             Management Suite
                         </p>
-                        <div className="flex items-center justify-center gap-2 mt-2">
-                             <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
-                             <p className="font-sans text-[9px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-[0.3em]">
-                                 Operational System
-                             </p>
-                        </div>
                     </div>
                 </div>
             </div>
 
             {/* NAV */}
-            <nav className="flex-1 px-4 py-8 space-y-1.5 overflow-y-auto custom-scrollbar">
+            <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto custom-scrollbar">
                 {navItems.map((item) => (
                     <NavItem
                         key={item.href}
@@ -147,14 +144,14 @@ function SidebarContent({ dark, toggle, setSidebarOpen }) {
             </nav>
 
             {/* FOOTER */}
-            <div className="px-6 py-6 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/30">
+            <div className="px-4 py-6 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/20">
                 <div className="flex flex-col gap-4">
                     <ThemeSwitch dark={dark} toggle={toggle} />
                     <button 
                         onClick={handleLogout}
-                        className="flex items-center gap-4 px-4 py-3 rounded-xl text-slate-400 hover:text-rose-500 hover:bg-rose-500/5 transition-all duration-300 font-black text-[11px] uppercase tracking-widest"
+                        className="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:text-rose-500 hover:bg-rose-50/50 dark:hover:bg-rose-500/5 transition-all duration-300 font-bold text-[10px] uppercase tracking-widest"
                     >
-                        <MdLogout size={20} /> Terminate Session
+                        <MdLogout size={18} /> Terminate
                     </button>
                 </div>
             </div>
@@ -176,25 +173,23 @@ const NavItem = ({ href, icon: Icon, label, isActive, setSidebarOpen }) => {
         <Link href={href} className="block group outline-none" onClick={handleClick}>
             <motion.div
                 whileHover={{ x: 4 }}
-                className={`relative flex items-center gap-4 px-4 py-3.5 rounded-xl cursor-pointer overflow-hidden transition-all duration-300 ${isActive ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/50'}`}
+                className={`relative flex items-center gap-4 px-4 py-3 rounded-xl cursor-pointer overflow-hidden transition-all duration-200 ${isActive ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20' : 'text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/40'}`}
             >
                 {/* ICON */}
-                <div className={`transition-transform duration-500 group-hover:scale-110 ${isActive ? 'text-white' : ''}`}>
-                    <Icon size={24} />
+                <div className={`transition-transform duration-300 group-hover:scale-110 ${isActive ? 'text-white' : ''}`}>
+                    <Icon size={20} />
                 </div>
 
                 {/* LABEL */}
-                <span className={`font-sans text-[13px] font-black uppercase tracking-widest transition-colors`}>
+                <span className={`font-sans text-[13px] font-bold transition-colors`}>
                     {label}
                 </span>
 
-                {/* ACTIVE GLOW */}
+                {/* ACTIVE INDICATOR */}
                 {isActive && (
                     <motion.div 
                         layoutId="active-nav"
-                        className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/5 to-white/0"
-                        animate={{ x: ['-100%', '100%'] }}
-                        transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                        className="absolute left-0 top-3 bottom-3 w-1 bg-white rounded-full"
                     />
                 )}
             </motion.div>

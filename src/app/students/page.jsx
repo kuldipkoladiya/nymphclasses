@@ -59,81 +59,81 @@ export default function StudentsPage() {
     };
 
     return (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8 max-w-[1400px] mx-auto px-4 md:px-0">
-            {/* HERO BAR */}
-            <div className="glass-card p-8 flex flex-col md:flex-row justify-between items-center bg-white dark:bg-slate-900/40 border-l-[12px] border-l-blue-600">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6 max-w-7xl mx-auto">
+            {/* HEADER */}
+            <div className="glass-card p-8 flex flex-col md:flex-row justify-between items-center bg-white dark:bg-slate-900/60">
                 <div className="flex items-center gap-6">
-                    <div className="w-16 h-16 bg-blue-600 text-white rounded-3xl flex items-center justify-center shadow-2xl shadow-blue-500/40">
-                        <MdPeople size={32} />
+                    <div className="w-14 h-14 bg-blue-600/10 text-blue-600 rounded-2xl flex items-center justify-center border border-blue-600/20">
+                        <MdPeople size={28} />
                     </div>
                     <div>
-                        <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tightest">Student Roster</h1>
-                        <p className="text-blue-600 dark:text-blue-400 font-black uppercase tracking-[0.2em] text-[10px] mt-1">Active Personnel Directory</p>
+                        <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">Student Records</h1>
+                        <p className="text-slate-500 dark:text-slate-400 font-bold text-[10px] uppercase tracking-widest mt-1">Institutional Student Directory</p>
                     </div>
                 </div>
                 <Link href="/students/add">
-                    <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="mt-6 md:mt-0 px-10 py-4 rounded-3xl bg-blue-600 hover:bg-blue-500 text-white font-black text-sm uppercase tracking-[0.2em] shadow-xl shadow-blue-500/30 flex items-center gap-3">
-                        <MdAdd size={22} /> Add Student
-                    </motion.button>
+                    <button className="btn-primary mt-4 md:mt-0">
+                        <MdAdd size={20} /> Add New Student
+                    </button>
                 </Link>
             </div>
 
             {/* FILTERS */}
-            <div className="flex flex-col md:flex-row gap-6">
-                <div className="flex-1 glass-card px-8 py-2 bg-white dark:bg-slate-900/40 flex items-center gap-5 focus-within:ring-2 focus-within:ring-blue-500/20 transition-all border border-slate-100 dark:border-white/5">
-                    <MdSearch className="text-blue-600" size={26} />
-                    <input className="w-full py-5 bg-transparent outline-none font-bold text-slate-900 dark:text-white placeholder-slate-400" placeholder="Search identities..." value={search} onChange={(e) => setSearch(e.target.value)} />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="md:col-span-2 relative group">
+                    <MdSearch className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-600 transition-colors" size={20} />
+                    <input className="input-premium pl-14" placeholder="Search by name or roll number..." value={search} onChange={(e) => setSearch(e.target.value)} />
                 </div>
-                <div className="w-full md:w-[300px] glass-card px-8 py-2 bg-white dark:bg-slate-900/40 flex items-center gap-5 border border-slate-100 dark:border-white/5">
-                    <MdFilterList className="text-blue-600" size={26} />
-                    <select className="w-full py-5 bg-transparent outline-none font-bold text-slate-900 dark:text-white appearance-none cursor-pointer" value={filterStd} onChange={(e) => setFilterStd(e.target.value)}>
-                        <option value="">All Academic Standards</option>
+                <div className="relative group">
+                    <MdFilterList className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-600 transition-colors" size={20} />
+                    <select className="input-premium pl-14 appearance-none cursor-pointer" value={filterStd} onChange={(e) => setFilterStd(e.target.value)}>
+                        <option value="">All Standards</option>
                         {["1","2","3","4","5","6","7","8","9","10","11","12"].map(s => <option key={s} value={s}>Standard {s}</option>)}
                     </select>
                 </div>
             </div>
 
-            {/* TABLE CONTAINER */}
-            <div className="glass-card overflow-hidden bg-white dark:bg-slate-900/40 border border-slate-100 dark:border-white/5 shadow-2xl">
+            {/* DATA TABLE */}
+            <div className="glass-card overflow-hidden bg-white dark:bg-slate-900/60">
                 <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
+                    <table className="w-full text-left">
                         <thead>
-                            <tr className="bg-slate-50/50 dark:bg-white/[0.03] border-b border-slate-100 dark:border-white/5">
-                                <th className="px-10 py-6 text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Personnel Identity</th>
-                                <th className="px-10 py-6 text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 text-center">ID Tag</th>
-                                <th className="px-10 py-6 text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 text-center">Level</th>
-                                <th className="px-10 py-6 text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 text-right">Operational Actions</th>
+                            <tr className="border-b border-slate-100 dark:border-slate-800">
+                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Student Name</th>
+                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 text-center">Roll Number</th>
+                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 text-center">Academic Year</th>
+                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 text-right">Actions</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-slate-100 dark:divide-white/5">
+                        <tbody className="divide-y divide-slate-50 dark:divide-slate-800">
                             {loading ? (
                                 Array.from({ length: 5 }).map((_, i) => (
                                     <tr key={i} className="animate-pulse">
-                                        <td className="px-10 py-8"><div className="h-5 w-48 bg-slate-100 dark:bg-white/5 rounded-xl" /></td>
-                                        <td className="px-10 py-8"><div className="h-5 w-16 bg-slate-100 dark:bg-white/5 rounded-xl mx-auto" /></td>
-                                        <td className="px-10 py-8"><div className="h-5 w-12 bg-slate-100 dark:bg-white/5 rounded-xl mx-auto" /></td>
-                                        <td className="px-10 py-8"><div className="h-5 w-24 bg-slate-100 dark:bg-white/5 rounded-xl ml-auto" /></td>
+                                        <td className="px-8 py-6"><div className="h-4 w-40 bg-slate-100 dark:bg-slate-800 rounded-lg" /></td>
+                                        <td className="px-8 py-6"><div className="h-4 w-12 bg-slate-100 dark:bg-slate-800 rounded-lg mx-auto" /></td>
+                                        <td className="px-8 py-6"><div className="h-4 w-10 bg-slate-100 dark:bg-slate-800 rounded-lg mx-auto" /></td>
+                                        <td className="px-8 py-6"><div className="h-4 w-20 bg-slate-100 dark:bg-slate-800 rounded-lg ml-auto" /></td>
                                     </tr>
                                 ))
                             ) : filtered.length === 0 ? (
-                                <tr><td colSpan="4" className="px-10 py-24 text-center font-black text-slate-400 dark:text-slate-600 uppercase tracking-widest text-xs">Zero operational records discovered.</td></tr>
+                                <tr><td colSpan="4" className="px-8 py-20 text-center font-bold text-slate-400 uppercase tracking-widest text-xs">No records found.</td></tr>
                             ) : (
                                 filtered.map((s) => (
-                                    <motion.tr key={s._id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="hover:bg-blue-600/[0.02] dark:hover:bg-white/[0.02] transition-colors group">
-                                        <td className="px-10 py-7 font-bold text-slate-900 dark:text-white tracking-tight">{s.name}</td>
-                                        <td className="px-10 py-7 text-center">
-                                            <span className="px-4 py-1.5 rounded-xl bg-slate-100 dark:bg-white/[0.05] font-black text-[10px] tracking-widest text-slate-600 dark:text-slate-400">#{s.rollNumber}</span>
+                                    <tr key={s._id} className="hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-colors group">
+                                        <td className="px-8 py-5 font-bold text-slate-900 dark:text-white">{s.name}</td>
+                                        <td className="px-8 py-5 text-center">
+                                            <span className="px-3 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 font-bold text-[10px] text-slate-600 dark:text-slate-400">#{s.rollNumber}</span>
                                         </td>
-                                        <td className="px-10 py-7 text-center font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest text-xs">Std {s.standard}</td>
-                                        <td className="px-10 py-7 text-right">
-                                            <div className="flex gap-3 justify-end opacity-0 group-hover:opacity-100 transition-all transform group-hover:translate-x-0 translate-x-4">
+                                        <td className="px-8 py-5 text-center font-bold text-blue-600 dark:text-blue-400 text-xs">Std {s.standard}</td>
+                                        <td className="px-8 py-5">
+                                            <div className="flex gap-2 justify-end opacity-0 group-hover:opacity-100 transition-all">
                                                 <Link href={`/students/${s._id}`}>
-                                                    <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} className="p-3 rounded-2xl bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 hover:bg-blue-600 hover:text-white transition-all shadow-sm"><MdEdit size={20} /></motion.button>
+                                                    <button className="p-2 rounded-xl bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 hover:bg-blue-600 hover:text-white transition-all"><MdEdit size={18} /></button>
                                                 </Link>
-                                                <motion.button onClick={() => openDeletePopup(s._id)} whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} className="p-3 rounded-2xl bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 hover:bg-rose-500 hover:text-white transition-all shadow-sm"><MdDelete size={20} /></motion.button>
+                                                <button onClick={() => openDeletePopup(s._id)} className="p-2 rounded-xl bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 hover:bg-rose-500 hover:text-white transition-all"><MdDelete size={18} /></button>
                                             </div>
                                         </td>
-                                    </motion.tr>
+                                    </tr>
                                 ))
                             )}
                         </tbody>
@@ -145,4 +145,3 @@ export default function StudentsPage() {
         </motion.div>
     );
 }
-

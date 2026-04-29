@@ -6,16 +6,18 @@ import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
 import { Toaster } from "react-hot-toast";
 import { usePathname } from "next/navigation";
-import { Plus_Jakarta_Sans, Outfit } from "next/font/google";
+import { Plus_Jakarta_Sans, Manrope } from "next/font/google";
 
-const sans = Plus_Jakarta_Sans({ 
+const jakarta = Plus_Jakarta_Sans({ 
   subsets: ["latin"],
-  variable: "--font-sans",
+  variable: "--font-jakarta",
+  display: 'swap',
 });
 
-const display = Outfit({
+const manrope = Manrope({
   subsets: ["latin"],
-  variable: "--font-display",
+  variable: "--font-manrope",
+  display: 'swap',
 });
 
 export default function RootLayout({ children }) {
@@ -26,7 +28,7 @@ export default function RootLayout({ children }) {
     const isPublicRoute = pathname === "/" || pathname === "/login";
 
     return (
-        <html lang="en" className={`${sans.variable} ${display.variable}`}>
+        <html lang="en" className={`${jakarta.variable} ${manrope.variable}`}>
         <body className="min-h-screen flex text-slate-800 dark:text-slate-100 font-sans selection:bg-blue-500/30">
             <Toaster position="top-center" />
             

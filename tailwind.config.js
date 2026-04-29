@@ -5,18 +5,18 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: {
-          50: '#eff6ff',
-          100: '#dbeafe',
-          200: '#bfdbfe',
-          300: '#93c5fd',
-          400: '#60a5fa',
-          500: '#3b82f6', // Blue
-          600: '#2563eb',
-          700: '#1d4ed8',
-          800: '#1e40af',
-          900: '#1e3a8a',
-          950: '#172554',
+        blue: {
+          50: '#f0f7ff',
+          100: '#e0effe',
+          200: '#bae0fd',
+          300: '#7cc8fb',
+          400: '#38aaf7',
+          500: '#0e8ce9',
+          600: '#026fc7',
+          700: '#0358a1',
+          800: '#074b85',
+          900: '#0c3f6e',
+          950: '#082849',
         },
         slate: {
           50: '#f8fafc',
@@ -33,8 +33,9 @@ module.exports = {
         },
       },
       fontFamily: {
-        sans: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'],
-        display: ['"Outfit"', 'sans-serif'],
+        sans: ["var(--font-jakarta)", "system-ui", "sans-serif"],
+        display: ["var(--font-manrope)", "system-ui", "sans-serif"],
+        mono: ["JetBrains Mono", "monospace"],
       },
       boxShadow: {
         'premium': '0 20px 50px -12px rgba(0, 0, 0, 0.1)',
