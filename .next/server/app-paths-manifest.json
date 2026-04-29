@@ -1,8 +1,1 @@
-{
-  "/login/page": "app/login/page.js",
-  "/page": "app/page.js",
-  "/not-found": "app/not-found.js",
-  "/students/page": "app/students/page.js",
-  "/results/page": "app/results/page.js",
-  "/dashboard/page": "app/dashboard/page.js"
-}
+{}

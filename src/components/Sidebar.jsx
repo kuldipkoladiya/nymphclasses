@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
     MdDashboard,
     MdPeople,
@@ -10,7 +11,7 @@ import {
 } from "react-icons/md";
 import { FiSun, FiMoon } from "react-icons/fi";
 import Image from "next/image";
-import Logo from "@/assets/logo.png";
+import Logo from "../assets/logo.png"; // Relative path
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 
@@ -29,9 +30,9 @@ function useTheme() {
     }, []);
 
     const toggle = () => {
-        document.documentElement.classList.toggle("dark");
-        localStorage.setItem("theme", dark ? "light" : "dark");
-        setDark(!dark);
+        const isDark = document.documentElement.classList.toggle("dark");
+        localStorage.setItem("theme", isDark ? "dark" : "light");
+        setDark(isDark);
     };
 
     return { dark, toggle };
@@ -41,61 +42,44 @@ function useTheme() {
    SIDEBAR
 ===================== */
 export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
-    const [isDesktop, setIsDesktop] = useState(false);
     const { dark, toggle } = useTheme();
 
-    useEffect(() => {
-        const check = () => setIsDesktop(window.innerWidth >= 768);
-        check();
-        window.addEventListener("resize", check);
-        return () => window.removeEventListener("resize", check);
-    }, []);
-
-    /* DESKTOP */
-    if (isDesktop) {
-        return (
-            <aside className="fixed top-0 left-0 h-screen w-64 bg-white dark:bg-slate-900 border-r border-gray-200 dark:border-slate-700 flex flex-col">
+    return (
+        <>
+            {/* DESKTOP SIDEBAR */}
+            <aside className="hidden md:flex fixed top-0 left-0 h-screen w-[280px] bg-white/70 dark:bg-darkCard/80 backdrop-blur-md z-50 flex flex-col border-r-2 border-secondary-200 dark:border-darkBorder shadow-[4px_0_24px_rgba(0,0,0,0.02)] transition-colors duration-300">
                 <SidebarContent
                     dark={dark}
                     toggle={toggle}
                     setSidebarOpen={setSidebarOpen}
                 />
             </aside>
-        );
-    }
 
-    /* MOBILE */
-    return (
-        <>
-            {/* BACKDROP */}
+            {/* MOBILE SIDEBAR */}
             <AnimatePresence>
                 {sidebarOpen && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 0.45 }}
-                        exit={{ opacity: 0 }}
-                        onClick={() => setSidebarOpen(false)}
-                        className="fixed inset-0 bg-black z-40"
-                    />
-                )}
-            </AnimatePresence>
-
-            {/* SIDEBAR */}
-            <AnimatePresence>
-                {sidebarOpen && (
-                    <motion.aside
-                        initial={{ x: -280 }}
-                        animate={{ x: 0 }}
-                        exit={{ x: -280 }}
-                        transition={{ type: "spring", stiffness: 260, damping: 26 }}
-                        className="fixed top-0 left-0 z-50 h-screen w-64 bg-white dark:bg-slate-900 border-r border-gray-200 dark:border-slate-700 flex flex-col"
-                    >
-                        <SidebarContent
-                            dark={dark}
-                            toggle={toggle}
-                            setSidebarOpen={setSidebarOpen}
+                    <>
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setSidebarOpen(false)}
+                            className="fixed inset-0 bg-secondary-900/80 backdrop-blur-sm z-[60] md:hidden"
                         />
-                    </motion.aside>
+                        <motion.aside
+                            initial={{ x: -280 }}
+                            animate={{ x: 0 }}
+                            exit={{ x: -280 }}
+                            transition={{ type: "spring", stiffness: 350, damping: 25 }}
+                            className="fixed top-0 left-0 z-[70] h-screen w-[280px] bg-white dark:bg-darkCard flex flex-col shadow-2xl border-r-2 border-primary-500 md:hidden"
+                        >
+                            <SidebarContent
+                                dark={dark}
+                                toggle={toggle}
+                                setSidebarOpen={setSidebarOpen}
+                            />
+                        </motion.aside>
+                    </>
                 )}
             </AnimatePresence>
         </>
@@ -106,59 +90,52 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
    SIDEBAR CONTENT
 ===================== */
 function SidebarContent({ dark, toggle, setSidebarOpen }) {
+    const pathname = usePathname();
+
+    const navItems = [
+        { href: "/dashboard", icon: MdDashboard, label: "Dashboard" },
+        { href: "/students", icon: MdPeople, label: "Students" },
+        { href: "/results", icon: MdSchool, label: "Results" },
+        { href: "/fees", icon: MdMoney, label: "Fees" },
+        { href: "/attendance", icon: MdList, label: "Attendance" },
+    ];
+
     return (
         <>
             {/* LOGO */}
-            <div className="px-6 py-6 border-b dark:border-slate-700">
-                <div className="flex items-center gap-3">
-                    <Image src={Logo} width={40} alt="logo" />
+            <div className="px-8 py-8 border-b-2 border-secondary-100 dark:border-darkBorder relative overflow-hidden group">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-primary-500/10 dark:bg-primary-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:bg-primary-500/20 transition-colors duration-500"></div>
+                <div className="flex items-center gap-4 relative z-10 w-full justify-center flex-col text-center">
+                    <div className="w-16 h-16 rounded-2xl flex items-center justify-center border border-primary-100 dark:border-primary-900/50 p-2 shadow-neon group-hover:shadow-neon-intense transition-all duration-300">
+                        <Image src={Logo} alt="Logo" width={60} height={60} className="object-contain" priority />
+                    </div>
                     <div>
-                        <p className="font-semibold text-gray-800 dark:text-white">
+                        <p className="font-display font-bold text-xl text-secondary-900 dark:text-secondary-50 tracking-tight leading-tight mt-3">
                             Nymph Classes
                         </p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">
-                            School Admin
+                        <p className="font-sans text-[10px] font-bold text-primary-600 dark:text-primary-400 uppercase tracking-[0.2em] mt-1">
+                            Core Interface
                         </p>
                     </div>
                 </div>
             </div>
 
             {/* NAV */}
-            <nav className="flex-1 px-3 py-6 space-y-1">
-                <NavItem
-                    href="/dashboard"
-                    icon={MdDashboard}
-                    label="Dashboard"
-                    setSidebarOpen={setSidebarOpen}
-                />
-                <NavItem
-                    href="/students"
-                    icon={MdPeople}
-                    label="Students"
-                    setSidebarOpen={setSidebarOpen}
-                />
-                <NavItem
-                    href="/results"
-                    icon={MdSchool}
-                    label="Results"
-                    setSidebarOpen={setSidebarOpen}
-                />
-                <NavItem
-                    href="/fees"
-                    icon={MdMoney}
-                    label="Fees"
-                    setSidebarOpen={setSidebarOpen}
-                />
-                <NavItem
-                    href="/attendance"
-                    icon={MdList}
-                    label="Attendance"
-                    setSidebarOpen={setSidebarOpen}
-                />
+            <nav className="flex-1 px-4 py-8 space-y-2 overflow-y-auto">
+                {navItems.map((item) => (
+                    <NavItem
+                        key={item.href}
+                        href={item.href}
+                        icon={item.icon}
+                        label={item.label}
+                        isActive={pathname.startsWith(item.href)}
+                        setSidebarOpen={setSidebarOpen}
+                    />
+                ))}
             </nav>
 
             {/* FOOTER */}
-            <div className="px-4 py-4 border-t dark:border-slate-700">
+            <div className="px-6 py-6 border-t border-secondary-200 dark:border-darkBorder bg-secondary-50/50 dark:bg-darkCard/50">
                 <ThemeSwitch dark={dark} toggle={toggle} />
             </div>
         </>
@@ -168,7 +145,7 @@ function SidebarContent({ dark, toggle, setSidebarOpen }) {
 /* =====================
    NAV ITEM
 ===================== */
-const NavItem = ({ href, icon: Icon, label, setSidebarOpen }) => {
+const NavItem = ({ href, icon: Icon, label, isActive, setSidebarOpen }) => {
     const handleClick = () => {
         if (window.innerWidth < 768) {
             setSidebarOpen(false);
@@ -176,43 +153,45 @@ const NavItem = ({ href, icon: Icon, label, setSidebarOpen }) => {
     };
 
     return (
-        <Link href={href} className="block" onClick={handleClick}>
+        <Link href={href} className="block group outline-none" onClick={handleClick}>
             <motion.div
                 whileHover="hover"
                 initial="rest"
-                animate="rest"
+                animate={isActive ? "active" : "rest"}
                 variants={{
-                    rest: { backgroundColor: "rgba(0,0,0,0)" },
-                    hover: { backgroundColor: "rgba(99,102,241,0.08)" },
+                    rest: { backgroundColor: "transparent" },
+                    hover: { backgroundColor: "rgba(139, 92, 246, 0.05)" },
+                    active: { backgroundColor: "rgba(139, 92, 246, 0.1)" }
                 }}
-                className="relative flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer overflow-hidden"
+                className={`relative flex items-center gap-4 px-4 py-3.5 rounded-xl cursor-pointer overflow-hidden transition-all duration-300 ${isActive ? 'shadow-[inset_0_0_12px_rgba(139,92,246,0.15)] border border-primary-500/20' : 'border border-transparent'}`}
             >
                 {/* ACTIVE BAR */}
                 <motion.span
-                    variants={{
-                        rest: { scaleY: 0 },
-                        hover: { scaleY: 1 },
+                    initial={false}
+                    animate={{ 
+                        scaleY: isActive ? 1 : 0, 
+                        opacity: isActive ? 1 : 0 
                     }}
-                    transition={{ duration: 0.25 }}
-                    className="absolute left-0 top-0 h-full w-1 bg-indigo-500 origin-top"
+                    transition={{ duration: 0.25, type: 'spring', stiffness: 400, damping: 25 }}
+                    className="absolute left-0 top-[10%] h-[80%] w-1.5 rounded-r-sm bg-primary-500 dark:bg-primary-400 origin-top shadow-neon"
                 />
 
                 {/* ICON */}
                 <motion.div
                     variants={{
                         rest: { scale: 1, rotate: 0 },
-                        hover: { scale: 1.15, rotate: -5 },
+                        hover: { scale: 1.1, rotate: -5 },
+                        active: { scale: 1.05, rotate: 0 }
                     }}
-                    transition={{ type: "spring", stiffness: 300 }}
-                    className="text-indigo-500 dark:text-indigo-400"
+                    className={`transition-colors flex-shrink-0 ${isActive ? 'text-primary-600 dark:text-primary-400' : 'text-secondary-400 dark:text-secondary-500 group-hover:text-primary-500'}`}
                 >
-                    <Icon size={22} />
+                    <Icon size={24} className={isActive ? "drop-shadow-neon" : ""} />
                 </motion.div>
 
                 {/* LABEL */}
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-          {label}
-        </span>
+                <span className={`font-sans text-[15px] font-semibold tracking-wide transition-colors ${isActive ? 'text-primary-700 dark:text-primary-300' : 'text-secondary-600 dark:text-secondary-400 group-hover:text-secondary-900 dark:group-hover:text-secondary-100'}`}>
+                    {label}
+                </span>
             </motion.div>
         </Link>
     );
@@ -222,27 +201,27 @@ const NavItem = ({ href, icon: Icon, label, setSidebarOpen }) => {
    THEME SWITCH
 ===================== */
 const ThemeSwitch = ({ dark, toggle }) => (
-    <div className="flex items-center justify-between">
-    <span className="text-sm text-gray-600 dark:text-gray-400">
-      Appearance
-    </span>
+    <div className="flex items-center justify-between px-2">
+        <span className="font-display text-xs font-bold text-secondary-500 dark:text-secondary-400 uppercase tracking-widest">
+            Mode
+        </span>
 
         <button
             onClick={toggle}
-            className={`relative w-14 h-7 rounded-full transition-colors ${
-                dark ? "bg-indigo-600" : "bg-gray-300"
+            className={`relative w-[54px] h-[30px] rounded-full transition-colors duration-500 shadow-inner outline-none border-2 border-transparent focus:border-primary-500 ${
+                dark ? "bg-darkBg" : "bg-secondary-200"
             }`}
         >
             <motion.span
                 layout
-                transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                className="absolute top-0.5 left-0.5 w-6 h-6 rounded-full bg-white shadow flex items-center justify-center"
-                style={{ x: dark ? 28 : 0 }}
+                transition={{ type: "spring", stiffness: 600, damping: 30 }}
+                className={`absolute top-[2px] left-[2px] w-5 h-5 rounded-full flex items-center justify-center shadow-md ${dark ? 'bg-primary-500 shadow-neon' : 'bg-white'}`}
+                style={{ x: dark ? 24 : 0 }}
             >
                 {dark ? (
-                    <FiMoon className="text-indigo-600 text-xs" />
+                    <FiMoon strokeWidth={3} className="text-white text-[11px]" />
                 ) : (
-                    <FiSun className="text-yellow-500 text-xs" />
+                    <FiSun strokeWidth={3} className="text-secondary-500 text-[11px]" />
                 )}
             </motion.span>
         </button>

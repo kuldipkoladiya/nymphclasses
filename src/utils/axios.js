@@ -1,4 +1,5 @@
 import axios from "axios";
+import toast from "react-hot-toast";
 
 const instance = axios.create({
     baseURL: "https://nymph-be.vercel.app/api",
@@ -11,5 +12,17 @@ instance.interceptors.request.use((config) => {
     }
     return config;
 });
+
+instance.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        const message = error.response?.data?.message || "An unexpected error occurred";
+        // Only show toast if it's not a 401 (which might be handled by auth logic)
+        if (error.response?.status !== 401) {
+            toast.error(message);
+        }
+        return Promise.reject(error);
+    }
+);
 
 export default instance;

@@ -2,23 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import axios from "axios";
-import Popup from "@/components/Popup";
+import axios from "@/utils/axios";
+import { motion, AnimatePresence } from "framer-motion";
+import toast from "react-hot-toast";
+import { MdClass, MdEditDocument, MdDateRange, MdScore, MdCheckCircle, MdLibraryBooks, MdSave, MdGroup } from "react-icons/md";
 
 /* =============================
-   API INSTANCE (TOKEN SUPPORT)
+   API INSTANCE (Token supported via interceptor in @/utils/axios)
 ============================= */
-const API = axios.create({
-    baseURL: "https://nymph-be.vercel.app/api",
-});
-
-API.interceptors.request.use((config) => {
-    if (typeof window !== "undefined") {
-        const token = localStorage.getItem("token");
-        if (token) config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-});
 
 export default function CreateResultPage() {
     const router = useRouter();
@@ -34,7 +25,6 @@ export default function CreateResultPage() {
 
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
-    const [popup, setPopup] = useState(null);
 
     const SUBJECT_OPTIONS = [
         "Maths",
@@ -43,6 +33,8 @@ export default function CreateResultPage() {
         "Gujarati",
         "Hindi",
         "Social Science",
+        "Computer",
+        "Sanskrit"
     ];
 
     /* =============================
@@ -69,45 +61,41 @@ export default function CreateResultPage() {
        Load students
     ============================= */
     const loadStudents = async () => {
-        if (!standard || !selectedSubjects.length) {
-            setPopup({
-                type: "error",
-                title: "Missing Data",
-                message: "Please enter standard and select subjects",
-            });
+        if (!standard) {
+            toast.error("Standard parameter missing.");
+            return;
+        }
+        if (!selectedSubjects.length) {
+            toast.error("Select at least one syllabus node.");
             return;
         }
 
         setLoading(true);
         try {
-            const res = await API.get(`/students/by-standard/${standard}`);
+            const res = await axios.get(`/students/by-standard/${standard}`);
             const list = res.data?.students || res.data || [];
 
             if (!list.length) {
-                setPopup({
-                    type: "info",
-                    title: "No Students",
-                    message: "No students found for this standard",
+                toast.error(`No entities found in Class ${standard}`);
+                setStudents([]);
+                setMarks({});
+            } else {
+                setStudents(list);
+                toast.success(`Connected ${list.length} units`);
+
+                const init = {};
+                list.forEach((stu) => {
+                    init[stu._id] = selectedSubjects.map((s) => ({
+                        name: s,
+                        marksObtained: "",
+                        totalMarks: totalMaximum,
+                    }));
                 });
+                setMarks(init);
             }
-
-            setStudents(list);
-
-            const init = {};
-            list.forEach((stu) => {
-                init[stu._id] = selectedSubjects.map((s) => ({
-                    name: s,
-                    marksObtained: "",
-                    totalMarks: totalMaximum,
-                }));
-            });
-            setMarks(init);
         } catch {
-            setPopup({
-                type: "error",
-                title: "Error",
-                message: "Failed to load students",
-            });
+            toast.error("Telemetry failed. Retry sequence.");
+            setStudents([]);
         }
         setLoading(false);
     };
@@ -117,194 +105,290 @@ export default function CreateResultPage() {
     ============================= */
     const saveAllResults = async () => {
         if (!examName || !examDate) {
-            setPopup({
-                type: "error",
-                title: "Missing Details",
-                message: "Please fill exam name and date",
-            });
+            toast.error("Missing Exam ID or Timestamp.");
             return;
         }
 
         setSaving(true);
         try {
-            for (const stu of students) {
-                await API.post("/results", {
+            const savePromises = students.map((stu) =>
+                axios.post("/results", {
                     studentId: stu._id,
                     examName,
                     standard,
                     examDate,
                     subjects: marks[stu._id],
-                });
-            }
+                })
+            );
 
-            setPopup({
-                type: "success",
-                title: "Success",
-                message: "Results saved successfully",
-            });
-
-            setTimeout(() => router.push("/results/view"), 1200);
+            await Promise.all(savePromises);
+            toast.success("Metrics published successfully!");
+            setTimeout(() => router.push("/results/view"), 1500);
         } catch {
-            setPopup({
-                type: "error",
-                title: "Error",
-                message: "Failed to save results",
-            });
+            toast.error("Upload error. Verify grid inputs.");
         }
         setSaving(false);
     };
 
     return (
-        <div className="max-w-7xl mx-auto space-y-6">
-
+        <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="max-w-[1200px] mx-auto space-y-6"
+        >
             {/* HEADER */}
-            <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-2xl p-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 cyber-panel p-6 shadow-sm">
                 <div>
-                    <h1 className="text-2xl font-semibold text-gray-800 dark:text-white">
-                        Create Result
+                    <h1 className="text-2xl font-display font-bold text-secondary-900 dark:text-white tracking-tight uppercase">
+                        Metrics Ingestion
                     </h1>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                        Standard wise result entry
+                    <p className="font-sans text-sm font-semibold text-secondary-500 mt-1 uppercase tracking-widest">
+                        Batch process performance data streams.
                     </p>
                 </div>
-
                 <button
                     onClick={() => router.push("/results/view")}
-                    className="px-4 py-2 rounded-lg border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800"
+                    className="
+                        px-5 py-2.5 rounded-xl font-bold font-display text-sm tracking-wide uppercase
+                        bg-secondary-100 dark:bg-darkCard text-secondary-700 dark:text-secondary-300
+                        hover:bg-primary-500 hover:text-white border border-secondary-200 dark:border-darkBorder hover:border-primary-500 transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)]
+                        flex items-center gap-2 group
+                    "
                 >
-                    View Results
+                    <MdLibraryBooks size={18} className="group-hover:animate-pulse" /> Access Registry
                 </button>
             </div>
 
-            {/* FORM */}
-            <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-2xl p-6 space-y-6">
-
+            {/* FORM CONFIG */}
+            <div className="cyber-panel p-6 md:p-8 space-y-8 shadow-[0_4px_20px_rgba(0,0,0,0.02)] border border-secondary-200 dark:border-darkBorder">
                 {/* BASIC INFO */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <Input label="Standard" value={standard} onChange={setStandard} />
-                    <Input label="Exam Name" value={examName} onChange={setExamName} />
-                    <Input type="date" label="Exam Date" value={examDate} onChange={setExamDate} />
-                    <Input type="number" label="Total Marks" value={totalMaximum} onChange={(v) => setTotalMaximum(+v)} />
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <InputWrapper label="Level Config" icon={<MdClass />}>
+                        <div className="relative">
+                            <select
+                                value={standard}
+                                onChange={(e) => setStandard(e.target.value)}
+                                className="styled-input appearance-none cursor-pointer pr-8 uppercase"
+                            >
+                                <option value="">Target Level</option>
+                                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((s) => (
+                                    <option key={s} value={s}>Class {s}</option>
+                                ))}
+                            </select>
+                        </div>
+                    </InputWrapper>
+
+                    <InputWrapper label="Evaluation ID" icon={<MdEditDocument />}>
+                        <input
+                            placeholder="e.g. ALPHA-TEST-1"
+                            value={examName}
+                            onChange={(e) => setExamName(e.target.value)}
+                            className="styled-input"
+                        />
+                    </InputWrapper>
+
+                    <InputWrapper label="Timestamp" icon={<MdDateRange />}>
+                        <input
+                            type="date"
+                            value={examDate}
+                            onChange={(e) => setExamDate(e.target.value)}
+                            className="styled-input uppercase"
+                        />
+                    </InputWrapper>
+
+                    <InputWrapper label="Max Value Threshold" icon={<MdScore />}>
+                        <input
+                            type="number"
+                            min="1"
+                            value={totalMaximum}
+                            onChange={(e) => setTotalMaximum(+e.target.value)}
+                            className="styled-input font-bold text-primary-500 bg-primary-50/10 focus:ring-primary-500"
+                        />
+                    </InputWrapper>
                 </div>
 
                 {/* SUBJECTS */}
-                <div>
-                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
-                        Subjects
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                        {SUBJECT_OPTIONS.map((s) => (
-                            <button
-                                key={s}
-                                onClick={() =>
-                                    setSelectedSubjects((p) =>
-                                        p.includes(s) ? p.filter((x) => x !== s) : [...p, s]
-                                    )
-                                }
-                                className={`px-3 py-1 rounded-full text-sm border ${
-                                    selectedSubjects.includes(s)
-                                        ? "bg-indigo-600 text-white border-indigo-600"
-                                        : "bg-white dark:bg-slate-800 text-gray-600 dark:text-gray-300 border-gray-300 dark:border-slate-600"
-                                }`}
-                            >
-                                {s}
-                            </button>
-                        ))}
+                <div className="pt-4 border-t border-secondary-100 dark:border-darkBorder">
+                    <div className="flex items-center gap-2 mb-4">
+                        <MdLibraryBooks className="text-primary-500" size={20} />
+                        <h3 className="text-[10px] font-bold text-secondary-800 dark:text-secondary-200 uppercase tracking-[0.2em]">
+                            Syllabus Nodes
+                        </h3>
+                    </div>
+
+                    <div className="flex flex-wrap gap-3">
+                        {SUBJECT_OPTIONS.map((sub) => {
+                            const isSelected = selectedSubjects.includes(sub);
+                            return (
+                                <button
+                                    key={sub}
+                                    onClick={() => setSelectedSubjects((p) => p.includes(sub) ? p.filter((x) => x !== sub) : [...p, sub])}
+                                    className={`
+                                        relative px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all duration-300 flex items-center gap-2 border
+                                        ${isSelected
+                                            ? "bg-primary-500/10 border-primary-500 text-primary-500 shadow-[0_0_15px_rgba(6,182,212,0.3)] scale-[1.02]"
+                                            : "bg-white dark:bg-[#131C31] border-secondary-200 dark:border-darkBorder text-secondary-500 dark:text-secondary-400 hover:border-primary-500/50"}
+                                    `}
+                                >
+                                    {isSelected && <MdCheckCircle size={14} className="animate-pulse" />}
+                                    {sub}
+                                </button>
+                            );
+                        })}
                     </div>
                 </div>
 
-                <button
-                    onClick={loadStudents}
-                    className="px-6 py-2 rounded-lg bg-gradient-to-r from-indigo-600 to-blue-600 text-white font-medium hover:opacity-90"
-                >
-                    Load Students
-                </button>
+                {/* LOAD ACTION */}
+                <div className="flex justify-end pt-5 border-t border-secondary-100 dark:border-darkBorder">
+                    <button
+                        onClick={loadStudents}
+                        disabled={loading}
+                        className="
+                            px-8 py-3 rounded-xl font-bold font-display tracking-wide text-sm flex items-center gap-2
+                            bg-primary-500 hover:bg-primary-400 text-white uppercase
+                            shadow-neon hover:shadow-neon-intense hover:-translate-y-0.5
+                            transition-all disabled:opacity-50 disabled:shadow-none disabled:hover:translate-y-0 disabled:cursor-not-allowed
+                        "
+                    >
+                        {loading ? (
+                            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                        ) : (
+                            <><MdGroup size={20} /> Connect Class {standard || "?"} Grid</>
+                        )}
+                    </button>
+                </div>
+            </div>
 
-                {loading && <p className="text-sm text-gray-500">Loading students...</p>}
-
-                {/* STUDENT TABLE */}
+            {/* MARKS ENTRY GRID */}
+            <AnimatePresence>
                 {students.length > 0 && (
-                    <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-2xl p-4 space-y-4">
-                        <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
-                            Enter Marks
-                        </h3>
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="cyber-panel overflow-hidden border border-secondary-200 dark:border-darkBorder p-0 shadow-none"
+                    >
+                        <div className="p-4 sm:p-6 bg-secondary-50 dark:bg-darkBg border-b border-secondary-200 dark:border-darkBorder flex justify-between items-center">
+                            <h3 className="text-sm font-bold text-secondary-800 dark:text-white flex items-center gap-2 uppercase tracking-widest">
+                                <MdScore className="text-primary-500" size={20} /> Data Matrix
+                            </h3>
+                            <span className="text-[10px] font-black tracking-[0.2em] px-3 py-1 bg-primary-500/10 text-primary-500 rounded-md border border-primary-500/30 uppercase">
+                                {students.length} Units Active
+                            </span>
+                        </div>
 
-                        <div className="overflow-x-auto">
-                            <table className="w-full text-sm">
-                                <thead className="bg-gray-100 dark:bg-slate-800">
-                                <tr>
-                                    <th className="p-3 text-left text-gray-800 dark:text-white">Student</th>
-                                    {selectedSubjects.map((s) => (
-                                        <th key={s} className="p-3 text-center text-gray-800 dark:text-white">
-                                            {s} / {totalMaximum}
+                        <div className="overflow-x-auto p-0">
+                            <table className="w-full text-sm border-collapse">
+                                <thead>
+                                    <tr>
+                                        <th className="p-4 text-left font-bold text-[10px] text-secondary-500 dark:text-secondary-400 tracking-[0.2em] uppercase sticky left-0 bg-secondary-50 dark:bg-darkBg z-10 border-b border-secondary-200 dark:border-darkBorder min-w-[150px]">
+                                            Identity
                                         </th>
-                                    ))}
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {students.map((stu) => (
-                                    <tr key={stu._id} className="border-t border-gray-200 dark:border-slate-700">
-                                        <td className="p-3 font-medium text-gray-800 dark:text-white">{stu.name}</td>
-                                        {marks[stu._id]?.map((m, i) => (
-                                            <td key={i} className="p-3 text-center text-gray-800 dark:text-white">
-                                                <input
-                                                    type="number"
-                                                    max={totalMaximum}
-                                                    value={m.marksObtained}
-                                                    onChange={(e) =>
-                                                        setMarks((p) => ({
-                                                            ...p,
-                                                            [stu._id]: p[stu._id].map((x, idx) =>
-                                                                idx === i ? { ...x, marksObtained: e.target.value } : x
-                                                            ),
-                                                        }))
-                                                    }
-                                                    className="w-24 h-11 text-center rounded-lg bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-indigo-500"
-                                                />
-                                            </td>
+                                        {selectedSubjects.map((sub) => (
+                                            <th key={sub} className="p-4 text-center font-bold text-[10px] text-primary-600 dark:text-primary-400 uppercase tracking-[0.2em] bg-primary-50/30 dark:bg-primary-900/10 border-b border-secondary-200 dark:border-darkBorder border-l border-secondary-100 dark:border-darkBorder min-w-[120px]">
+                                                {sub} <br /> <span className="text-[9px] font-medium text-secondary-400 tracking-wider">MAX: {totalMaximum}</span>
+                                            </th>
                                         ))}
                                     </tr>
-                                ))}
+                                </thead>
+                                <tbody>
+                                    {students.map((stu, i) => (
+                                        <motion.tr
+                                            initial={{ opacity: 0, x: -10 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            transition={{ delay: i * 0.05 }}
+                                            key={stu._id}
+                                            className="group border-b border-secondary-100 dark:border-darkBorder hover:bg-primary-500/5 dark:hover:bg-primary-900/10 transition-colors"
+                                        >
+                                            <td className="p-4 font-bold text-secondary-800 dark:text-secondary-200 sticky left-0 bg-white dark:bg-[#131C31] group-hover:bg-secondary-50 dark:group-hover:bg-darkBg transition-colors">
+                                                {stu.name}
+                                                <div className="text-[10px] font-bold text-secondary-400 uppercase tracking-widest mt-1">UID: {stu.rollNumber}</div>
+                                            </td>
+
+                                            {marks[stu._id]?.map((m, idx) => (
+                                                <td key={idx} className="p-3 border-l border-secondary-50 dark:border-white/5">
+                                                    <div className="flex justify-center">
+                                                        <input
+                                                            type="number"
+                                                            min="0"
+                                                            max={totalMaximum}
+                                                            value={m.marksObtained}
+                                                            onChange={(e) => {
+                                                                const val = e.target.value;
+                                                                if (val > totalMaximum) {
+                                                                    toast.error(`Value exceeds threshold (${totalMaximum})`);
+                                                                    return;
+                                                                }
+                                                                setMarks((p) => ({
+                                                                    ...p,
+                                                                    [stu._id]: p[stu._id].map((x, subIdx) =>
+                                                                        subIdx === idx ? { ...x, marksObtained: val } : x
+                                                                    ),
+                                                                }))
+                                                            }}
+                                                            className="
+                                                                w-24 text-center py-2 px-1 rounded-md font-bold font-display bg-white dark:bg-darkCard 
+                                                                border border-secondary-300 dark:border-darkBorder focus:border-primary-500 focus:shadow-[inset_0_0_10px_rgba(6,182,212,0.1)]
+                                                                text-secondary-900 dark:text-white transition-all outline-none shadow-sm
+                                                            "
+                                                            placeholder="000"
+                                                        />
+                                                    </div>
+                                                </td>
+                                            ))}
+                                        </motion.tr>
+                                    ))}
                                 </tbody>
                             </table>
                         </div>
-                    </div>
-                )}
 
-                {students.length > 0 && (
-                    <button
-                        disabled={saving}
-                        onClick={saveAllResults}
-                        className="w-full md:w-auto px-8 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 text-white font-semibold hover:opacity-90"
-                    >
-                        {saving ? "Saving..." : "Save Results"}
-                    </button>
+                        <div className="p-6 bg-secondary-50 dark:bg-darkBg border-t border-secondary-200 dark:border-darkBorder flex justify-end">
+                            <button
+                                disabled={saving}
+                                onClick={saveAllResults}
+                                className="
+                                    px-10 py-3.5 rounded-xl font-bold font-display uppercase tracking-wide text-sm flex items-center justify-center gap-3 w-full sm:w-auto
+                                    bg-primary-500 hover:bg-primary-400 text-white
+                                    shadow-neon hover:shadow-neon-intense hover:-translate-y-0.5
+                                    transition-all disabled:opacity-50 disabled:shadow-none disabled:hover:translate-y-0 disabled:cursor-not-allowed
+                                "
+                            >
+                                {saving ? (
+                                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                ) : (
+                                    <><MdSave size={20} /> Publish Matrix</>
+                                )}
+                            </button>
+                        </div>
+                    </motion.div>
                 )}
-            </div>
+            </AnimatePresence>
 
-            {/* POPUP */}
-            {popup && (
-                <Popup open={true} {...popup} onClose={() => setPopup(null)} />
-            )}
-        </div>
+            {/* INLINE STYLES FOR INPUTS */}
+            <style jsx global>{`
+                .styled-input {
+                    @apply w-full pl-10 pr-4 py-3 rounded-xl bg-white dark:bg-darkCard border border-secondary-200 dark:border-darkBorder text-secondary-800 dark:text-secondary-100 focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500 transition-all font-bold tracking-wide shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)];
+                }
+            `}</style>
+        </motion.div>
     );
 }
 
 /* =============================
-   INPUT COMPONENT
+   INPUT WRAPPER
 ============================= */
-function Input({ label, value, onChange, type = "text" }) {
+function InputWrapper({ label, icon, children }) {
     return (
-        <div className="flex flex-col">
-            <label className="text-sm mb-1 text-gray-600 dark:text-gray-400">
+        <div className="flex flex-col space-y-2 relative group">
+            <label className="text-[10px] font-bold text-secondary-500 dark:text-secondary-400 uppercase tracking-[0.2em] pl-1">
                 {label}
             </label>
-            <input
-                type={type}
-                value={value}
-                onChange={(e) => onChange(e.target.value)}
-                className="px-3 py-2 rounded-lg bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-600 text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
+            <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-secondary-400 group-focus-within:text-primary-500 transition-colors z-10">
+                    {icon}
+                </div>
+                {children}
+            </div>
         </div>
     );
 }

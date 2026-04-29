@@ -4,13 +4,12 @@ import { useState } from "react";
 import axios from "@/utils/axios";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import Popup from "@/components/Popup";
-import { MdArrowBack } from "react-icons/md";
+import { MdArrowBack, MdPerson, MdPhone, MdLocationOn, MdFamilyRestroom, MdClass, MdNumbers, MdCheckCircle } from "react-icons/md";
+import toast from "react-hot-toast";
 
 export default function AddStudent() {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
-    const [popup, setPopup] = useState(null);
 
     const [form, setForm] = useState({
         name: "",
@@ -36,148 +35,142 @@ export default function AddStudent() {
             Object.keys(form).forEach((key) => data.append(key, form[key]));
 
             await axios.post("/students", data);
-
-            setPopup({
-                type: "success",
-                title: "Student Added",
-                message: "Student has been added successfully",
-            });
-
+            toast.success("Student added successfully!");
             setTimeout(() => router.push("/students"), 1200);
         } catch (err) {
-            setPopup({
-                type: "error",
-                title: "Error",
-                message: "Failed to add student",
-            });
+            toast.error("Failed to add student. Please try again.");
+        } finally {
+            setLoading(false);
         }
-
-        setLoading(false);
     };
 
+    const formFields = [
+        { name: "name", label: "Full Name", icon: MdPerson, placeholder: "John Doe", type: "text" },
+        { name: "rollNumber", label: "Roll Number", icon: MdNumbers, placeholder: "101", type: "text" },
+        { name: "standard", label: "Standard/Class", icon: MdClass, placeholder: "10", type: "text" },
+        { name: "section", label: "Section", icon: MdClass, placeholder: "A", type: "text" },
+        { name: "fatherName", label: "Father's Name", icon: MdFamilyRestroom, placeholder: "Richard Doe", type: "text" },
+        { name: "motherName", label: "Mother's Name", icon: MdFamilyRestroom, placeholder: "Jane Doe", type: "text" },
+        { name: "phone", label: "Contact Number", icon: MdPhone, placeholder: "+91 9876543210", type: "text" },
+    ];
+
     return (
-        <div className="max-w-4xl mx-auto space-y-6">
+        <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="max-w-[1000px] mx-auto space-y-6"
+        >
             {/* HEADER */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-4 bg-white dark:bg-[#131C31] p-6 rounded-3xl border border-gray-100 dark:border-white/5 shadow-sm">
                 <button
                     onClick={() => router.back()}
-                    className="
-            flex items-center gap-1
-            px-3 py-2 rounded-lg
-            border border-gray-300 dark:border-slate-700
-            text-gray-700 dark:text-gray-300
-            hover:bg-gray-100 dark:hover:bg-slate-800
-            transition
-          "
+                    className="p-2.5 rounded-xl border border-gray-200 dark:border-slate-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-800 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all shadow-sm"
+                    title="Go Back"
                 >
-                    <MdArrowBack size={18} /> Back
+                    <MdArrowBack size={20} />
                 </button>
-
-                <h1 className="text-2xl font-semibold text-gray-800 dark:text-white">
-                    Add Student
-                </h1>
+                <div>
+                    <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300">
+                        Enroll New Student
+                    </h1>
+                    <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mt-0.5">
+                        Fill in the academic and personal details to create a new profile.
+                    </p>
+                </div>
             </div>
 
             {/* FORM CARD */}
-            <motion.form
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                onSubmit={handleSubmit}
-                className="
-          bg-white dark:bg-slate-900
-          border border-gray-200 dark:border-slate-700
-          rounded-2xl p-6
-          grid grid-cols-1 md:grid-cols-2 gap-5
-        "
-            >
-                {[
-                    { name: "name", label: "Student Name" },
-                    { name: "rollNumber", label: "Roll Number" },
-                    { name: "standard", label: "Standard" },
-                    { name: "section", label: "Section" },
-                    { name: "fatherName", label: "Father Name" },
-                    { name: "motherName", label: "Mother Name" },
-                    { name: "phone", label: "Phone Number" },
-                ].map((field) => (
-                    <div key={field.name} className="flex flex-col">
-                        <label className="text-sm mb-1 text-gray-600 dark:text-gray-400">
-                            {field.label}
-                        </label>
-                        <input
-                            type="text"
-                            name={field.name}
-                            value={form[field.name]}
-                            onChange={handleChange}
-                            required
-                            className="
-                px-3 py-2 rounded-lg
-                bg-white dark:bg-slate-800
-                border border-gray-300 dark:border-slate-600
-                text-gray-800 dark:text-gray-100
-                focus:outline-none focus:ring-2 focus:ring-indigo-500
-              "
-                        />
+            <div className="glass-card p-6 sm:p-8">
+                <form onSubmit={handleSubmit} className="space-y-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                        {formFields.map((field) => (
+                            <div key={field.name} className="flex flex-col space-y-1.5 relative group">
+                                <label className="text-sm font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-2">
+                                    {field.label}
+                                </label>
+                                <div className="relative">
+                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-indigo-500 transition-colors">
+                                        <field.icon size={18} />
+                                    </div>
+                                    <input
+                                        type={field.type}
+                                        name={field.name}
+                                        value={form[field.name]}
+                                        onChange={handleChange}
+                                        required
+                                        placeholder={field.placeholder}
+                                        className="
+                                            w-full pl-11 pr-4 py-3 rounded-xl
+                                            bg-gray-50/50 dark:bg-slate-800/50
+                                            border border-gray-200 dark:border-slate-700/60
+                                            text-gray-800 dark:text-gray-100 placeholder-gray-400
+                                            focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500/50
+                                            transition-all shadow-sm
+                                        "
+                                    />
+                                </div>
+                            </div>
+                        ))}
+
+                        {/* ADDRESS */}
+                        <div className="md:col-span-2 flex flex-col space-y-1.5 relative group">
+                            <label className="text-sm font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-2">
+                                Current Address
+                            </label>
+                            <div className="relative border border-gray-200 dark:border-slate-700/60 rounded-xl bg-gray-50/50 dark:bg-slate-800/50 shadow-sm focus-within:ring-2 focus-within:ring-indigo-500/20 focus-within:border-indigo-500/50 transition-all">
+                                <div className="absolute top-3.5 left-0 pl-4 flex items-start pointer-events-none text-gray-400 group-focus-within:text-indigo-500 transition-colors">
+                                    <MdLocationOn size={18} />
+                                </div>
+                                <textarea
+                                    name="address"
+                                    rows={3}
+                                    value={form.address}
+                                    onChange={handleChange}
+                                    placeholder="123 Education Street, Learning City..."
+                                    className="
+                                        w-full pl-11 pr-4 py-3 rounded-xl bg-transparent
+                                        text-gray-800 dark:text-gray-100 placeholder-gray-400
+                                        focus:outline-none resize-y min-h-[100px]
+                                    "
+                                />
+                            </div>
+                        </div>
                     </div>
-                ))}
 
-                {/* ADDRESS */}
-                <div className="md:col-span-2">
-                    <label className="text-sm mb-1 text-gray-600 dark:text-gray-400">
-                        Address
-                    </label>
-                    <textarea
-                        name="address"
-                        rows={3}
-                        value={form.address}
-                        onChange={handleChange}
-                        className="
-              w-full px-3 py-2 rounded-lg
-              bg-white dark:bg-slate-800
-              border border-gray-300 dark:border-slate-600
-              text-gray-800 dark:text-gray-100
-              focus:outline-none focus:ring-2 focus:ring-indigo-500
-            "
-                    />
-                </div>
-
-                {/* ACTIONS */}
-                <div className="md:col-span-2 flex justify-end gap-3 pt-2">
-                    <button
-                        type="button"
-                        onClick={() => router.back()}
-                        className="
-              px-5 py-2 rounded-lg
-              border border-gray-300 dark:border-slate-700
-              text-gray-700 dark:text-gray-300
-              hover:bg-gray-100 dark:hover:bg-slate-800
-            "
-                    >
-                        Cancel
-                    </button>
-
-                    <button
-                        disabled={loading}
-                        className="
-              px-6 py-2 rounded-lg
-              bg-gradient-to-r from-indigo-600 to-blue-600
-              text-white font-medium
-              shadow hover:opacity-90
-              disabled:opacity-60
-            "
-                    >
-                        {loading ? "Saving..." : "Save Student"}
-                    </button>
-                </div>
-            </motion.form>
-
-            {/* POPUP */}
-            {popup && (
-                <Popup
-                    open={true}
-                    {...popup}
-                    onClose={() => setPopup(null)}
-                />
-            )}
-        </div>
+                    <div className="pt-6 border-t border-gray-100 dark:border-slate-800/80 flex flex-col-reverse sm:flex-row justify-end gap-4">
+                        <button
+                            type="button"
+                            onClick={() => router.back()}
+                            className="
+                                px-6 py-3 rounded-xl font-semibold text-sm
+                                bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700
+                                text-gray-700 dark:text-gray-300
+                                hover:bg-gray-50 dark:hover:bg-slate-700/80 transition-all shadow-sm
+                            "
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className="
+                                px-8 py-3 rounded-xl font-bold text-sm inline-flex items-center justify-center gap-2
+                                bg-gradient-to-r from-indigo-600 to-purple-600 text-white
+                                shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/40 hover:-translate-y-0.5
+                                transition-all disabled:opacity-70 disabled:hover:translate-y-0 disabled:cursor-not-allowed
+                            "
+                        >
+                            {loading ? (
+                                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                            ) : (
+                                <>
+                                    <MdCheckCircle size={18} /> Confirm Enrollment
+                                </>
+                            )}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </motion.div>
     );
 }
