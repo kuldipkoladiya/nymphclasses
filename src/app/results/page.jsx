@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import axios from "@/utils/axios";
 import { motion, AnimatePresence } from "framer-motion";
 import toast from "react-hot-toast";
+import Link from "next/link";
 import { MdClass, MdEditDocument, MdDateRange, MdScore, MdCheckCircle, MdLibraryBooks, MdSave, MdGroup } from "react-icons/md";
 
 /* =============================
@@ -92,51 +93,55 @@ export default function CreateResultPage() {
     };
 
     return (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-[1400px] mx-auto space-y-8 pb-20 px-4 md:px-0">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-7xl mx-auto space-y-6 pb-20">
             {/* HEADER */}
-            <div className="glass-card p-10 flex flex-col md:flex-row justify-between items-center bg-white dark:bg-slate-900/40 border-l-[12px] border-l-blue-600">
-                <div>
-                    <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tightest uppercase">Metrics Ingestion</h1>
-                    <div className="flex items-center gap-2 mt-2">
-                        <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
-                        <p className="text-blue-600 dark:text-blue-400 font-black uppercase tracking-[0.2em] text-[10px]">Academic Performance System</p>
+            <div className="glass-card p-8 flex flex-col md:flex-row justify-between items-center bg-white dark:bg-slate-900/60">
+                <div className="flex items-center gap-6">
+                    <div className="w-14 h-14 bg-blue-600/10 text-blue-600 rounded-2xl flex items-center justify-center border border-blue-600/20">
+                        <MdEditDocument size={28} />
+                    </div>
+                    <div>
+                        <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">Create Results</h1>
+                        <p className="text-slate-500 dark:text-slate-400 font-bold text-[10px] uppercase tracking-widest mt-1">Academic Performance Records</p>
                     </div>
                 </div>
-                <button onClick={() => router.push("/results/view")} className="mt-6 md:mt-0 px-8 py-3.5 rounded-2xl bg-slate-900 dark:bg-blue-600/10 text-white dark:text-blue-400 font-black text-xs uppercase tracking-widest flex items-center gap-3 hover:scale-105 transition-all shadow-lg border border-transparent dark:border-blue-600/20">
-                    <MdLibraryBooks size={20} /> Result Registry
-                </button>
+                <Link href="/results/view">
+                    <button className="px-6 py-4 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold text-sm uppercase tracking-widest hover:bg-slate-200 dark:hover:bg-slate-700 transition-all flex items-center gap-3">
+                        <MdLibraryBooks size={20} /> Result Registry
+                    </button>
+                </Link>
             </div>
 
             {/* CONFIG PANEL */}
-            <div className="glass-card p-10 bg-white dark:bg-slate-900/40 border border-slate-100 dark:border-white/5">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="glass-card p-8 bg-white dark:bg-slate-900/60">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     <InputWrapper label="Standard" icon={<MdClass />}>
-                        <select value={standard} onChange={(e) => setStandard(e.target.value)} className="w-full pl-12 pr-4 py-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:ring-4 focus:ring-blue-600/10 focus:border-blue-600 transition-all outline-none font-bold text-slate-900 dark:text-white appearance-none cursor-pointer">
+                        <select value={standard} onChange={(e) => setStandard(e.target.value)} className="input-premium pl-12 appearance-none cursor-pointer">
                             <option value="">Select Level</option>
                             {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(s => <option key={s} value={s}>Standard {s}</option>)}
                         </select>
                     </InputWrapper>
 
                     <InputWrapper label="Exam Name" icon={<MdEditDocument />}>
-                        <input placeholder="e.g. First Terminal" value={examName} onChange={(e) => setExamName(e.target.value)} className="w-full pl-12 pr-4 py-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:ring-4 focus:ring-blue-600/10 focus:border-blue-600 transition-all outline-none font-bold text-slate-900 dark:text-white placeholder-slate-400" />
+                        <input placeholder="e.g. First Terminal" value={examName} onChange={(e) => setExamName(e.target.value)} className="input-premium pl-12" />
                     </InputWrapper>
 
-                    <InputWrapper label="Date" icon={<MdDateRange />}>
-                        <input type="date" value={examDate} onChange={(e) => setExamDate(e.target.value)} className="w-full pl-12 pr-4 py-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:ring-4 focus:ring-blue-600/10 focus:border-blue-600 transition-all outline-none font-bold text-slate-900 dark:text-white uppercase" />
+                    <InputWrapper label="Exam Date" icon={<MdDateRange />}>
+                        <input type="date" value={examDate} onChange={(e) => setExamDate(e.target.value)} className="input-premium pl-12" />
                     </InputWrapper>
 
                     <InputWrapper label="Max Marks" icon={<MdScore />}>
-                        <input type="number" value={totalMaximum} onChange={(e) => setTotalMaximum(+e.target.value)} className="w-full pl-12 pr-4 py-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:ring-4 focus:ring-blue-600/10 focus:border-blue-600 transition-all outline-none font-bold text-blue-600 dark:text-blue-400" />
+                        <input type="number" value={totalMaximum} onChange={(e) => setTotalMaximum(+e.target.value)} className="input-premium pl-12" />
                     </InputWrapper>
                 </div>
 
-                <div className="mt-10 pt-10 border-t border-slate-100 dark:border-white/5">
-                    <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-6">Subject Nodes Selection</h3>
-                    <div className="flex flex-wrap gap-3">
+                <div className="mt-10 pt-10 border-t border-slate-100 dark:border-slate-800">
+                    <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-4">Subject Selection</h3>
+                    <div className="flex flex-wrap gap-2">
                         {SUBJECT_OPTIONS.map(sub => {
                             const active = selectedSubjects.includes(sub);
                             return (
-                                <button key={sub} onClick={() => setSelectedSubjects(p => active ? p.filter(x => x !== sub) : [...p, sub])} className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border ${active ? 'bg-blue-600 border-blue-600 text-white shadow-lg shadow-blue-600/30' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-500 hover:border-blue-600'}`}>
+                                <button key={sub} onClick={() => setSelectedSubjects(p => active ? p.filter(x => x !== sub) : [...p, sub])} className={`px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all border ${active ? 'bg-blue-600 border-blue-600 text-white shadow-lg shadow-blue-600/20' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-500 hover:border-blue-600'}`}>
                                     {sub}
                                 </button>
                             );
@@ -144,9 +149,9 @@ export default function CreateResultPage() {
                     </div>
                 </div>
 
-                <div className="mt-10 flex justify-end">
-                    <button onClick={loadStudents} disabled={loading} className="px-10 py-4 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-black text-sm uppercase tracking-widest shadow-xl shadow-blue-600/30 flex items-center gap-3 transition-all active:scale-95 disabled:opacity-50">
-                        {loading ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <><MdGroup size={22} /> Load Class {standard || "?"} Grid</>}
+                <div className="mt-8 flex justify-end">
+                    <button onClick={loadStudents} disabled={loading} className="btn-primary">
+                        {loading ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <><MdGroup size={20} /> Load Student Grid</>}
                     </button>
                 </div>
             </div>
@@ -154,33 +159,37 @@ export default function CreateResultPage() {
             {/* MARKS GRID */}
             <AnimatePresence>
                 {students.length > 0 && (
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="glass-card overflow-hidden bg-white dark:bg-slate-900/40 border border-slate-100 dark:border-white/5">
-                        <div className="p-8 bg-slate-50/50 dark:bg-white/[0.02] border-b border-slate-100 dark:border-white/5 flex justify-between items-center">
-                            <h3 className="text-lg font-black text-slate-900 dark:text-white uppercase tracking-widest flex items-center gap-3"><MdScore className="text-blue-600" /> Assessment Matrix</h3>
-                            <span className="text-[10px] font-black tracking-widest px-4 py-1.5 bg-blue-600/10 text-blue-600 rounded-full border border-blue-600/20 uppercase">{students.length} Records</span>
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="glass-card overflow-hidden bg-white dark:bg-slate-900/60">
+                        <div className="p-6 bg-slate-50/50 dark:bg-white/[0.02] border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
+                            <h3 className="text-lg font-black text-slate-900 dark:text-white uppercase tracking-widest flex items-center gap-3">
+                                <MdScore className="text-blue-600" /> Assessment Matrix
+                            </h3>
+                            <span className="text-[10px] font-bold px-4 py-1 bg-blue-600/10 text-blue-600 rounded-full border border-blue-600/20 uppercase">
+                                {students.length} Records
+                            </span>
                         </div>
 
                         <div className="overflow-x-auto">
-                            <table className="w-full text-left border-collapse">
+                            <table className="w-full text-left">
                                 <thead>
                                     <tr className="bg-slate-50/30 dark:bg-white/[0.01]">
-                                        <th className="p-6 text-[11px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 dark:border-white/5 sticky left-0 bg-slate-50 dark:bg-slate-900 z-10">Personnel Identity</th>
+                                        <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 dark:border-slate-800 sticky left-0 bg-slate-50 dark:bg-slate-900 z-10">Student Identity</th>
                                         {selectedSubjects.map(sub => (
-                                            <th key={sub} className="p-6 text-center text-[11px] font-black text-blue-600 uppercase tracking-widest border-b border-slate-100 dark:border-white/5 border-l border-slate-100 dark:border-white/5 min-w-[140px]">
+                                            <th key={sub} className="px-8 py-5 text-center text-[10px] font-black text-blue-600 uppercase tracking-widest border-b border-slate-100 dark:border-slate-800 border-l border-slate-100 dark:border-slate-800 min-w-[120px]">
                                                 {sub} <div className="text-[9px] text-slate-400 font-bold mt-1">/ {totalMaximum}</div>
                                             </th>
                                         ))}
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody className="divide-y divide-slate-50 dark:divide-slate-800">
                                     {students.map((stu, i) => (
-                                        <tr key={stu._id} className="border-b border-slate-50 dark:border-white/5 hover:bg-blue-600/[0.02] transition-colors group">
-                                            <td className="p-6 sticky left-0 bg-white dark:bg-slate-900 group-hover:bg-slate-50 dark:group-hover:bg-slate-800 transition-colors">
+                                        <tr key={stu._id} className="hover:bg-blue-600/[0.02] transition-colors group">
+                                            <td className="px-8 py-5 sticky left-0 bg-white dark:bg-slate-900 group-hover:bg-slate-50 dark:group-hover:bg-slate-800 transition-colors">
                                                 <p className="font-bold text-slate-900 dark:text-white">{stu.name}</p>
-                                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-0.5">UID: {stu.rollNumber}</p>
+                                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">UID: {stu.rollNumber}</p>
                                             </td>
                                             {marks[stu._id]?.map((m, idx) => (
-                                                <td key={idx} className="p-4 border-l border-slate-50 dark:border-white/5">
+                                                <td key={idx} className="px-4 py-4 border-l border-slate-50 dark:border-slate-800">
                                                     <div className="flex justify-center">
                                                         <input type="number" max={totalMaximum} value={m.marksObtained} onChange={(e) => {
                                                             const val = e.target.value;
@@ -189,7 +198,7 @@ export default function CreateResultPage() {
                                                                 ...p,
                                                                 [stu._id]: p[stu._id].map((x, subIdx) => subIdx === idx ? { ...x, marksObtained: val } : x)
                                                             }));
-                                                        }} className="w-24 text-center py-3 rounded-xl font-black bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:border-blue-600 transition-all outline-none text-slate-900 dark:text-white" placeholder="---" />
+                                                        }} className="w-20 text-center py-2 rounded-xl font-bold bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:border-blue-600 transition-all outline-none text-slate-900 dark:text-white" placeholder="---" />
                                                     </div>
                                                 </td>
                                             ))}
@@ -199,9 +208,9 @@ export default function CreateResultPage() {
                             </table>
                         </div>
 
-                        <div className="p-8 bg-slate-50/50 dark:bg-white/[0.02] border-t border-slate-100 dark:border-white/5 flex justify-end">
-                            <button onClick={saveAllResults} disabled={saving} className="px-12 py-4 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-black text-sm uppercase tracking-widest shadow-xl shadow-blue-600/30 flex items-center gap-3 transition-all active:scale-95 disabled:opacity-50">
-                                {saving ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <><MdSave size={22} /> Publish All Results</>}
+                        <div className="p-8 bg-slate-50/50 dark:bg-white/[0.02] border-t border-slate-100 dark:border-slate-800 flex justify-end">
+                            <button onClick={saveAllResults} disabled={saving} className="btn-primary">
+                                {saving ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <><MdSave size={20} /> Publish Results</>}
                             </button>
                         </div>
                     </motion.div>

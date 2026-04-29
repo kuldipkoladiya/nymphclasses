@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import axios from "../../utils/axios";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
+import Link from "next/link";
 import { MdSearch, MdCalendarMonth, MdClass, MdCheckCircle, MdCancel, MdSave } from "react-icons/md";
 
 export default function AttendancePage() {
@@ -101,7 +102,12 @@ export default function AttendancePage() {
                     </div>
                 </div>
 
-                <div className="mt-4 md:mt-0">
+                <div className="flex gap-4 mt-4 md:mt-0">
+                    <Link href="/attendance/view">
+                        <button className="px-6 py-4 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold text-sm uppercase tracking-widest hover:bg-slate-200 dark:hover:bg-slate-700 transition-all flex items-center gap-3">
+                            <MdCalendarMonth size={20} /> View Logs
+                        </button>
+                    </Link>
                     <button onClick={save} disabled={saving || students.length === 0} className="btn-primary">
                         {saving ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <MdSave size={20} />}
                         {saving ? "SAVING..." : attendanceExists ? "UPDATE RECORDS" : "SAVE ATTENDANCE"}
