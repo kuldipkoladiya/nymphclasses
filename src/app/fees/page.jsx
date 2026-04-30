@@ -178,6 +178,7 @@ export default function FeesDashboard() {
 const ActionCard = ({ icon, title, subtitle, color, onClick, variants }) => {
     const colorStyles = {
         blue: "bg-blue-600 text-white shadow-blue-600/30 hover:bg-blue-500",
+        emerald: "bg-emerald-500 text-white shadow-emerald-500/30 hover:bg-emerald-400",
         rose: "bg-rose-500 text-white shadow-rose-500/30 hover:bg-rose-400",
         slate: "bg-slate-900 text-white shadow-slate-900/30 hover:bg-slate-800",
     };
