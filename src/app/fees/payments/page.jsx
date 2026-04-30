@@ -402,11 +402,22 @@ export default function FeePaymentsPage() {
                                                         <button 
                                                             onClick={() => {
                                                                 setReceiptData(p);
+                                                                setReceiptPdfUrl(p.receiptPdf);
                                                             }}
                                                             className="p-2 rounded-xl bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 hover:bg-blue-600 hover:text-white transition-all shadow-sm"
                                                         >
                                                             <MdReceipt size={18} />
                                                         </button>
+                                                        {p.receiptPdf && (
+                                                            <a 
+                                                                href={p.receiptPdf} 
+                                                                target="_blank" 
+                                                                rel="noopener noreferrer"
+                                                                className="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-600 hover:text-white transition-all shadow-sm"
+                                                            >
+                                                                <MdDownload size={18} />
+                                                            </a>
+                                                        )}
                                                         <button 
                                                             onClick={() => {
                                                                 setActionId(p._id);
