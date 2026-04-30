@@ -119,6 +119,7 @@ export default function FeePaymentsPage() {
 
     const [receiptData, setReceiptData] = useState(null);
     const [receiptPdfUrl, setReceiptPdfUrl] = useState(null);
+    const [downloading, setDownloading] = useState(false);
     const printRef = useRef();
 
     useEffect(() => {
@@ -341,12 +342,27 @@ export default function FeePaymentsPage() {
                                             <MdPrint size={18} /> Print Receipt
                                         </button>
                                         <button 
-                                            onClick={() => {
-                                                if (receiptPdfUrl) window.open(receiptPdfUrl, "_blank");
+                                            disabled={downloading}
+                                            onClick={async () => {
+                                                if (receiptPdfUrl) {
+                                                    window.open(receiptPdfUrl, "_blank");
+                                                } else if (receiptData) {
+                                                    setDownloading(true);
+                                                    try {
+                                                        const res = await axios.get(`/fees/receipt/${receiptData._id}`);
+                                                        window.open(res.data.pdfUrl, "_blank");
+                                                        setReceiptPdfUrl(res.data.pdfUrl);
+                                                    } catch {
+                                                        toast.error("Could not generate PDF");
+                                                    } finally {
+                                                        setDownloading(false);
+                                                    }
+                                                }
                                             }}
                                             className="flex items-center gap-2 px-6 py-3 rounded-xl bg-emerald-700/50 text-white font-black text-xs uppercase tracking-widest hover:bg-emerald-700 transition-all border border-emerald-500/30"
                                         >
-                                            <MdDownload size={18} /> Download PDF
+                                            {downloading ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <MdDownload size={18} />} 
+                                            Download PDF
                                         </button>
                                     </div>
                                 </div>
