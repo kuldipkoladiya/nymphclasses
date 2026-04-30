@@ -10,19 +10,13 @@ import Popup from "@/components/Popup";
 
 export default function AttendanceViewPage() {
     const [standard, setStandard] = useState("");
-    const [date, setDate] = useState("");
+    const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
     const [attendanceData, setAttendanceData] = useState([]);
     const [loading, setLoading] = useState(false);
     const [search, setSearch] = useState("");
     const [popup, setPopup] = useState(null);
     const [actionId, setActionId] = useState(null);
 
-    useEffect(() => {
-        if (!date) {
-            const d = new Date();
-            setDate(d.toISOString().slice(0, 10));
-        }
-    }, []);
 
     const loadAttendance = async () => {
         if (!standard || !date) return toast.error("Select Standard and Date");

@@ -125,7 +125,7 @@ export default function FeeStructurePage() {
                             <div className="p-4 rounded-xl bg-blue-50 dark:bg-blue-500/5 border border-blue-100 dark:border-blue-500/10 mt-4">
                                 <p className="text-[9px] text-blue-600 dark:text-blue-400 font-bold leading-relaxed flex gap-2">
                                     <MdInfo size={14} className="shrink-0" />
-                                    Updating a standard's fee will automatically reflect in the remaining balance for all students in that class.
+                                    Updating a standard&apos;s fee will automatically reflect in the remaining balance for all students in that class.
                                 </p>
                             </div>
                         </div>
