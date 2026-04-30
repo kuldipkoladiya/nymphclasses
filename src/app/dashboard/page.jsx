@@ -40,13 +40,13 @@ const TiltCard = ({ title, value, icon: Icon, color = "indigo" }) => {
     const [rotateY, setRotateY] = useState(0);
 
     const handleMouseMove = (e) => {
-        if (!cardRef.current) return;
+        if (!cardRef.current || window.innerWidth < 768) return;
         const rect = cardRef.current.getBoundingClientRect();
         const centerX = rect.left + rect.width / 2;
         const centerY = rect.top + rect.height / 2;
         const mouseX = e.clientX;
         const mouseY = e.clientY;
-        
+
         setRotateY((mouseX - centerX) / 15);
         setRotateX((centerY - mouseY) / 15);
     };
@@ -61,20 +61,22 @@ const TiltCard = ({ title, value, icon: Icon, color = "indigo" }) => {
             ref={cardRef}
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
-            style={{ 
+            style={{
                 perspective: 1000,
                 rotateX,
                 rotateY,
                 transformStyle: "preserve-3d"
             }}
-            className="glass-card p-8 bg-white dark:bg-slate-900/40 backdrop-blur-xl border border-white/20 dark:border-white/5 shadow-xl transition-shadow hover:shadow-2xl group"
+            className="glass-card p-6 md:p-8 bg-white dark:bg-slate-900/40 backdrop-blur-xl border border-white/20 dark:border-white/5 shadow-xl transition-shadow hover:shadow-2xl group"
         >
-            <div style={{ transform: "translateZ(40px)" }}>
-                <div className={`w-14 h-14 rounded-2xl bg-${color}-500 flex items-center justify-center mb-6 shadow-lg shadow-${color}-500/30 group-hover:scale-110 transition-transform duration-500`}>
-                    <Icon size={28} className="text-white" />
+            <div style={{ transform: "translateZ(40px)" }} className="flex flex-row md:flex-col items-center md:items-start gap-4 md:gap-0">
+                <div className={`w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-${color}-500 flex items-center justify-center md:mb-6 shadow-lg shadow-${color}-500/30 group-hover:scale-110 transition-transform duration-500 flex-shrink-0`}>
+                    <Icon size={24} className="text-white" />
                 </div>
-                <p className="text-[10px] font-black text-gray-400 dark:text-slate-500 uppercase tracking-[0.2em]">{title}</p>
-                <p className="text-4xl font-black text-gray-900 dark:text-white mt-2 tracking-tightest">{value ?? "0"}</p>
+                <div>
+                    <p className="text-[9px] md:text-[10px] font-black text-gray-400 dark:text-slate-500 uppercase tracking-[0.2em]">{title}</p>
+                    <p className="text-2xl md:text-4xl font-black text-gray-900 dark:text-white mt-1 md:mt-2 tracking-tightest">{value ?? "0"}</p>
+                </div>
             </div>
         </motion.div>
     );
@@ -119,7 +121,7 @@ export default function Dashboard() {
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-10 max-w-[1400px] mx-auto">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div>
-                    <h1 className="text-5xl font-black text-slate-900 dark:text-white tracking-tightest">Dashboard</h1>
+                    <h1 className="text-3xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tightest">Dashboard</h1>
                     <div className="flex items-center gap-2 mt-2">
                         <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                         <p className="text-blue-600 dark:text-blue-400 font-black uppercase tracking-[0.2em] text-[10px]">Academic Overview</p>
@@ -135,14 +137,14 @@ export default function Dashboard() {
                     <>
                         <TiltCard title="Total Students" value={main.totalStudents} icon={MdPeopleAlt} color="blue" />
                         <TiltCard title="Present Today" value={main.presentToday} icon={MdCheckCircle} color="emerald" />
-                        <TiltCard title="Collected Today" value={`₹${feesAnalytics.todayCollected || 0}`} icon={MdTrendingUp} color="blue" />
-                        <TiltCard title="Total Fees" value={`₹${feesAnalytics.totalCollected || 0}`} icon={MdAccountBalanceWallet} color="slate" />
+                        <TiltCard title="Collected Today" value={`Rs. ${feesAnalytics.todayCollected || 0}`} icon={MdTrendingUp} color="blue" />
+                        <TiltCard title="Total Fees" value={`Rs. ${feesAnalytics.totalCollected || 0}`} icon={MdAccountBalanceWallet} color="slate" />
                     </>
                 )}
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div className="lg:col-span-2 glass-card p-8 md:p-10 bg-white dark:bg-slate-900/40">
+                <div className="lg:col-span-2 glass-card p-6 md:p-10 bg-white dark:bg-slate-900/40">
                     <div className="flex items-center justify-between mb-10">
                         <h2 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tightest">Student Distribution</h2>
                         <div className="px-3 py-1 bg-blue-600/10 border border-blue-600/20 rounded-full text-blue-600 text-[10px] font-black uppercase tracking-widest">By Standard</div>
@@ -158,15 +160,15 @@ export default function Dashboard() {
                     </div>
                     <div className="space-y-4 flex-1">
                         {loading ? Array.from({ length: 5 }).map((_, i) => <div key={i} className="h-20 bg-slate-100 dark:bg-white/5 rounded-3xl animate-pulse" />) : main.topStudents?.map((s, i) => (
-                            <motion.div 
+                            <motion.div
                                 initial={{ opacity: 0, x: 20 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: i * 0.1 }}
-                                key={i} 
+                                key={i}
                                 className="flex items-center justify-between p-5 border border-slate-100 dark:border-white/5 rounded-3xl bg-slate-50/50 dark:bg-white/[0.02] hover:bg-white dark:hover:bg-white/[0.05] transition-all cursor-pointer group"
                             >
                                 <div className="flex items-center gap-5">
-                                    <div className="w-12 h-12 rounded-2xl bg-slate-900 dark:bg-blue-600 text-white flex items-center justify-center font-black shadow-lg shadow-blue-500/30 group-hover:rotate-12 transition-transform duration-500">{i+1}</div>
+                                    <div className="w-12 h-12 rounded-2xl bg-slate-900 dark:bg-blue-600 text-white flex items-center justify-center font-black shadow-lg shadow-blue-500/30 group-hover:rotate-12 transition-transform duration-500">{i + 1}</div>
                                     <div className="flex flex-col">
                                         <span className="font-bold text-slate-900 dark:text-white text-sm tracking-tight">{s.studentId?.name}</span>
                                         <span className="text-slate-400 text-[10px] font-black uppercase tracking-widest mt-0.5">Std {s.studentId?.standard} • {s.studentId?.rollNumber}</span>
@@ -186,10 +188,12 @@ export default function Dashboard() {
 
 function StatSkeleton() {
     return (
-        <div className="glass-card p-8 h-[200px] bg-white dark:bg-slate-900/40 animate-pulse">
-            <div className="w-14 h-14 bg-gray-100 dark:bg-white/5 rounded-2xl mb-8"></div>
-            <div className="h-3 w-20 bg-gray-100 dark:bg-white/5 rounded-full mb-3"></div>
-            <div className="h-10 w-28 bg-gray-100 dark:bg-white/5 rounded-xl"></div>
+        <div className="glass-card p-6 md:p-8 h-[120px] md:h-[200px] bg-white dark:bg-slate-900/40 animate-pulse flex flex-row md:flex-col items-center md:items-start gap-4 md:gap-0">
+            <div className="w-12 h-12 md:w-14 md:h-14 bg-gray-100 dark:bg-white/5 rounded-2xl md:mb-8 flex-shrink-0"></div>
+            <div className="flex-1 space-y-3">
+                <div className="h-2 w-16 bg-gray-100 dark:bg-white/5 rounded-full"></div>
+                <div className="h-8 w-24 bg-gray-100 dark:bg-white/5 rounded-xl"></div>
+            </div>
         </div>
     );
 }

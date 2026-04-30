@@ -94,12 +94,12 @@ export default function FeeStructurePage() {
                                 <label className="label-premium ml-1">Standard / Class</label>
                                 <div className="relative group">
                                     <MdClass className="input-icon top-1/2 -translate-y-1/2" size={18} />
-                                    <input 
-                                        type="number" 
-                                        placeholder="e.g. 10" 
-                                        className="input-premium input-with-icon" 
-                                        value={standard} 
-                                        onChange={(e) => setStandard(e.target.value)} 
+                                    <input
+                                        type="number"
+                                        placeholder="e.g. 10"
+                                        className="input-premium input-with-icon"
+                                        value={standard}
+                                        onChange={(e) => setStandard(e.target.value)}
                                     />
                                 </div>
                             </div>
@@ -108,12 +108,12 @@ export default function FeeStructurePage() {
                                 <label className="label-premium ml-1">Yearly Tuition Fee</label>
                                 <div className="relative group">
                                     <MdCurrencyRupee className="input-icon top-1/2 -translate-y-1/2" size={18} />
-                                    <input 
-                                        type="number" 
-                                        placeholder="e.g. 25000" 
-                                        className="input-premium input-with-icon" 
-                                        value={fee} 
-                                        onChange={(e) => setFee(e.target.value)} 
+                                    <input
+                                        type="number"
+                                        placeholder="e.g. 25000"
+                                        className="input-premium input-with-icon"
+                                        value={fee}
+                                        onChange={(e) => setFee(e.target.value)}
                                     />
                                 </div>
                             </div>
@@ -168,7 +168,7 @@ export default function FeeStructurePage() {
                                                     </span>
                                                 </td>
                                                 <td className="px-8 py-5 text-center font-black text-slate-900 dark:text-white">
-                                                    ₹ {s.yearlyFee.toLocaleString()}
+                                                    Rs. {s.yearlyFee.toLocaleString()}
                                                 </td>
                                                 <td className="px-8 py-5">
                                                     <div className="flex justify-end opacity-0 group-hover:opacity-100 transition-all gap-2">

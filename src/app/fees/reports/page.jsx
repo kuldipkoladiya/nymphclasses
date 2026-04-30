@@ -63,7 +63,7 @@ export default function FeesReportsPage() {
                         {data?.standardWise?.map(std => (
                             <div key={std._id} className="p-6 rounded-2xl bg-emerald-500/5 border border-emerald-500/10 text-center">
                                 <p className="text-[9px] font-black text-emerald-600 uppercase mb-2">Std {std._id}</p>
-                                <p className="text-lg font-black text-slate-900 dark:text-white">₹{std.total.toLocaleString()}</p>
+                                <p className="text-lg font-black text-slate-900 dark:text-white">Rs. {std.total.toLocaleString()}</p>
                             </div>
                         ))}
                     </div>
@@ -95,11 +95,11 @@ export default function FeesReportsPage() {
                                         <p className="text-xs font-black text-slate-900 dark:text-white">{item.student.name}</p>
                                         <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Std {item.student.standard}</p>
                                     </td>
-                                    <td className="px-8 py-5 text-center text-xs font-bold text-slate-500">₹{item.totalFee.toLocaleString()}</td>
+                                    <td className="px-8 py-5 text-center text-xs font-bold text-slate-500">Rs. {item.totalFee.toLocaleString()}</td>
                                     <td className="px-8 py-5 text-center">
-                                        <span className="px-3 py-1 rounded-lg bg-emerald-500/10 text-emerald-600 text-[10px] font-black">₹{item.totalPaid.toLocaleString()}</span>
+                                        <span className="px-3 py-1 rounded-lg bg-emerald-500/10 text-emerald-600 text-[10px] font-black">Rs. {item.totalPaid.toLocaleString()}</span>
                                     </td>
-                                    <td className="px-8 py-5 text-right font-black text-rose-600">₹{item.remaining.toLocaleString()}</td>
+                                    <td className="px-8 py-5 text-right font-black text-rose-600">Rs. {item.remaining.toLocaleString()}</td>
                                 </tr>
                             ))}
                         </tbody>

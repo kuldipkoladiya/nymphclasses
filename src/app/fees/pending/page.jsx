@@ -30,8 +30,8 @@ export default function PendingFeesPage() {
         }
     };
 
-    const filtered = list.filter(p => 
-        p.name?.toLowerCase().includes(search.toLowerCase()) || 
+    const filtered = list.filter(p =>
+        p.name?.toLowerCase().includes(search.toLowerCase()) ||
         p.rollNumber?.includes(search)
     );
 
@@ -52,7 +52,7 @@ export default function PendingFeesPage() {
                 </div>
                 <div className="text-right mt-4 md:mt-0">
                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Outstanding</p>
-                    <p className="text-3xl font-black text-rose-600 tracking-tightest">₹{totalDeficit.toLocaleString()}</p>
+                    <p className="text-3xl font-black text-rose-600 tracking-tightest">Rs. {totalDeficit.toLocaleString()}</p>
                 </div>
             </div>
 
@@ -124,7 +124,7 @@ export default function PendingFeesPage() {
                                             </div>
                                         </td>
                                         <td className="px-8 py-5 text-right font-black text-rose-600">
-                                            ₹{p.remaining.toLocaleString()}
+                                            Rs. {p.remaining.toLocaleString()}
                                         </td>
                                         <td className="px-8 py-5">
                                             <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all">

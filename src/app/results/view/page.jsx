@@ -156,8 +156,8 @@ export default function ViewResultsPage() {
                         <h3 className="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-4">Step 1: Identity Selection</h3>
                         <div className="flex gap-2">
                             <div className="relative flex-1 group">
-                                <MdClass className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-600" />
-                                <input className="input-premium pl-11 py-2.5 text-sm" placeholder="Std (e.g. 10)" value={standard} onChange={(e) => setStandard(e.target.value)} />
+                                <MdClass className="input-icon top-1/2 -translate-y-1/2" />
+                                <input className="input-premium input-with-icon" placeholder="Std (e.g. 10)" value={standard} onChange={(e) => setStandard(e.target.value)} />
                             </div>
                             <button onClick={loadStudents} disabled={loadingStudents} className="px-4 rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/20">
                                 {loadingStudents ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <MdSearch size={20} />}

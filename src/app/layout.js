@@ -29,7 +29,7 @@ export default function RootLayout({ children }) {
 
     return (
         <html lang="en" className={`${jakarta.variable} ${manrope.variable}`}>
-        <body className="min-h-screen flex text-slate-800 dark:text-slate-100 font-sans selection:bg-blue-500/30">
+        <body className="min-h-screen flex text-slate-800 dark:text-slate-100 font-sans selection:bg-blue-500/30 overflow-x-hidden">
             <Toaster position="top-center" />
             
             {/* AMBIENT BACKGROUND */}

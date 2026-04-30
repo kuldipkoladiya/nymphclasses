@@ -145,21 +145,21 @@ export default function FeesDashboard() {
                         <StatCard
                             variants={itemVariants}
                             title="Expected Fees"
-                            val={`₹${data.totalYearlyFees?.toLocaleString() || 0}`}
+                            val={`Rs. ${data.totalYearlyFees?.toLocaleString() || 0}`}
                             icon={<MdMonetizationOn />}
                             color="blue"
                         />
                         <StatCard
                             variants={itemVariants}
                             title="Collected Fees"
-                            val={`₹${data.totalCollected?.toLocaleString() || 0}`}
+                            val={`Rs. ${data.totalCollected?.toLocaleString() || 0}`}
                             icon={<MdCheckCircle />}
                             color="emerald"
                         />
                         <StatCard
                             variants={itemVariants}
                             title="Pending Amount"
-                            val={`₹${data.totalPending?.toLocaleString() || 0}`}
+                            val={`Rs. ${data.totalPending?.toLocaleString() || 0}`}
                             icon={<MdWarning />}
                             color="rose"
                         />

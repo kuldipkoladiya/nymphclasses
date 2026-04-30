@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
     MdArrowBack, MdPayments, MdHistory, MdDelete,
     MdCheckCircle, MdReceipt, MdSearch, MdPerson,
-    MdPrint, MdDownload, MdClose, MdSchool, MdWarning
+    MdPrint, MdDownload, MdClose, MdSchool, MdWarning, MdPictureAsPdf
 } from "react-icons/md";
 import toast from "react-hot-toast";
 import Popup from "@/components/Popup";
@@ -57,7 +57,7 @@ const PrintableReceipt = ({ student, payment, status }) => {
                         <tr className="text-sm">
                             <td className="py-4 font-bold">Academic Tuition Fee Installment</td>
                             <td className="text-center py-4">{payment?.paymentMode}</td>
-                            <td className="text-right py-4 font-black">₹{payment?.amount?.toLocaleString()}</td>
+                            <td className="text-right py-4 font-black">Rs. {payment?.amount?.toLocaleString()}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -68,15 +68,15 @@ const PrintableReceipt = ({ student, payment, status }) => {
                 <div className="w-64 space-y-2">
                     <div className="flex justify-between text-xs">
                         <span className="font-bold">Total Commitment:</span>
-                        <span>₹{status?.totalYearlyFee?.toLocaleString()}</span>
+                        <span>Rs. {status?.totalYearlyFee?.toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between text-xs">
                         <span className="font-bold">Amount Paid (Till Date):</span>
-                        <span>₹{status?.totalPaid?.toLocaleString()}</span>
+                        <span>Rs. {status?.totalPaid?.toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between text-lg font-black border-t-2 border-slate-900 pt-2 mt-2">
                         <span>Due Balance:</span>
-                        <span className="text-rose-600">₹{status?.remaining?.toLocaleString()}</span>
+                        <span className="text-rose-600">Rs. {status?.remaining?.toLocaleString()}</span>
                     </div>
                 </div>
             </div>
@@ -120,6 +120,7 @@ export default function FeePaymentsPage() {
     const [receiptData, setReceiptData] = useState(null);
     const [receiptPdfUrl, setReceiptPdfUrl] = useState(null);
     const [downloading, setDownloading] = useState(false);
+    const [generatingId, setGeneratingId] = useState(null);
     const printRef = useRef();
 
     useEffect(() => {
@@ -199,6 +200,22 @@ export default function FeePaymentsPage() {
         }
     };
 
+    const generateOnDemandPDF = async (paymentId) => {
+        setGeneratingId(paymentId);
+        try {
+            const res = await axios.get(`/fees/receipt/${paymentId}/generate`);
+            if (res.data.success) {
+                window.open(res.data.pdfUrl, "_blank");
+                toast.success("PDF Generated!");
+            }
+        } catch (err) {
+            console.error(err);
+            toast.error("Failed to generate PDF.");
+        } finally {
+            setGeneratingId(null);
+        }
+    };
+
     const handlePrint = useReactToPrint({
         contentRef: printRef,
         documentTitle: `Receipt_${receiptData?.receiptNo}`,
@@ -238,10 +255,10 @@ export default function FeePaymentsPage() {
                         <h3 className="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-4">Find Student</h3>
                         <div className="relative group">
                             <MdSearch className="input-icon top-1/2 -translate-y-1/2" size={20} />
-                            <input 
-                                className="input-premium input-with-icon" 
-                                placeholder="Name or Roll Number..." 
-                                value={searchQuery} 
+                            <input
+                                className="input-premium input-with-icon"
+                                placeholder="Name or Roll Number..."
+                                value={searchQuery}
                                 onChange={(e) => handleSearch(e.target.value)}
                                 onFocus={() => searchQuery.length >= 2 && setShowResults(true)}
                             />
@@ -255,7 +272,7 @@ export default function FeePaymentsPage() {
                                     initial={{ opacity: 0, y: -10 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0, y: -10 }}
-                                    className="absolute left-6 right-6 top-[100%] mt-2 z-50 glass-card bg-white dark:bg-slate-900 shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden"
+                                    className="absolute left-0 right-0 md:left-6 md:right-6 top-[100%] mt-2 z-50 glass-card bg-white dark:bg-slate-900 shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden"
                                 >
                                     <div className="max-h-60 overflow-y-auto">
                                         {searchResults.map((s) => (
@@ -284,14 +301,14 @@ export default function FeePaymentsPage() {
                         {status && (
                             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
                                 {/* QUICK STATS */}
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div className="glass-card p-5 bg-emerald-500/5 border-emerald-500/20">
                                         <p className="text-[9px] font-black text-emerald-600 uppercase tracking-widest mb-1 flex items-center gap-2"><MdCheckCircle /> Paid</p>
-                                        <p className="text-2xl font-black text-emerald-600 tracking-tight">₹{status.totalPaid.toLocaleString()}</p>
+                                        <p className="text-2xl font-black text-emerald-600 tracking-tight">Rs. {status.totalPaid.toLocaleString()}</p>
                                     </div>
                                     <div className="glass-card p-5 bg-rose-500/5 border-rose-500/20">
                                         <p className="text-[9px] font-black text-rose-600 uppercase tracking-widest mb-1 flex items-center gap-2"><MdWarning /> Arrears</p>
-                                        <p className="text-2xl font-black text-rose-600 tracking-tightest">₹{status.remaining.toLocaleString()}</p>
+                                        <p className="text-2xl font-black text-rose-600 tracking-tightest">Rs. {status.remaining.toLocaleString()}</p>
                                     </div>
                                 </div>
 
@@ -302,7 +319,7 @@ export default function FeePaymentsPage() {
                                         <div>
                                             <label className="label-premium">Payment Amount</label>
                                             <div className="relative group">
-                                                <span className="input-icon top-1/2 -translate-y-1/2 font-black text-xs">₹</span>
+                                                <span className="input-icon top-1/2 -translate-y-1/2 font-black text-[10px]">Rs.</span>
                                                 <input type="number" className="input-premium input-with-icon" placeholder="0.00" value={amount} onChange={(e) => setAmount(e.target.value)} />
                                             </div>
                                         </div>
@@ -397,91 +414,89 @@ export default function FeePaymentsPage() {
                                 <p className="text-[11px] font-black uppercase tracking-[0.2em]">No payments recorded yet</p>
                             </div>
                         ) : (
-                            <div className="overflow-x-auto">
-                                <table className="w-full text-left">
-                                    <thead>
-                                        <tr className="bg-slate-50/30 dark:bg-white/[0.01]">
-                                            <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Date</th>
-                                            <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Receipt</th>
-                                            <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Mode</th>
-                                            <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Amount</th>
-                                            <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-slate-50 dark:divide-slate-800">
-                                        {status.paymentHistory.slice().reverse().map((p) => (
-                                            <tr key={p._id} className="hover:bg-blue-600/[0.02] transition-colors group">
-                                                <td className="px-8 py-5">
-                                                    <p className="text-xs font-black text-slate-700 dark:text-slate-300">{new Date(p.createdAt || p.date).toLocaleDateString()}</p>
-                                                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{p.note || "Standard Installment"}</p>
-                                                </td>
-                                                <td className="px-8 py-5 text-center">
-                                                    <span className="px-3 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-[10px] font-black text-slate-500 uppercase tracking-widest border border-slate-200 dark:border-slate-700">#{p.receiptNo || 'N/A'}</span>
-                                                </td>
-                                                <td className="px-8 py-5 text-center">
-                                                    <span className={`px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest ${p.paymentMode === 'Cash' ? 'bg-amber-100 text-amber-600' : 'bg-blue-100 text-blue-600'}`}>{p.paymentMode}</span>
-                                                </td>
-                                                <td className="px-8 py-5 text-right font-black text-slate-900 dark:text-white">₹{p.amount.toLocaleString()}</td>
-                                                <td className="px-8 py-5">
-                                                    <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all">
-                                                        <button
-                                                            onClick={() => {
-                                                                setReceiptData(p);
-                                                                setReceiptPdfUrl(p.receiptPdf);
-                                                            }}
-                                                            className="p-2 rounded-xl bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 hover:bg-blue-600 hover:text-white transition-all shadow-sm"
-                                                        >
-                                                            <MdReceipt size={18} />
-                                                        </button>
-                                                        {p.receiptPdf && (
-                                                            <a
-                                                                href={p.receiptPdf}
-                                                                target="_blank"
-                                                                rel="noopener noreferrer"
-                                                                className="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-600 hover:text-white transition-all shadow-sm"
-                                                            >
-                                                                <MdDownload size={18} />
-                                                            </a>
-                                                        )}
-                                                        <button
-                                                            onClick={() => {
-                                                                setActionId(p._id);
-                                                                setPopup({
-                                                                    type: "confirm",
-                                                                    title: "Remove Payment Entry",
-                                                                    message: "Warning: This will void the payment and increase the student's remaining balance."
-                                                                });
-                                                            }}
-                                                            className="p-2 rounded-xl bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 hover:bg-rose-500 hover:text-white transition-all shadow-sm"
-                                                        >
-                                                            <MdDelete size={18} />
-                                                        </button>
-                                                    </div>
-                                                </td>
+                            <>
+                                {/* LEDGER TABLE */}
+                                <div className="overflow-x-auto">
+                                    <table className="w-full text-left">
+                                        <thead>
+                                            <tr className="bg-slate-50/30 dark:bg-white/[0.01]">
+                                                <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Date</th>
+                                                <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Receipt</th>
+                                                <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Mode</th>
+                                                <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Amount</th>
+                                                <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Actions</th>
                                             </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
+                                        </thead>
+                                        <tbody className="divide-y divide-slate-50 dark:divide-slate-800">
+                                            {status.paymentHistory.slice().reverse().map((p) => (
+                                                <tr key={p._id} className="hover:bg-blue-600/[0.02] transition-colors group">
+                                                    <td className="px-8 py-5">
+                                                        <p className="text-xs font-black text-slate-700 dark:text-slate-300">{new Date(p.createdAt || p.date).toLocaleDateString()}</p>
+                                                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{p.note || "Standard Installment"}</p>
+                                                    </td>
+                                                    <td className="px-8 py-5 text-center">
+                                                        <span className="px-3 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-[10px] font-black text-slate-500 uppercase tracking-widest border border-slate-200 dark:border-slate-700">#{p.receiptNo || 'N/A'}</span>
+                                                    </td>
+                                                    <td className="px-8 py-5 text-center">
+                                                        <span className={`px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest ${p.paymentMode === 'Cash' ? 'bg-amber-100 text-amber-600' : 'bg-blue-100 text-blue-600'}`}>{p.paymentMode}</span>
+                                                    </td>
+                                                    <td className="px-8 py-5 text-right font-black text-slate-900 dark:text-white">Rs. {p.amount.toLocaleString()}</td>
+                                                    <td className="px-8 py-5">
+                                                        <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                                                            <button
+                                                                onClick={() => {
+                                                                    setReceiptData(p);
+                                                                    setReceiptPdfUrl(p.receiptPdf);
+                                                                }}
+                                                                className="p-2 rounded-xl bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 hover:bg-blue-600 hover:text-white transition-all shadow-sm"
+                                                            >
+                                                                <MdReceipt size={18} />
+                                                            </button>
+                                                            {p.receiptPdf && (
+                                                                <a
+                                                                    href={p.receiptPdf}
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                    className="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-600 hover:text-white transition-all shadow-sm"
+                                                                >
+                                                                    <MdDownload size={18} />
+                                                                </a>
+                                                            )}
+                                                            <button
+                                                                disabled={generatingId === p._id}
+                                                                onClick={() => generateOnDemandPDF(p._id)}
+                                                                className="p-2 rounded-xl bg-slate-50 dark:bg-slate-500/10 text-slate-600 dark:text-slate-400 hover:bg-slate-600 hover:text-white transition-all shadow-sm disabled:opacity-50"
+                                                            >
+                                                                {generatingId === p._id ? <div className="w-4 h-4 border-2 border-slate-400 border-t-transparent rounded-full animate-spin" /> : <MdPictureAsPdf size={18} />}
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </>
+                        )}
                             </div>
+                    </div>
+                </div>
+
+                {/* HIDDEN PRINTABLE COMPONENT */}
+                <div className="hidden">
+                    <div ref={printRef}>
+                        {receiptData && (
+                            <PrintableReceipt
+                                student={selectedStudent}
+                                payment={receiptData}
+                                status={status}
+                            />
                         )}
                     </div>
                 </div>
-            </div>
 
-            {/* HIDDEN PRINTABLE COMPONENT */}
-            <div className="hidden">
-                <div ref={printRef}>
-                    {receiptData && (
-                        <PrintableReceipt
-                            student={selectedStudent}
-                            payment={receiptData}
-                            status={status}
-                        />
-                    )}
-                </div>
-            </div>
-
-            {popup && <Popup open={true} {...popup} onClose={() => setPopup(null)} onConfirm={deletePayment} />}
+                {popup && <Popup open={true} {...popup} onClose={() => setPopup(null)} onConfirm={deletePayment} />}
         </motion.div>
     );
 }

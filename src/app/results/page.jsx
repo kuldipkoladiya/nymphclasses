@@ -115,23 +115,23 @@ export default function CreateResultPage() {
             {/* CONFIG PANEL */}
             <div className="glass-card p-8 bg-white dark:bg-slate-900/60">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <InputWrapper label="Standard" icon={<MdClass />}>
-                        <select value={standard} onChange={(e) => setStandard(e.target.value)} className="input-premium pl-12 appearance-none cursor-pointer">
+                    <InputWrapper label="Standard" icon={<MdClass size={18} />}>
+                        <select value={standard} onChange={(e) => setStandard(e.target.value)} className="input-premium input-with-icon appearance-none cursor-pointer">
                             <option value="">Select Level</option>
                             {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(s => <option key={s} value={s}>Standard {s}</option>)}
                         </select>
                     </InputWrapper>
 
-                    <InputWrapper label="Exam Name" icon={<MdEditDocument />}>
-                        <input placeholder="e.g. First Terminal" value={examName} onChange={(e) => setExamName(e.target.value)} className="input-premium pl-12" />
+                    <InputWrapper label="Exam Name" icon={<MdEditDocument size={18} />}>
+                        <input placeholder="e.g. First Terminal" value={examName} onChange={(e) => setExamName(e.target.value)} className="input-premium input-with-icon" />
                     </InputWrapper>
 
-                    <InputWrapper label="Exam Date" icon={<MdDateRange />}>
-                        <input type="date" value={examDate} onChange={(e) => setExamDate(e.target.value)} className="input-premium pl-12" />
+                    <InputWrapper label="Exam Date" icon={<MdDateRange size={18} />}>
+                        <input type="date" value={examDate} onChange={(e) => setExamDate(e.target.value)} className="input-premium input-with-icon" />
                     </InputWrapper>
 
-                    <InputWrapper label="Max Marks" icon={<MdScore />}>
-                        <input type="number" value={totalMaximum} onChange={(e) => setTotalMaximum(+e.target.value)} className="input-premium pl-12" />
+                    <InputWrapper label="Max Marks" icon={<MdScore size={18} />}>
+                        <input type="number" value={totalMaximum} onChange={(e) => setTotalMaximum(+e.target.value)} className="input-premium input-with-icon" />
                     </InputWrapper>
                 </div>
 
@@ -169,6 +169,7 @@ export default function CreateResultPage() {
                             </span>
                         </div>
 
+                        {/* MARKS GRID */}
                         <div className="overflow-x-auto">
                             <table className="w-full text-left">
                                 <thead>
@@ -182,7 +183,7 @@ export default function CreateResultPage() {
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-50 dark:divide-slate-800">
-                                    {students.map((stu, i) => (
+                                    {students.map((stu) => (
                                         <tr key={stu._id} className="hover:bg-blue-600/[0.02] transition-colors group">
                                             <td className="px-8 py-5 sticky left-0 bg-white dark:bg-slate-900 group-hover:bg-slate-50 dark:group-hover:bg-slate-800 transition-colors">
                                                 <p className="font-bold text-slate-900 dark:text-white">{stu.name}</p>
@@ -208,6 +209,7 @@ export default function CreateResultPage() {
                             </table>
                         </div>
 
+
                         <div className="p-8 bg-slate-50/50 dark:bg-white/[0.02] border-t border-slate-100 dark:border-slate-800 flex justify-end">
                             <button onClick={saveAllResults} disabled={saving} className="btn-primary">
                                 {saving ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <><MdSave size={20} /> Publish Results</>}
@@ -222,10 +224,10 @@ export default function CreateResultPage() {
 
 function InputWrapper({ label, icon, children }) {
     return (
-        <div className="space-y-2 group">
-            <label className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] pl-1">{label}</label>
+        <div className="group">
+            <label className="label-premium ml-1">{label}</label>
             <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-600 transition-colors z-10">{icon}</div>
+                <div className="input-icon top-1/2 -translate-y-1/2">{icon}</div>
                 {children}
             </div>
         </div>

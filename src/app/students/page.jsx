@@ -81,12 +81,12 @@ export default function StudentsPage() {
             {/* FILTERS */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="md:col-span-2 relative group">
-                    <MdSearch className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-600 transition-colors" size={20} />
-                    <input className="input-premium pl-14" placeholder="Search by name or roll number..." value={search} onChange={(e) => setSearch(e.target.value)} />
+                    <MdSearch className="input-icon top-1/2 -translate-y-1/2" size={20} />
+                    <input className="input-premium input-with-icon" placeholder="Search by name or roll number..." value={search} onChange={(e) => setSearch(e.target.value)} />
                 </div>
                 <div className="relative group">
-                    <MdFilterList className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-600 transition-colors" size={20} />
-                    <select className="input-premium pl-14 appearance-none cursor-pointer" value={filterStd} onChange={(e) => setFilterStd(e.target.value)}>
+                    <MdFilterList className="input-icon top-1/2 -translate-y-1/2" size={20} />
+                    <select className="input-premium input-with-icon appearance-none cursor-pointer" value={filterStd} onChange={(e) => setFilterStd(e.target.value)}>
                         <option value="">All Standards</option>
                         {["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"].map(s => <option key={s} value={s}>Standard {s}</option>)}
                     </select>
@@ -95,6 +95,7 @@ export default function StudentsPage() {
 
             {/* DATA TABLE */}
             <div className="glass-card overflow-hidden bg-white dark:bg-slate-900/60">
+                {/* DATA TABLE */}
                 <div className="overflow-x-auto">
                     <table className="w-full text-left">
                         <thead>

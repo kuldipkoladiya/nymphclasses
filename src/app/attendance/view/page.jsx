@@ -79,16 +79,16 @@ export default function AttendanceViewPage() {
             {/* CONTROLS */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="relative group">
-                    <MdClass className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-600 transition-colors" size={20} />
-                    <select className="input-premium pl-14 appearance-none cursor-pointer" value={standard} onChange={(e) => setStandard(e.target.value)}>
+                    <MdClass className="input-icon top-1/2 -translate-y-1/2" size={20} />
+                    <select className="input-premium input-with-icon appearance-none cursor-pointer" value={standard} onChange={(e) => setStandard(e.target.value)}>
                         <option value="">Select Standard</option>
                         {["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"].map(s => <option key={s} value={s}>Standard {s}</option>)}
                     </select>
                 </div>
 
                 <div className="relative group">
-                    <MdCalendarMonth className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-600 transition-colors" size={20} />
-                    <input type="date" className="input-premium pl-14" value={date} onChange={(e) => setDate(e.target.value)} />
+                    <MdCalendarMonth className="input-icon top-1/2 -translate-y-1/2" size={20} />
+                    <input type="date" className="input-premium input-with-icon" value={date} onChange={(e) => setDate(e.target.value)} />
                 </div>
 
                 <button onClick={loadAttendance} disabled={loading} className="btn-primary h-[58px]">
@@ -118,6 +118,7 @@ export default function AttendanceViewPage() {
                     </div>
                 </div>
 
+                {/* TABLE */}
                 <div className="overflow-x-auto">
                     <table className="w-full text-left">
                         <thead>
@@ -158,7 +159,7 @@ export default function AttendanceViewPage() {
                                                         onClick={() => updateStatus(a._id, status)}
                                                         className={`px-3 py-1 rounded-lg font-black text-[9px] uppercase tracking-tighter transition-all ${
                                                             a.status === status 
-                                                                ? status === "Present" ? "bg-emerald-600 text-white shadow-lg shadow-emerald-600/20" : status === "Absent" ? "bg-rose-600 text-white shadow-lg shadow-rose-600/20" : "bg-amber-500 text-white shadow-lg shadow-amber-500/20"
+                                                                ? status === "Present" ? "bg-emerald-600 text-white shadow-lg shadow-emerald-600/20" : status === "Absent" ? "bg-rose-600 text-white shadow-lg shadow-rose-600/20" : "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
                                                                 : "bg-slate-100 dark:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
                                                         }`}
                                                     >

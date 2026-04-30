@@ -84,14 +84,12 @@ export default function AddStudent() {
                 <form onSubmit={handleSubmit} className="space-y-8">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
                         {formFields.map((field) => (
-                            <div key={field.name} className="flex flex-col space-y-1.5 relative group">
-                                <label className="text-sm font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-2">
+                            <div key={field.name} className="relative group">
+                                <label className="label-premium ml-1">
                                     {field.label}
                                 </label>
                                 <div className="relative">
-                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-indigo-500 transition-colors">
-                                        <field.icon size={18} />
-                                    </div>
+                                    <field.icon className="input-icon top-1/2 -translate-y-1/2" size={18} />
                                     <input
                                         type={field.type}
                                         name={field.name}
@@ -99,39 +97,26 @@ export default function AddStudent() {
                                         onChange={handleChange}
                                         required
                                         placeholder={field.placeholder}
-                                        className="
-                                            w-full pl-11 pr-4 py-3 rounded-xl
-                                            bg-gray-50/50 dark:bg-slate-800/50
-                                            border border-gray-200 dark:border-slate-700/60
-                                            text-gray-800 dark:text-gray-100 placeholder-gray-400
-                                            focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500/50
-                                            transition-all shadow-sm
-                                        "
+                                        className="input-premium input-with-icon"
                                     />
                                 </div>
                             </div>
                         ))}
 
                         {/* ADDRESS */}
-                        <div className="md:col-span-2 flex flex-col space-y-1.5 relative group">
-                            <label className="text-sm font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-2">
+                        <div className="md:col-span-2 relative group">
+                            <label className="label-premium ml-1">
                                 Current Address
                             </label>
-                            <div className="relative border border-gray-200 dark:border-slate-700/60 rounded-xl bg-gray-50/50 dark:bg-slate-800/50 shadow-sm focus-within:ring-2 focus-within:ring-indigo-500/20 focus-within:border-indigo-500/50 transition-all">
-                                <div className="absolute top-3.5 left-0 pl-4 flex items-start pointer-events-none text-gray-400 group-focus-within:text-indigo-500 transition-colors">
-                                    <MdLocationOn size={18} />
-                                </div>
+                            <div className="relative">
+                                <MdLocationOn className="input-icon top-5" size={18} />
                                 <textarea
                                     name="address"
                                     rows={3}
                                     value={form.address}
                                     onChange={handleChange}
                                     placeholder="123 Education Street, Learning City..."
-                                    className="
-                                        w-full pl-11 pr-4 py-3 rounded-xl bg-transparent
-                                        text-gray-800 dark:text-gray-100 placeholder-gray-400
-                                        focus:outline-none resize-y min-h-[100px]
-                                    "
+                                    className="input-premium input-with-icon resize-y min-h-[100px]"
                                 />
                             </div>
                         </div>

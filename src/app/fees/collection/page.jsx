@@ -48,13 +48,13 @@ export default function CollectionPage() {
 
     const filtered = payments.filter(p => {
         const student = p.studentId || {};
-        const matchesSearch = 
-            student.name?.toLowerCase().includes(search.toLowerCase()) || 
+        const matchesSearch =
+            student.name?.toLowerCase().includes(search.toLowerCase()) ||
             student.rollNumber?.includes(search) ||
             p.receiptNo?.includes(search);
-        
+
         const matchesMode = filterMode ? p.paymentMode === filterMode : true;
-        
+
         return matchesSearch && matchesMode;
     });
 
@@ -75,26 +75,26 @@ export default function CollectionPage() {
                 </div>
                 <div className="text-right mt-4 md:mt-0">
                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Filtered Collection</p>
-                    <p className="text-3xl font-black text-emerald-600 tracking-tightest">₹{totalCollected.toLocaleString()}</p>
+                    <p className="text-3xl font-black text-emerald-600 tracking-tightest">Rs. {totalCollected.toLocaleString()}</p>
                 </div>
             </div>
 
             {/* FILTERS */}
             <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
                 <div className="md:col-span-8 relative group">
-                    <MdSearch className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-emerald-500 transition-colors" size={20} />
-                    <input 
-                        className="input-premium pl-14" 
-                        placeholder="Search by Name, Roll No or Receipt..." 
-                        value={search} 
-                        onChange={(e) => setSearch(e.target.value)} 
+                    <MdSearch className="input-icon top-1/2 -translate-y-1/2" size={20} />
+                    <input
+                        className="input-premium input-with-icon"
+                        placeholder="Search by Name, Roll No or Receipt..."
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
                     />
                 </div>
                 <div className="md:col-span-4 relative group">
-                    <MdFilterList className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-emerald-500 transition-colors" size={20} />
-                    <select 
-                        className="input-premium pl-14 appearance-none cursor-pointer" 
-                        value={filterMode} 
+                    <MdFilterList className="input-icon top-1/2 -translate-y-1/2" size={20} />
+                    <select
+                        className="input-premium input-with-icon appearance-none cursor-pointer"
+                        value={filterMode}
                         onChange={(e) => setFilterMode(e.target.value)}
                     >
                         <option value="">All Payment Modes</option>
@@ -108,6 +108,7 @@ export default function CollectionPage() {
 
             {/* LIST */}
             <div className="glass-card overflow-hidden bg-white dark:bg-slate-900/60">
+                {/* REGISTRY TABLE */}
                 <div className="overflow-x-auto">
                     <table className="w-full text-left">
                         <thead>
@@ -158,7 +159,7 @@ export default function CollectionPage() {
                                         </td>
                                         <td className="px-8 py-5 text-center">
                                             <span className="px-3 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-[10px] font-black text-slate-500 uppercase tracking-widest border border-slate-200 dark:border-slate-700">
-                                                #{p.receiptNo || "N/A"}
+                                                #{p.receiptNo || 'N/A'}
                                             </span>
                                         </td>
                                         <td className="px-8 py-5 text-center">
@@ -166,12 +167,10 @@ export default function CollectionPage() {
                                                 {p.paymentMode}
                                             </span>
                                         </td>
-                                        <td className="px-8 py-5 text-right font-black text-slate-900 dark:text-white">
-                                            ₹{p.amount.toLocaleString()}
-                                        </td>
+                                        <td className="px-8 py-5 text-right font-black text-slate-900 dark:text-white">Rs. {p.amount.toLocaleString()}</td>
                                         <td className="px-8 py-5">
-                                            <div className="flex justify-end opacity-0 group-hover:opacity-100 transition-all">
-                                                <button 
+                                            <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                                                <button
                                                     onClick={() => {
                                                         setDeleteId(p._id);
                                                         setPopup({

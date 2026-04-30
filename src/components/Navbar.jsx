@@ -47,21 +47,20 @@ export default function Navbar({ setSidebarOpen }) {
                 ${scrolled ? 'bg-white/90 dark:bg-slate-950/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 shadow-sm' : 'bg-transparent'}
             `}
         >
-            {/* MOBILE MENU BUTTON & GREETING */}
+            {/* MOBILE LOGO & GREETING */}
             <div className="flex items-center gap-4 flex-1">
-                <button
-                    className="md:hidden p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 shadow-sm active:scale-95 transition-all"
-                    onClick={() => setSidebarOpen(true)}
-                >
-                    <MdMenu size={20} />
-                </button>
-                <div className="hidden sm:block">
-                    <p className="text-[9px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-[0.2em] mb-0.5">
-                        {greeting}
-                    </p>
-                    <h2 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">
-                        Administrative Panel
-                    </h2>
+                <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-blue-600/10 flex items-center justify-center border border-blue-600/20 md:hidden">
+                        <Image src={Logo} alt="Logo" width={24} height={24} className="object-contain" />
+                    </div>
+                    <div className="hidden sm:block">
+                        <p className="text-[9px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-[0.2em] mb-0.5">
+                            {greeting}
+                        </p>
+                        <h2 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">
+                            Administrative Panel
+                        </h2>
+                    </div>
                 </div>
             </div>
 
