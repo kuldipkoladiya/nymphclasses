@@ -88,16 +88,16 @@ export default function FeeStructurePage() {
                         <h3 className="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-6 flex items-center gap-2">
                             <MdAddCircle size={16} /> Create / Update Rule
                         </h3>
-                        
+
                         <div className="space-y-5">
                             <div>
-                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block ml-1">Standard / Class</label>
+                                <label className="label-premium ml-1">Standard / Class</label>
                                 <div className="relative group">
-                                    <MdClass className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-600 transition-colors" />
+                                    <MdClass className="input-icon top-1/2 -translate-y-1/2" size={18} />
                                     <input 
                                         type="number" 
                                         placeholder="e.g. 10" 
-                                        className="input-premium pl-11" 
+                                        className="input-premium input-with-icon" 
                                         value={standard} 
                                         onChange={(e) => setStandard(e.target.value)} 
                                     />
@@ -105,13 +105,13 @@ export default function FeeStructurePage() {
                             </div>
 
                             <div>
-                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block ml-1">Yearly Tuition Fee</label>
+                                <label className="label-premium ml-1">Yearly Tuition Fee</label>
                                 <div className="relative group">
-                                    <MdCurrencyRupee className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-600 transition-colors" />
+                                    <MdCurrencyRupee className="input-icon top-1/2 -translate-y-1/2" size={18} />
                                     <input 
                                         type="number" 
                                         placeholder="e.g. 25000" 
-                                        className="input-premium pl-11" 
+                                        className="input-premium input-with-icon" 
                                         value={fee} 
                                         onChange={(e) => setFee(e.target.value)} 
                                     />
@@ -143,7 +143,7 @@ export default function FeeStructurePage() {
 
                         {fetching ? (
                             <div className="p-12 space-y-4">
-                                {[1,2,3].map(i => <div key={i} className="h-16 bg-slate-100 dark:bg-slate-800 rounded-2xl animate-pulse" />)}
+                                {[1, 2, 3].map(i => <div key={i} className="h-16 bg-slate-100 dark:bg-slate-800 rounded-2xl animate-pulse" />)}
                             </div>
                         ) : structures.length === 0 ? (
                             <div className="py-20 text-center text-slate-400">
@@ -172,7 +172,7 @@ export default function FeeStructurePage() {
                                                 </td>
                                                 <td className="px-8 py-5">
                                                     <div className="flex justify-end opacity-0 group-hover:opacity-100 transition-all gap-2">
-                                                        <button 
+                                                        <button
                                                             onClick={() => {
                                                                 setStandard(s.standard);
                                                                 setFee(s.yearlyFee);
@@ -181,7 +181,7 @@ export default function FeeStructurePage() {
                                                         >
                                                             <MdSettings size={18} />
                                                         </button>
-                                                        <button 
+                                                        <button
                                                             onClick={() => {
                                                                 setDeleteId(s._id);
                                                                 setPopup({

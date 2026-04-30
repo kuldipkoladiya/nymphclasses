@@ -11,7 +11,12 @@
     @apply antialiased text-slate-800 dark:text-slate-200 bg-slate-50 dark:bg-slate-950 font-sans leading-relaxed;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-display tracking-tight;
   }
 }
@@ -25,9 +30,11 @@
   width: 5px;
   height: 5px;
 }
+
 ::-webkit-scrollbar-track {
   background: transparent;
 }
+
 ::-webkit-scrollbar-thumb {
   @apply bg-slate-300 dark:bg-slate-800 rounded-full hover:bg-slate-400 dark:hover:bg-slate-700 transition-colors;
 }
@@ -72,9 +79,17 @@
 }
 
 @keyframes float-blob {
-  0% { transform: translate(0, 0) rotate(0deg) scale(1); }
-  50% { transform: translate(4%, 4%) rotate(5deg) scale(1.05); }
-  100% { transform: translate(-1%, 6%) rotate(-2deg) scale(1); }
+  0% {
+    transform: translate(0, 0) rotate(0deg) scale(1);
+  }
+
+  50% {
+    transform: translate(4%, 4%) rotate(5deg) scale(1.05);
+  }
+
+  100% {
+    transform: translate(-1%, 6%) rotate(-2deg) scale(1);
+  }
 }
 
 /* CUSTOM COMPONENTS */
@@ -82,13 +97,26 @@
   @apply px-10 py-3.5 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm tracking-wide shadow-lg shadow-blue-600/20 hover:-translate-y-0.5 active:translate-y-0 transition-all disabled:opacity-50 flex items-center justify-center gap-2;
 }
 
+.label-premium {
+  @apply text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-3 block;
+}
+
 .input-premium {
-  @apply w-full px-5 py-3.5 bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-4 focus:ring-blue-600/5 focus:border-blue-600/50 transition-all outline-none font-medium text-slate-900 dark:text-white placeholder-slate-400;
+  @apply w-full px-5 py-4 bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-4 focus:ring-blue-600/5 focus:border-blue-600/50 transition-all outline-none font-medium text-slate-900 dark:text-white placeholder:text-slate-400 text-sm;
+}
+
+.input-with-icon {
+  @apply pl-12;
+}
+
+.input-icon {
+  @apply absolute left-5 text-slate-400 group-focus-within:text-blue-600 transition-colors pointer-events-none z-10;
 }
 
 .custom-scrollbar::-webkit-scrollbar {
   width: 3px;
 }
+
 .custom-scrollbar::-webkit-scrollbar-thumb {
   @apply bg-slate-200 dark:bg-slate-800 rounded-full;
 }

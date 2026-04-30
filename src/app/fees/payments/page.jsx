@@ -4,9 +4,9 @@ import { useState, useEffect, useRef } from "react";
 import axios from "@/utils/axios";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-    MdArrowBack, MdPayments, MdHistory, MdDelete, 
-    MdCheckCircle, MdReceipt, MdSearch, MdPerson, 
+import {
+    MdArrowBack, MdPayments, MdHistory, MdDelete,
+    MdCheckCircle, MdReceipt, MdSearch, MdPerson,
     MdPrint, MdDownload, MdClose, MdSchool, MdWarning
 } from "react-icons/md";
 import toast from "react-hot-toast";
@@ -237,9 +237,9 @@ export default function FeePaymentsPage() {
                     <div className="glass-card p-6 bg-white dark:bg-slate-900/60 relative">
                         <h3 className="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-4">Find Student</h3>
                         <div className="relative group">
-                            <MdSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-600" size={20} />
+                            <MdSearch className="input-icon top-1/2 -translate-y-1/2" size={20} />
                             <input 
-                                className="input-premium pl-12 py-3 text-sm" 
+                                className="input-premium input-with-icon" 
                                 placeholder="Name or Roll Number..." 
                                 value={searchQuery} 
                                 onChange={(e) => handleSearch(e.target.value)}
@@ -251,16 +251,16 @@ export default function FeePaymentsPage() {
                         {/* SEARCH RESULTS DROPDOWN */}
                         <AnimatePresence>
                             {showResults && searchResults.length > 0 && (
-                                <motion.div 
-                                    initial={{ opacity: 0, y: -10 }} 
-                                    animate={{ opacity: 1, y: 0 }} 
+                                <motion.div
+                                    initial={{ opacity: 0, y: -10 }}
+                                    animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0, y: -10 }}
                                     className="absolute left-6 right-6 top-[100%] mt-2 z-50 glass-card bg-white dark:bg-slate-900 shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden"
                                 >
                                     <div className="max-h-60 overflow-y-auto">
                                         {searchResults.map((s) => (
-                                            <button 
-                                                key={s._id} 
+                                            <button
+                                                key={s._id}
                                                 onClick={() => loadStatus(s._id)}
                                                 className="w-full p-4 flex items-center gap-4 hover:bg-blue-600/5 transition-colors border-b border-slate-50 dark:border-slate-800 last:border-none"
                                             >
@@ -297,20 +297,29 @@ export default function FeePaymentsPage() {
 
                                 {/* RECORD NEW */}
                                 <div className="glass-card p-6 bg-white dark:bg-slate-900/60 border-l-4 border-l-blue-600">
-                                    <h3 className="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-4">Post New Entry</h3>
+                                    <h3 className="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-6">Post New Entry</h3>
                                     <div className="space-y-4">
-                                        <div className="relative group">
-                                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-black">₹</span>
-                                            <input type="number" className="input-premium pl-10" placeholder="Amount" value={amount} onChange={(e) => setAmount(e.target.value)} />
+                                        <div>
+                                            <label className="label-premium">Payment Amount</label>
+                                            <div className="relative group">
+                                                <span className="input-icon top-1/2 -translate-y-1/2 font-black text-xs">₹</span>
+                                                <input type="number" className="input-premium input-with-icon" placeholder="0.00" value={amount} onChange={(e) => setAmount(e.target.value)} />
+                                            </div>
                                         </div>
-                                        <div className="grid grid-cols-2 gap-3">
-                                            <select className="input-premium cursor-pointer text-xs" value={mode} onChange={(e) => setMode(e.target.value)}>
-                                                <option>Cash</option>
-                                                <option>Online</option>
-                                                <option>Cheque</option>
-                                                <option>Bank Transfer</option>
-                                            </select>
-                                            <input className="input-premium text-xs" placeholder="Note (Ref ID, etc)" value={note} onChange={(e) => setNote(e.target.value)} />
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <label className="label-premium">Method</label>
+                                                <select className="input-premium cursor-pointer" value={mode} onChange={(e) => setMode(e.target.value)}>
+                                                    <option>Cash</option>
+                                                    <option>Online</option>
+                                                    <option>Cheque</option>
+                                                    <option>Bank Transfer</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label className="label-premium">Note / Ref</label>
+                                                <input className="input-premium" placeholder="Optional" value={note} onChange={(e) => setNote(e.target.value)} />
+                                            </div>
                                         </div>
                                         <button onClick={payFee} disabled={paying} className="btn-primary w-full py-4 mt-2 shadow-blue-600/30">
                                             {paying ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <><MdPayments size={20} /> Complete Payment</>}
@@ -341,7 +350,7 @@ export default function FeePaymentsPage() {
                                         <button onClick={handlePrint} className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-emerald-600 font-black text-xs uppercase tracking-widest hover:bg-emerald-50 transition-all shadow-xl">
                                             <MdPrint size={18} /> Print Receipt
                                         </button>
-                                        <button 
+                                        <button
                                             disabled={downloading}
                                             onClick={async () => {
                                                 if (receiptPdfUrl) {
@@ -361,7 +370,7 @@ export default function FeePaymentsPage() {
                                             }}
                                             className="flex items-center gap-2 px-6 py-3 rounded-xl bg-emerald-700/50 text-white font-black text-xs uppercase tracking-widest hover:bg-emerald-700 transition-all border border-emerald-500/30"
                                         >
-                                            {downloading ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <MdDownload size={18} />} 
+                                            {downloading ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <MdDownload size={18} />}
                                             Download PDF
                                         </button>
                                     </div>
@@ -415,7 +424,7 @@ export default function FeePaymentsPage() {
                                                 <td className="px-8 py-5 text-right font-black text-slate-900 dark:text-white">₹{p.amount.toLocaleString()}</td>
                                                 <td className="px-8 py-5">
                                                     <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all">
-                                                        <button 
+                                                        <button
                                                             onClick={() => {
                                                                 setReceiptData(p);
                                                                 setReceiptPdfUrl(p.receiptPdf);
@@ -425,16 +434,16 @@ export default function FeePaymentsPage() {
                                                             <MdReceipt size={18} />
                                                         </button>
                                                         {p.receiptPdf && (
-                                                            <a 
-                                                                href={p.receiptPdf} 
-                                                                target="_blank" 
+                                                            <a
+                                                                href={p.receiptPdf}
+                                                                target="_blank"
                                                                 rel="noopener noreferrer"
                                                                 className="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-600 hover:text-white transition-all shadow-sm"
                                                             >
                                                                 <MdDownload size={18} />
                                                             </a>
                                                         )}
-                                                        <button 
+                                                        <button
                                                             onClick={() => {
                                                                 setActionId(p._id);
                                                                 setPopup({
@@ -463,10 +472,10 @@ export default function FeePaymentsPage() {
             <div className="hidden">
                 <div ref={printRef}>
                     {receiptData && (
-                        <PrintableReceipt 
-                            student={selectedStudent} 
-                            payment={receiptData} 
-                            status={status} 
+                        <PrintableReceipt
+                            student={selectedStudent}
+                            payment={receiptData}
+                            status={status}
                         />
                     )}
                 </div>
