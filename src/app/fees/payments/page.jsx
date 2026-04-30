@@ -200,7 +200,7 @@ export default function FeePaymentsPage() {
     };
 
     const handlePrint = useReactToPrint({
-        content: () => printRef.current,
+        contentRef: printRef,
         documentTitle: `Receipt_${receiptData?.receiptNo}`,
     });
 
