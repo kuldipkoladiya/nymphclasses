@@ -69,21 +69,21 @@ export default function FeesDashboard() {
                 variants={containerVariants}
                 initial="hidden"
                 animate="show"
-                className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6"
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6"
             >
-                <ActionCard
-                    variants={itemVariants}
-                    icon={<MdAccountBalance size={28} />}
-                    title="Fee Config"
-                    subtitle="Edit Prices"
-                    color="blue"
-                    onClick={() => router.push("/fees/structure")}
-                />
                 <ActionCard
                     variants={itemVariants}
                     icon={<MdPayments size={28} />}
                     title="Collection"
-                    subtitle="Payment List"
+                    subtitle="Global Registry"
+                    color="emerald"
+                    onClick={() => router.push("/fees/collection")}
+                />
+                <ActionCard
+                    variants={itemVariants}
+                    icon={<MdAccountBalance size={28} />}
+                    title="Payments"
+                    subtitle="New Entry"
                     color="blue"
                     onClick={() => router.push("/fees/payments")}
                 />
@@ -97,11 +97,19 @@ export default function FeesDashboard() {
                 />
                 <ActionCard
                     variants={itemVariants}
+                    icon={<MdPeopleAlt size={28} />}
+                    title="Fee Config"
+                    subtitle="Edit Prices"
+                    color="blue"
+                    onClick={() => router.push("/fees/structure")}
+                />
+                <ActionCard
+                    variants={itemVariants}
                     icon={<MdInsights size={28} />}
                     title="Reports"
                     subtitle="Fee Stats"
                     color="slate"
-                    onClick={() => { }}
+                    onClick={() => router.push("/fees/reports")}
                 />
             </motion.div>
 
