@@ -355,5 +355,4 @@ export default function ViewResultsPage() {
             {popup && <Popup open={true} {...popup} onClose={() => setPopup(null)} onConfirm={confirmDelete} />}
         </motion.div>
     );
-}   );
 }
