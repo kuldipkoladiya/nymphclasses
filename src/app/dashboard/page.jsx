@@ -106,7 +106,7 @@ export default function Dashboard() {
     const classWiseData = {
         labels: main.classWise?.map((c) => `Std ${c._id}`) || [],
         datasets: [{
-            label: "Student Volume",
+            label: "Students",
             data: main.classWise?.map((c) => c.count) || [],
             backgroundColor: "rgba(37, 99, 235, 0.8)",
             hoverBackgroundColor: "rgba(37, 99, 235, 1)",
@@ -122,7 +122,7 @@ export default function Dashboard() {
                     <h1 className="text-5xl font-black text-slate-900 dark:text-white tracking-tightest">Dashboard</h1>
                     <div className="flex items-center gap-2 mt-2">
                         <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                        <p className="text-blue-600 dark:text-blue-400 font-black uppercase tracking-[0.2em] text-[10px]">Real-time Academic Intelligence</p>
+                        <p className="text-blue-600 dark:text-blue-400 font-black uppercase tracking-[0.2em] text-[10px]">Academic Overview</p>
                     </div>
                 </div>
                 <div className="text-right hidden md:block">
@@ -136,7 +136,7 @@ export default function Dashboard() {
                         <TiltCard title="Total Students" value={main.totalStudents} icon={MdPeopleAlt} color="blue" />
                         <TiltCard title="Present Today" value={main.presentToday} icon={MdCheckCircle} color="emerald" />
                         <TiltCard title="Collected Today" value={`₹${feesAnalytics.todayCollected || 0}`} icon={MdTrendingUp} color="blue" />
-                        <TiltCard title="Total Capital" value={`₹${feesAnalytics.totalCollected || 0}`} icon={MdAccountBalanceWallet} color="slate" />
+                        <TiltCard title="Total Fees" value={`₹${feesAnalytics.totalCollected || 0}`} icon={MdAccountBalanceWallet} color="slate" />
                     </>
                 )}
             </div>
@@ -144,8 +144,8 @@ export default function Dashboard() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2 glass-card p-8 md:p-10 bg-white dark:bg-slate-900/40">
                     <div className="flex items-center justify-between mb-10">
-                        <h2 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tightest">Roster Distribution</h2>
-                        <div className="px-3 py-1 bg-blue-600/10 border border-blue-600/20 rounded-full text-blue-600 text-[10px] font-black uppercase tracking-widest">Class-wise Analysis</div>
+                        <h2 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tightest">Student Distribution</h2>
+                        <div className="px-3 py-1 bg-blue-600/10 border border-blue-600/20 rounded-full text-blue-600 text-[10px] font-black uppercase tracking-widest">By Standard</div>
                     </div>
                     <div className="h-[350px] w-full">
                         {!loading && <ChartComponent type="bar" data={classWiseData} />}
@@ -173,7 +173,7 @@ export default function Dashboard() {
                                     </div>
                                 </div>
                                 <div className="text-right">
-                                    <span className="text-blue-600 dark:text-blue-400 font-black text-lg">{s.percentage}%</span>
+                                    <span className="text-blue-600 dark:text-blue-400 font-black text-lg">{Math.min(s.percentage, 100)}%</span>
                                 </div>
                             </motion.div>
                         ))}

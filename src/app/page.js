@@ -5,12 +5,12 @@ import Image from "next/image";
 import Logo from "../assets/logo.png";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef, useState } from "react";
-import { 
-    MdArrowForward, 
-    MdAutoGraph, 
-    MdSecurity, 
-    MdSpeed, 
-    MdGroups, 
+import {
+    MdArrowForward,
+    MdAutoGraph,
+    MdSecurity,
+    MdSpeed,
+    MdGroups,
     MdCheckCircle,
     MdAssuredWorkload,
     MdLogin
@@ -28,7 +28,7 @@ const FeatureCard = ({ icon: Icon, title, description, delay }) => {
         const centerY = rect.top + rect.height / 2;
         const mouseX = e.clientX;
         const mouseY = e.clientY;
-        
+
         setRotateY((mouseX - centerX) / 25);
         setRotateX((centerY - mouseY) / 25);
     };
@@ -46,7 +46,7 @@ const FeatureCard = ({ icon: Icon, title, description, delay }) => {
             viewport={{ once: true }}
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
-            style={{ 
+            style={{
                 perspective: 1000,
                 rotateX,
                 rotateY,
@@ -76,7 +76,7 @@ export default function LandingPage() {
 
     return (
         <div ref={containerRef} className="min-h-screen selection:bg-blue-600/10 font-sans overflow-hidden relative">
-            
+
             <div className="purple-blobs-bg" />
 
             {/* NAVBAR */}
@@ -90,7 +90,7 @@ export default function LandingPage() {
                             Nymph<span className="text-blue-600">Classes</span>
                         </span>
                     </div>
-                    
+
                     <div className="hidden md:flex items-center gap-10">
                         {["Features", "Pricing", "About"].map((item) => (
                             <a key={item} href={`#${item.toLowerCase()}`} className="text-[11px] font-bold text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-white transition-colors uppercase tracking-widest">
@@ -100,7 +100,7 @@ export default function LandingPage() {
                     </div>
 
                     <Link href="/login">
-                        <motion.button 
+                        <motion.button
                             whileTap={{ scale: 0.95 }}
                             className="px-6 py-2.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold text-xs shadow-lg transition-all"
                         >
@@ -111,7 +111,7 @@ export default function LandingPage() {
             </nav>
 
             <main className="relative z-10">
-                
+
                 {/* HERO SECTION */}
                 <motion.section style={{ y: heroY }} className="max-w-7xl mx-auto px-6 pt-32 pb-20 md:pt-48 md:pb-32 flex flex-col items-center text-center">
                     <motion.div
@@ -126,17 +126,17 @@ export default function LandingPage() {
                         Enterprise Grade Solution
                     </motion.div>
 
-                    <motion.h1 
+                    <motion.h1
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6 }}
                         className="text-5xl md:text-8xl font-black text-slate-900 dark:text-white tracking-tightest leading-none max-w-5xl mb-8"
                     >
-                        Master Your <br className="hidden md:block"/>
+                        Master Your <br className="hidden md:block" />
                         <span className="text-blue-600">Academic Workflow.</span>
                     </motion.h1>
 
-                    <motion.p 
+                    <motion.p
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6, delay: 0.1 }}
@@ -145,7 +145,7 @@ export default function LandingPage() {
                         A professional management ecosystem built for scale. Streamline student records, attendance, and finances with surgical precision.
                     </motion.p>
 
-                    <motion.div 
+                    <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6, delay: 0.2 }}
@@ -168,7 +168,7 @@ export default function LandingPage() {
                     <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-16 gap-8">
                         <div className="max-w-2xl text-center lg:text-left mx-auto lg:mx-0">
                             <h2 className="text-4xl md:text-6xl font-black text-slate-900 dark:text-white tracking-tightest mb-6 leading-tight">
-                                Built for the <br/> <span className="text-blue-600">Modern Classroom.</span>
+                                Built for the <br /> <span className="text-blue-600">Modern Classroom.</span>
                             </h2>
                             <p className="text-lg text-slate-600 dark:text-slate-400 font-medium leading-relaxed">
                                 Our integrated suite provides a unified command center for academic excellence. Every module is optimized for speed and clarity.
@@ -177,32 +177,32 @@ export default function LandingPage() {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        <FeatureCard 
+                        <FeatureCard
                             icon={MdAutoGraph}
                             title="Visual Analytics"
                             description="Real-time data visualization of academic performance and institutional growth metrics."
                         />
-                        <FeatureCard 
+                        <FeatureCard
                             icon={MdSecurity}
                             title="Zero Trust Auth"
                             description="Industrial-grade security keeping student data protected with military precision."
                         />
-                        <FeatureCard 
+                        <FeatureCard
                             icon={MdSpeed}
                             title="High Velocity"
                             description="Optimized architecture ensuring sub-millisecond response times across the entire platform."
                         />
-                        <FeatureCard 
+                        <FeatureCard
                             icon={MdGroups}
                             title="Roster Control"
                             description="Comprehensive student lifecycle management with advanced filtering and batch operations."
                         />
-                        <FeatureCard 
+                        <FeatureCard
                             icon={MdCheckCircle}
                             title="Smart Records"
                             description="Automated record keeping for attendance and academic milestones with cloud sync."
                         />
-                        <FeatureCard 
+                        <FeatureCard
                             icon={MdAssuredWorkload}
                             title="Financial Core"
                             description="Robust fee management and financial tracking with automated reconciliation."
@@ -214,8 +214,8 @@ export default function LandingPage() {
             {/* FOOTER */}
             <footer className="max-w-7xl mx-auto px-6 py-12 border-t border-slate-100 dark:border-slate-900 flex flex-col md:flex-row justify-between items-center gap-8">
                 <div className="flex items-center gap-4 transition-all">
-                     <Image src={Logo} alt="Logo" width={24} height={24} className="object-contain" />
-                     <span className="font-black tracking-widest text-[10px] uppercase text-slate-400 dark:text-slate-600">Nymph Classes © 2024</span>
+                    <Image src={Logo} alt="Logo" width={24} height={24} className="object-contain" />
+                    <span className="font-black tracking-widest text-[10px] uppercase text-slate-400 dark:text-slate-600">Nymph Classes © 2024</span>
                 </div>
                 <div className="flex gap-8 md:gap-12">
                     {["Protocol", "Privacy", "Terms"].map(item => (

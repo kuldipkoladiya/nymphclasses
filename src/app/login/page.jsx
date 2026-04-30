@@ -47,6 +47,7 @@ export default function LoginPage() {
             const res = await axios.post("/auth/login", { email, password });
             if (typeof window !== "undefined") {
                 localStorage.setItem("token", res.data.token);
+                localStorage.setItem("admin", JSON.stringify(res.data.admin));
                 toast.success("Identity Verified");
                 window.location.href = "/dashboard";
             }
@@ -80,8 +81,8 @@ export default function LoginPage() {
                         transition={{ delay: 0.1 }}
                         className="text-6xl font-black text-white mb-8 tracking-tightest leading-none"
                     >
-                        Precision <br />
-                        <span className="text-blue-500">Management.</span>
+                        Nymph <br />
+                        <span className="text-blue-500">Classes.</span>
                     </motion.h1>
                     
                     <motion.p
@@ -103,13 +104,13 @@ export default function LoginPage() {
                             <div className="w-10 h-10 rounded-xl bg-slate-900 flex items-center justify-center border border-slate-800 text-blue-500 shadow-sm">
                                 <MdSecurity size={20} />
                             </div>
-                            Encrypted Gateway
+                            Secure
                         </div>
                         <div className="flex items-center gap-4 text-slate-300 font-bold uppercase tracking-widest text-[9px]">
                             <div className="w-10 h-10 rounded-xl bg-slate-900 flex items-center justify-center border border-slate-800 text-emerald-500 shadow-sm">
                                 <MdAdminPanelSettings size={20} />
                             </div>
-                            System Administration
+                            Admin
                         </div>
                     </motion.div>
                 </div>
@@ -124,13 +125,13 @@ export default function LoginPage() {
                 >
                     <div className="glass-card p-10 md:p-12 bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 shadow-xl relative">
                         <div className="mb-10">
-                            <h2 className="text-3xl font-black text-slate-900 dark:text-white mb-2">Secure Login</h2>
-                            <p className="text-slate-500 dark:text-slate-400 font-bold text-[10px] uppercase tracking-[0.2em]">Authorized Personnel Only</p>
+                            <h2 className="text-3xl font-black text-slate-900 dark:text-white mb-2">Login</h2>
+                            <p className="text-slate-500 dark:text-slate-400 font-bold text-[10px] uppercase tracking-[0.2em]">Admin Access</p>
                         </div>
 
                         <div className="space-y-6">
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">Account Identity</label>
+                                <label className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">Email</label>
                                 <div className="relative group">
                                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-600 transition-colors">
                                         <FiMail size={18} />
@@ -145,7 +146,7 @@ export default function LoginPage() {
                             </div>
 
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">Access Token</label>
+                                <label className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">Password</label>
                                 <div className="relative group">
                                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-600 transition-colors">
                                         <FiLock size={18} />
@@ -175,7 +176,7 @@ export default function LoginPage() {
                                     <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                                 ) : (
                                     <>
-                                        Authenticate <MdLogin size={20} />
+                                        Login Now <MdLogin size={20} />
                                     </>
                                 )}
                             </button>

@@ -40,8 +40,8 @@ export default function StudentsPage() {
         setDeleteId(id);
         setPopup({
             type: "confirm",
-            title: "Purge Student Record",
-            message: "Warning: This action is irreversible. All student diagnostics will be permanently erased.",
+            title: "Delete Student",
+            message: "Warning: This action is irreversible. All student records will be permanently deleted.",
         });
     };
 
@@ -49,7 +49,7 @@ export default function StudentsPage() {
         try {
             await axios.delete(`/students/${deleteId}`);
             setStudents((prev) => prev.filter((s) => s._id !== deleteId));
-            toast.success("Record purged successfully.");
+            toast.success("Student deleted.");
         } catch (error) {
             // Error handled by axios interceptor
         } finally {
@@ -67,8 +67,8 @@ export default function StudentsPage() {
                         <MdPeople size={28} />
                     </div>
                     <div>
-                        <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">Student Records</h1>
-                        <p className="text-slate-500 dark:text-slate-400 font-bold text-[10px] uppercase tracking-widest mt-1">Institutional Student Directory</p>
+                        <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">Students</h1>
+                        <p className="text-slate-500 dark:text-slate-400 font-bold text-[10px] uppercase tracking-widest mt-1">List of all Students</p>
                     </div>
                 </div>
                 <Link href="/students/add">
@@ -88,7 +88,7 @@ export default function StudentsPage() {
                     <MdFilterList className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-600 transition-colors" size={20} />
                     <select className="input-premium pl-14 appearance-none cursor-pointer" value={filterStd} onChange={(e) => setFilterStd(e.target.value)}>
                         <option value="">All Standards</option>
-                        {["1","2","3","4","5","6","7","8","9","10","11","12"].map(s => <option key={s} value={s}>Standard {s}</option>)}
+                        {["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"].map(s => <option key={s} value={s}>Standard {s}</option>)}
                     </select>
                 </div>
             </div>
@@ -101,7 +101,7 @@ export default function StudentsPage() {
                             <tr className="border-b border-slate-100 dark:border-slate-800">
                                 <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Student Name</th>
                                 <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 text-center">Roll Number</th>
-                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 text-center">Academic Year</th>
+                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 text-center">Standard</th>
                                 <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 text-right">Actions</th>
                             </tr>
                         </thead>

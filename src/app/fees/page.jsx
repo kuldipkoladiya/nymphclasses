@@ -45,7 +45,7 @@ export default function FeesDashboard() {
     };
 
     return (
-        <motion.div 
+        <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             className="max-w-[1400px] mx-auto space-y-10 pb-20 px-4 md:px-0"
@@ -65,7 +65,7 @@ export default function FeesDashboard() {
             </div>
 
             {/* ACTIONS */}
-            <motion.div 
+            <motion.div
                 variants={containerVariants}
                 initial="hidden"
                 animate="show"
@@ -75,7 +75,7 @@ export default function FeesDashboard() {
                     variants={itemVariants}
                     icon={<MdAccountBalance size={28} />}
                     title="Fee Config"
-                    subtitle="BASELINE STRUCTURE"
+                    subtitle="Edit Prices"
                     color="blue"
                     onClick={() => router.push("/fees/structure")}
                 />
@@ -83,7 +83,7 @@ export default function FeesDashboard() {
                     variants={itemVariants}
                     icon={<MdPayments size={28} />}
                     title="Collection"
-                    subtitle="CREDIT REGISTRY"
+                    subtitle="Payment List"
                     color="blue"
                     onClick={() => router.push("/fees/payments")}
                 />
@@ -91,17 +91,17 @@ export default function FeesDashboard() {
                     variants={itemVariants}
                     icon={<MdPendingActions size={28} />}
                     title="Deficits"
-                    subtitle="PENDING OVERSIGHT"
+                    subtitle="Pending Fees"
                     color="rose"
                     onClick={() => router.push("/fees/pending")}
                 />
                 <ActionCard
                     variants={itemVariants}
                     icon={<MdInsights size={28} />}
-                    title="Telemetry"
-                    subtitle="REVENUE ANALYSIS"
+                    title="Reports"
+                    subtitle="Fee Stats"
                     color="slate"
-                    onClick={() => {}}
+                    onClick={() => { }}
                 />
             </motion.div>
 
@@ -109,11 +109,11 @@ export default function FeesDashboard() {
             <div className="space-y-6">
                 <div className="flex items-center justify-between">
                     <h2 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tightest flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white"><MdMonetizationOn size={18} /></div> 
-                        Operational Metrics
+                        <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white"><MdMonetizationOn size={18} /></div>
+                        Fee Summary
                     </h2>
                 </div>
-                
+
                 {loading ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                         {[1, 2, 3, 4].map((i) => (
@@ -121,45 +121,45 @@ export default function FeesDashboard() {
                         ))}
                     </div>
                 ) : data ? (
-                    <motion.div 
+                    <motion.div
                         variants={containerVariants}
                         initial="hidden"
                         animate="show"
                         className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
                     >
-                        <StatCard 
+                        <StatCard
                             variants={itemVariants}
-                            title="Active Units" 
-                            val={data.totalStudents} 
-                            icon={<MdPeopleAlt />} 
-                            color="blue" 
-                        />
-                        <StatCard 
-                            variants={itemVariants}
-                            title="Target Assets" 
-                            val={`₹${data.totalYearlyFees?.toLocaleString() || 0}`} 
-                            icon={<MdMonetizationOn />} 
+                            title="Total Students"
+                            val={data.totalStudents}
+                            icon={<MdPeopleAlt />}
                             color="blue"
                         />
-                        <StatCard 
+                        <StatCard
                             variants={itemVariants}
-                            title="Secured Capital" 
-                            val={`₹${data.totalCollected?.toLocaleString() || 0}`} 
-                            icon={<MdCheckCircle />} 
+                            title="Expected Fees"
+                            val={`₹${data.totalYearlyFees?.toLocaleString() || 0}`}
+                            icon={<MdMonetizationOn />}
+                            color="blue"
+                        />
+                        <StatCard
+                            variants={itemVariants}
+                            title="Collected Fees"
+                            val={`₹${data.totalCollected?.toLocaleString() || 0}`}
+                            icon={<MdCheckCircle />}
                             color="emerald"
                         />
-                        <StatCard 
+                        <StatCard
                             variants={itemVariants}
-                            title="Deficit Volume" 
-                            val={`₹${data.totalPending?.toLocaleString() || 0}`} 
-                            icon={<MdWarning />} 
+                            title="Pending Amount"
+                            val={`₹${data.totalPending?.toLocaleString() || 0}`}
+                            icon={<MdWarning />}
                             color="rose"
                         />
                     </motion.div>
                 ) : (
                     <div className="glass-card p-20 text-center flex flex-col items-center justify-center border-dashed bg-white dark:bg-white/5">
                         <MdWarning className="text-rose-500 mb-4" size={48} />
-                        <p className="text-slate-400 font-black uppercase tracking-widest text-xs">Data Stream Interrupted</p>
+                        <p className="text-slate-400 font-black uppercase tracking-widest text-xs">No Data Found</p>
                     </div>
                 )}
             </div>

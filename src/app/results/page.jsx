@@ -101,13 +101,13 @@ export default function CreateResultPage() {
                         <MdEditDocument size={28} />
                     </div>
                     <div>
-                        <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">Create Results</h1>
-                        <p className="text-slate-500 dark:text-slate-400 font-bold text-[10px] uppercase tracking-widest mt-1">Academic Performance Records</p>
+                        <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">Results</h1>
+                        <p className="text-slate-500 dark:text-slate-400 font-bold text-[10px] uppercase tracking-widest mt-1">Student Scores</p>
                     </div>
                 </div>
                 <Link href="/results/view">
                     <button className="px-6 py-4 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold text-sm uppercase tracking-widest hover:bg-slate-200 dark:hover:bg-slate-700 transition-all flex items-center gap-3">
-                        <MdLibraryBooks size={20} /> Result Registry
+                        <MdLibraryBooks size={20} /> View Results
                     </button>
                 </Link>
             </div>

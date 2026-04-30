@@ -95,10 +95,10 @@ function SidebarContent({ dark, toggle, setSidebarOpen }) {
     const pathname = usePathname();
 
     const navItems = [
-        { href: "/dashboard", icon: MdDashboard, label: "Analytics" },
+        { href: "/dashboard", icon: MdDashboard, label: "Dashboard" },
         { href: "/students", icon: MdPeople, label: "Student Roster" },
-        { href: "/results", icon: MdSchool, label: "Academic Results" },
-        { href: "/fees", icon: MdMoney, label: "Financial Hub" },
+        { href: "/results", icon: MdSchool, label: "Results" },
+        { href: "/fees", icon: MdMoney, label: "Fee Config" },
         { href: "/attendance", icon: MdList, label: "Attendance" },
     ];
 
@@ -123,7 +123,7 @@ function SidebarContent({ dark, toggle, setSidebarOpen }) {
                         </h1>
                         <p className="font-sans text-[9px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-[0.3em] mt-1.5 flex items-center justify-center gap-2">
                              <span className="w-1 h-1 rounded-full bg-emerald-500"></span>
-                             Management Suite
+                             Admin Panel
                         </p>
                     </div>
                 </div>
@@ -151,7 +151,7 @@ function SidebarContent({ dark, toggle, setSidebarOpen }) {
                         onClick={handleLogout}
                         className="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:text-rose-500 hover:bg-rose-50/50 dark:hover:bg-rose-500/5 transition-all duration-300 font-bold text-[10px] uppercase tracking-widest"
                     >
-                        <MdLogout size={18} /> Terminate
+                        <MdLogout size={18} /> Logout
                     </button>
                 </div>
             </div>
