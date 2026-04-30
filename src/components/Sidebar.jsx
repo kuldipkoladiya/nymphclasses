@@ -75,6 +75,14 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
                             transition={{ type: "spring", stiffness: 300, damping: 30 }}
                             className="fixed top-0 left-0 z-[70] h-screen w-[280px] bg-white dark:bg-slate-950 flex flex-col shadow-2xl border-r border-blue-600/20 md:hidden"
                         >
+                            <div className="absolute top-4 right-4 z-[80]">
+                                <button 
+                                    onClick={() => setSidebarOpen(false)}
+                                    className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-blue-600 transition-all"
+                                >
+                                    <MdLogout className="rotate-180" size={20} />
+                                </button>
+                            </div>
                             <SidebarContent
                                 dark={dark}
                                 toggle={toggle}

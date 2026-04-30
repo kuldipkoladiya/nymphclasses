@@ -102,7 +102,7 @@
 }
 
 .input-premium {
-  @apply w-full px-5 py-4 bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-4 focus:ring-blue-600/5 focus:border-blue-600/50 transition-all outline-none font-medium text-slate-900 dark:text-white placeholder:text-slate-400 text-sm;
+  @apply w-full px-5 py-4 bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-4 focus:ring-blue-600/5 focus:border-blue-600/50 transition-all outline-none font-medium text-slate-900 dark:text-white placeholder:text-slate-400 text-sm min-h-[56px];
 }
 
 .input-with-icon {
@@ -110,7 +110,7 @@
 }
 
 .input-icon {
-  @apply absolute left-5 text-slate-400 group-focus-within:text-blue-600 transition-colors pointer-events-none z-10;
+  @apply absolute left-5 text-slate-400 group-focus-within:text-blue-600 transition-colors pointer-events-none z-10 flex items-center justify-center;
 }
 
 /* MOBILE OPTIMIZATIONS */
@@ -126,7 +126,15 @@
   }
 
   .input-premium {
-    @apply py-4 px-6 text-base; /* Larger text for better mobile accessibility */
+    @apply py-4 px-6 text-base h-auto; /* Ensuring consistent height */
+  }
+
+  .input-with-icon {
+    padding-left: 3.5rem !important; /* Force enough space for icon on mobile */
+  }
+
+  .label-premium {
+    @apply mb-2 ml-1;
   }
 
   .btn-primary {

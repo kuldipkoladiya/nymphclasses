@@ -47,6 +47,14 @@ export default function Navbar({ setSidebarOpen }) {
                 ${scrolled ? 'bg-white/90 dark:bg-slate-950/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 shadow-sm' : 'bg-transparent'}
             `}
         >
+            {/* MOBILE TOGGLE */}
+            <button
+                onClick={() => setSidebarOpen(true)}
+                className="p-2.5 mr-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 shadow-sm md:hidden"
+            >
+                <MdMenu size={24} />
+            </button>
+
             {/* MOBILE LOGO & GREETING */}
             <div className="flex items-center gap-4 flex-1">
                 <div className="flex items-center gap-3">
