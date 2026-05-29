@@ -314,7 +314,7 @@ export default function ViewResultsPage() {
                                             <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/10">
                                                 <p className="text-[9px] font-black uppercase tracking-widest text-white/60 mb-1">Percentage</p>
                                                 <div className="flex items-center gap-2">
-                                                    <MdPercent size={18} />
+                                                    {/*<MdPercent size={18} />*/}
                                                     <span className="text-xl font-black">{selectedResult.percentage}%</span>
                                                 </div>
                                             </div>
