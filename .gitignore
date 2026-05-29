@@ -6,6 +6,7 @@ yarn-error.log*
 
 # Env
 .env
+.env.local
 
 # IDE
 .idea/

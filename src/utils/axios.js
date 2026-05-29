@@ -2,7 +2,7 @@ import axios from "axios";
 import toast from "react-hot-toast";
 
 const instance = axios.create({
-    baseURL: "https://nymph-be.vercel.app/api",
+    baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api",
 });
 
 instance.interceptors.request.use((config) => {
