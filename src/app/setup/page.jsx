@@ -62,11 +62,10 @@ export default function SetupPage() {
 
         setLoading(true);
         try {
-            const res = await axios.post("/auth/setup", {
+            const res = await axios.post("/auth/register", {
                 name,
                 email,
                 password,
-                setupKey: secretKey,
             });
             toast.success(res.data.message || "Superadmin created successfully!");
             setSuccess(true);
