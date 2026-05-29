@@ -17,8 +17,8 @@ instance.interceptors.response.use(
     (response) => response,
     (error) => {
         const message = error.response?.data?.message || "An unexpected error occurred";
-        // Only show toast if it's not a 401 and we're in the browser
-        if (typeof window !== "undefined" && error.response?.status !== 401) {
+        // Only show toast if it's not a 401/403 and we're in the browser
+        if (typeof window !== "undefined" && error.response?.status !== 401 && error.response?.status !== 403) {
             toast.error(message);
         }
         return Promise.reject(error);
