@@ -4,6 +4,7 @@ import "./globals.css";
 import { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
+import AccessDenied from "../components/AccessDenied";
 import { Toaster } from "react-hot-toast";
 import { usePathname } from "next/navigation";
 import { Plus_Jakarta_Sans, Manrope } from "next/font/google";
@@ -23,6 +24,7 @@ const manrope = Manrope({
 export default function RootLayout({ children }) {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [authorized, setAuthorized] = useState(false);
+    const [hasPermission, setHasPermission] = useState(true);
     const pathname = usePathname();
 
     // Define routes that shouldn't have the dashboard shell 
@@ -31,6 +33,7 @@ export default function RootLayout({ children }) {
     useEffect(() => {
         if (isPublicRoute) {
             setAuthorized(true);
+            setHasPermission(true);
             return;
         }
 
@@ -63,16 +66,19 @@ export default function RootLayout({ children }) {
                 
                 if (requiredPermission === "superadmin") {
                     if (admin.role !== "superadmin") {
-                        window.location.href = "/dashboard";
+                        setHasPermission(false);
+                        setAuthorized(true);
                         return;
                     }
                 } else {
                     if (admin.role !== "superadmin" && !admin.permissions?.[requiredPermission]) {
-                        window.location.href = "/dashboard";
+                        setHasPermission(false);
+                        setAuthorized(true);
                         return;
                     }
                 }
             }
+            setHasPermission(true);
             setAuthorized(true);
         } catch (e) {
             console.error("Auth routing validation error:", e);
@@ -98,7 +104,9 @@ export default function RootLayout({ children }) {
                     <div className="flex-1 md:ml-[280px] flex flex-col min-h-screen w-full transition-all duration-300">
                         <Navbar setSidebarOpen={setSidebarOpen} />
                         <main className="flex-1 pt-24 px-4 md:px-8 pb-8 w-full max-w-7xl mx-auto">
-                            {authorized && children}
+                            {authorized && (
+                                hasPermission ? children : <AccessDenied moduleName={pathname} />
+                            )}
                         </main>
                     </div>
                 </>
