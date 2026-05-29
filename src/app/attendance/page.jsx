@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 import Link from "next/link";
 import { MdSearch, MdCalendarMonth, MdClass, MdCheckCircle, MdCancel, MdSave } from "react-icons/md";
+import { FaWhatsapp } from "react-icons/fa";
 
 export default function AttendancePage() {
     const [standard, setStandard] = useState("");
@@ -16,6 +17,7 @@ export default function AttendancePage() {
     const [search, setSearch] = useState("");
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
+    const [sendWhatsApp, setSendWhatsApp] = useState(true);
 
     useEffect(() => {
         if (!date) {
@@ -77,10 +79,15 @@ export default function AttendancePage() {
         setSaving(true);
         try {
             await Promise.all(
-                students.map((s) => axios.post("/attendance", { studentId: s._id, date, status: attendance[s._id] || "Absent" }))
+                students.map((s) => axios.post("/attendance", { 
+                    studentId: s._id, 
+                    date, 
+                    status: attendance[s._id] || "Absent",
+                    sendWhatsApp
+                }))
             );
             setAttendanceExists(true);
-            toast.success("Attendance committed successfully!");
+            toast.success(sendWhatsApp ? "Attendance saved & WhatsApp alerts sent!" : "Attendance saved successfully!");
         } catch {
             toast.error("Error saving records.");
         } finally {
@@ -136,11 +143,29 @@ export default function AttendancePage() {
                 </div>
             </div>
 
-            {/* BATCH ACTIONS */}
+            {/* BATCH ACTIONS & WHATSAPP TOGGLE */}
             {filtered.length > 0 && (
-                <div className="flex gap-4 justify-end">
-                    <button onClick={() => bulk("Present")} className="px-5 py-2 rounded-xl text-[9px] font-bold uppercase tracking-widest bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 border border-emerald-500/20 hover:bg-emerald-600 hover:text-white transition-all">Mark All Present</button>
-                    <button onClick={() => bulk("Absent")} className="px-5 py-2 rounded-xl text-[9px] font-bold uppercase tracking-widest bg-rose-50 text-rose-600 dark:bg-rose-500/10 border border-rose-500/20 hover:bg-rose-600 hover:text-white transition-all">Mark All Absent</button>
+                <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-white/20 dark:bg-slate-900/20 p-4 rounded-2xl border border-slate-100 dark:border-slate-800/40">
+                    {/* WhatsApp Toggle */}
+                    <label className="flex items-center gap-3 cursor-pointer group select-none">
+                        <div className="relative">
+                            <input 
+                                type="checkbox" 
+                                checked={sendWhatsApp} 
+                                onChange={(e) => setSendWhatsApp(e.target.checked)} 
+                                className="sr-only peer" 
+                            />
+                            <div className="w-11 h-6 bg-slate-200 dark:bg-slate-800 rounded-full peer peer-focus:ring-2 peer-focus:ring-blue-600/30 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                        </div>
+                        <span className="text-[10px] font-black text-slate-700 dark:text-slate-300 uppercase tracking-widest flex items-center gap-2">
+                            <FaWhatsapp className="text-green-500 text-base" /> WhatsApp Alerts for Absentees
+                        </span>
+                    </label>
+
+                    <div className="flex gap-4">
+                        <button onClick={() => bulk("Present")} className="px-5 py-2 rounded-xl text-[9px] font-bold uppercase tracking-widest bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 border border-emerald-500/20 hover:bg-emerald-600 hover:text-white transition-all">Mark All Present</button>
+                        <button onClick={() => bulk("Absent")} className="px-5 py-2 rounded-xl text-[9px] font-bold uppercase tracking-widest bg-rose-50 text-rose-600 dark:bg-rose-500/10 border border-rose-500/20 hover:bg-rose-600 hover:text-white transition-all">Mark All Absent</button>
+                    </div>
                 </div>
             )}
 

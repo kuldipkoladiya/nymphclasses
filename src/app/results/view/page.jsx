@@ -7,6 +7,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { MdArrowBack, MdSearch, MdSchool, MdAssignment, MdDelete, MdDownload, MdGrade, MdPercent, MdPerson, MdNumbers, MdClass, MdEdit, MdSave, MdCancel } from "react-icons/md";
 import toast from "react-hot-toast";
 import Popup from "@/components/Popup";
+import { FaWhatsapp } from "react-icons/fa";
+import Link from "next/link";
 
 export default function ViewResultsPage() {
     const router = useRouter();
@@ -28,6 +30,7 @@ export default function ViewResultsPage() {
     const [isEditing, setIsEditing] = useState(false);
     const [editData, setEditData] = useState(null);
     const [saving, setSaving] = useState(false);
+    const [sendingWhatsApp, setSendingWhatsApp] = useState(false);
 
     const loadStudents = async () => {
         if (!standard) return toast.error("Enter standard first.");
@@ -120,6 +123,25 @@ export default function ViewResultsPage() {
         }
     };
 
+    const sendWhatsAppResult = async () => {
+        if (!selectedStudent || !selectedResult) return;
+        setSendingWhatsApp(true);
+        try {
+            const res = await axios.post(`/results/send-whatsapp/${selectedStudent._id}/${selectedResult._id}`);
+            if (res.data?.success || res.status === 200) {
+                toast.success("Result PDF sent via WhatsApp!");
+            } else {
+                toast.error(res.data?.error || "Failed to send WhatsApp.");
+            }
+        } catch (error) {
+            console.error("WhatsApp sending failed:", error);
+            const errMsg = error.response?.data?.error || "Failed to send WhatsApp.";
+            toast.error(errMsg);
+        } finally {
+            setSendingWhatsApp(false);
+        }
+    };
+
     const confirmDelete = async () => {
         try {
             await axios.delete(`/results/${deleteId}`);
@@ -147,6 +169,11 @@ export default function ViewResultsPage() {
                         <p className="text-slate-500 dark:text-slate-400 font-bold text-[10px] uppercase tracking-widest mt-1">Class → Student → Exam Lifecycle</p>
                     </div>
                 </div>
+                <Link href="/results/whatsapp" className="mt-4 md:mt-0">
+                    <button className="px-6 py-4 rounded-2xl bg-green-50 dark:bg-green-950/20 text-green-600 dark:text-green-400 font-bold text-sm uppercase tracking-widest hover:bg-green-600 hover:text-white transition-all flex items-center gap-3 border border-green-500/10 hover:border-green-600">
+                        <FaWhatsapp size={20} /> Link Device
+                    </button>
+                </Link>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
@@ -322,9 +349,21 @@ export default function ViewResultsPage() {
                                         ))}
                                     </div>
 
-                                    <div className="mt-10 grid grid-cols-2 gap-4">
-                                        <button onClick={downloadPdf} className="btn-primary py-4">
+                                    <div className="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                        <button onClick={downloadPdf} className="btn-primary py-4 flex items-center justify-center gap-2">
                                             <MdDownload size={20} /> Download PDF
+                                        </button>
+                                        <button 
+                                            onClick={sendWhatsAppResult} 
+                                            disabled={sendingWhatsApp}
+                                            className="px-6 py-4 rounded-2xl bg-green-50 dark:bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/10 hover:bg-green-600 hover:text-white hover:border-green-600 disabled:opacity-50 transition-all font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2"
+                                        >
+                                            {sendingWhatsApp ? (
+                                                <div className="w-5 h-5 border-2 border-green-600/30 border-t-green-600 dark:border-white/30 dark:border-t-white rounded-full animate-spin" />
+                                            ) : (
+                                                <FaWhatsapp size={20} />
+                                            )}
+                                            Send WhatsApp
                                         </button>
                                         <button 
                                             onClick={() => {
@@ -335,7 +374,7 @@ export default function ViewResultsPage() {
                                                     message: "This will permanently delete this exam entry from the student's records."
                                                 });
                                             }}
-                                            className="px-6 py-4 rounded-2xl bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/10 hover:bg-rose-500 hover:text-white transition-all font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-3"
+                                            className="px-6 py-4 rounded-2xl bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/10 hover:bg-rose-500 hover:text-white transition-all font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2"
                                         >
                                             <MdDelete size={20} /> Delete Result
                                         </button>

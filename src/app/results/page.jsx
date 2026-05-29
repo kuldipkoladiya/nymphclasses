@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import toast from "react-hot-toast";
 import Link from "next/link";
 import { MdClass, MdEditDocument, MdDateRange, MdScore, MdCheckCircle, MdLibraryBooks, MdSave, MdGroup } from "react-icons/md";
+import { FaWhatsapp } from "react-icons/fa";
 
 /* =============================
    API INSTANCE (Token supported via interceptor in @/utils/axios)
@@ -26,6 +27,7 @@ export default function CreateResultPage() {
 
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
+    const [sendWhatsApp, setSendWhatsApp] = useState(true);
 
     const SUBJECT_OPTIONS = [
         "Maths", "Science", "English", "Gujarati", "Hindi", "Social Science", "Computer", "Sanskrit"
@@ -80,10 +82,11 @@ export default function CreateResultPage() {
                     standard,
                     examDate,
                     subjects: marks[stu._id],
+                    sendWhatsApp,
                 })
             );
             await Promise.all(savePromises);
-            toast.success("All results published!");
+            toast.success(sendWhatsApp ? "Results published & WhatsApp alerts queued!" : "All results published!");
             router.push("/results/view");
         } catch {
             toast.error("Error saving results.");
@@ -105,11 +108,18 @@ export default function CreateResultPage() {
                         <p className="text-slate-500 dark:text-slate-400 font-bold text-[10px] uppercase tracking-widest mt-1">Student Scores</p>
                     </div>
                 </div>
-                <Link href="/results/view">
-                    <button className="px-6 py-4 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold text-sm uppercase tracking-widest hover:bg-slate-200 dark:hover:bg-slate-700 transition-all flex items-center gap-3">
-                        <MdLibraryBooks size={20} /> View Results
-                    </button>
-                </Link>
+                <div className="flex flex-wrap items-center gap-4 mt-4 md:mt-0">
+                    <Link href="/results/whatsapp">
+                        <button className="px-6 py-4 rounded-2xl bg-green-50 dark:bg-green-950/20 text-green-600 dark:text-green-400 font-bold text-sm uppercase tracking-widest hover:bg-green-600 hover:text-white transition-all flex items-center gap-3 border border-green-500/10 hover:border-green-600">
+                            <FaWhatsapp size={20} /> Link Device
+                        </button>
+                    </Link>
+                    <Link href="/results/view">
+                        <button className="px-6 py-4 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold text-sm uppercase tracking-widest hover:bg-slate-200 dark:hover:bg-slate-700 transition-all flex items-center gap-3">
+                            <MdLibraryBooks size={20} /> View Results
+                        </button>
+                    </Link>
+                </div>
             </div>
 
             {/* CONFIG PANEL */}
@@ -149,7 +159,23 @@ export default function CreateResultPage() {
                     </div>
                 </div>
 
-                <div className="mt-8 flex justify-end">
+                <div className="mt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
+                    {/* WhatsApp Alert Toggle */}
+                    <label className="flex items-center gap-3 cursor-pointer group select-none">
+                        <div className="relative">
+                            <input 
+                                type="checkbox" 
+                                checked={sendWhatsApp} 
+                                onChange={(e) => setSendWhatsApp(e.target.checked)} 
+                                className="sr-only peer" 
+                            />
+                            <div className="w-11 h-6 bg-slate-200 dark:bg-slate-800 rounded-full peer peer-focus:ring-2 peer-focus:ring-blue-600/30 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                        </div>
+                        <span className="text-xs font-black text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+                            <FaWhatsapp className="text-green-500 text-lg" /> Send WhatsApp Alerts
+                        </span>
+                    </label>
+
                     <button onClick={loadStudents} disabled={loading} className="btn-primary">
                         {loading ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <><MdGroup size={20} /> Load Student Grid</>}
                     </button>
