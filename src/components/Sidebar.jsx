@@ -101,18 +101,46 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
 ===================== */
 function SidebarContent({ dark, toggle, setSidebarOpen }) {
     const pathname = usePathname();
+    const [admin, setAdmin] = useState(null);
 
-    const navItems = [
-        { href: "/dashboard", icon: MdDashboard, label: "Dashboard" },
-        { href: "/students", icon: MdPeople, label: "Student Roster" },
-        { href: "/results", icon: MdSchool, label: "Results" },
-        { href: "/fees", icon: MdMoney, label: "Fee Config" },
-        { href: "/attendance", icon: MdList, label: "Attendance" },
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            const saved = localStorage.getItem("admin");
+            if (saved) {
+                try {
+                    setAdmin(JSON.parse(saved));
+                } catch (e) {
+                    console.error("Error parsing admin data:", e);
+                }
+            }
+        }
+    }, []);
+
+    const allNavItems = [
+        { href: "/dashboard", icon: MdDashboard, label: "Dashboard", permission: "dashboard" },
+        { href: "/students", icon: MdPeople, label: "Student Roster", permission: "students" },
+        { href: "/results", icon: MdSchool, label: "Results", permission: "results" },
+        { href: "/fees", icon: MdMoney, label: "Fee Config", permission: "fees" },
+        { href: "/attendance", icon: MdList, label: "Attendance", permission: "attendance" },
+        { href: "/expenses", icon: MdMoney, label: "Expenses", permission: "expenses" },
     ];
+
+    // Filter nav items based on role and permissions
+    const navItems = allNavItems.filter(item => {
+        if (!admin) return false;
+        if (admin.role === "superadmin") return true;
+        return admin.permissions?.[item.permission] === true;
+    });
+
+    // If superadmin, add Staff Accounts management link
+    if (admin && admin.role === "superadmin") {
+        navItems.push({ href: "/staff", icon: MdSecurity, label: "Staff Accounts" });
+    }
 
     const handleLogout = () => {
         if (typeof window !== "undefined") {
             localStorage.removeItem("token");
+            localStorage.removeItem("admin");
             window.location.href = "/login";
         }
     };
@@ -131,7 +159,7 @@ function SidebarContent({ dark, toggle, setSidebarOpen }) {
                         </h1>
                         <p className="font-sans text-[9px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-[0.3em] mt-1.5 flex items-center justify-center gap-2">
                              <span className="w-1 h-1 rounded-full bg-emerald-500"></span>
-                             Admin Panel
+                             {admin?.role === "superadmin" ? "Super Admin" : "Staff Panel"}
                         </p>
                     </div>
                 </div>

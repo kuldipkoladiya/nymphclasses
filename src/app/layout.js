@@ -22,10 +22,63 @@ const manrope = Manrope({
 
 export default function RootLayout({ children }) {
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [authorized, setAuthorized] = useState(false);
     const pathname = usePathname();
 
     // Define routes that shouldn't have the dashboard shell 
-    const isPublicRoute = pathname === "/" || pathname === "/login";
+    const isPublicRoute = pathname === "/" || pathname === "/login" || pathname === "/setup";
+
+    useEffect(() => {
+        if (isPublicRoute) {
+            setAuthorized(true);
+            return;
+        }
+
+        const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+        const adminRaw = typeof window !== "undefined" ? localStorage.getItem("admin") : null;
+
+        if (!token || !adminRaw) {
+            window.location.href = "/login";
+            return;
+        }
+
+        try {
+            const admin = JSON.parse(adminRaw);
+            
+            // Define route permission requirements
+            const routePermissions = {
+                "/students": "students",
+                "/results": "results",
+                "/fees": "fees",
+                "/attendance": "attendance",
+                "/expenses": "expenses",
+                "/dashboard": "dashboard",
+                "/staff": "superadmin", // Staff dashboard is superadmin only
+            };
+
+            const matchedRoute = Object.keys(routePermissions).find(route => pathname.startsWith(route));
+            
+            if (matchedRoute) {
+                const requiredPermission = routePermissions[matchedRoute];
+                
+                if (requiredPermission === "superadmin") {
+                    if (admin.role !== "superadmin") {
+                        window.location.href = "/dashboard";
+                        return;
+                    }
+                } else {
+                    if (admin.role !== "superadmin" && !admin.permissions?.[requiredPermission]) {
+                        window.location.href = "/dashboard";
+                        return;
+                    }
+                }
+            }
+            setAuthorized(true);
+        } catch (e) {
+            console.error("Auth routing validation error:", e);
+            window.location.href = "/login";
+        }
+    }, [pathname, isPublicRoute]);
 
     return (
         <html lang="en" className={`${jakarta.variable} ${manrope.variable}`}>
@@ -45,7 +98,7 @@ export default function RootLayout({ children }) {
                     <div className="flex-1 md:ml-[280px] flex flex-col min-h-screen w-full transition-all duration-300">
                         <Navbar setSidebarOpen={setSidebarOpen} />
                         <main className="flex-1 pt-24 px-4 md:px-8 pb-8 w-full max-w-7xl mx-auto">
-                            {children}
+                            {authorized && children}
                         </main>
                     </div>
                 </>
