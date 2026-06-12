@@ -15,64 +15,7 @@ instance.interceptors.request.use((config) => {
 });
 
 instance.interceptors.response.use(
-    (response) => {
-        const message = response.data?.message;
-        const method = response.config?.method?.toLowerCase();
-        if (message && typeof window !== "undefined" && ["post", "put", "delete"].includes(method)) {
-            toast.dismiss();
-            toast.custom(
-                (t) => {
-                    if (!t.visible) return null;
-                    const content = (
-                        <div className={`fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-[4px] p-4 transition-all duration-200 ${
-                            t.visible ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
-                        }`}>
-                            <style>{`
-                                @keyframes shrink-progress {
-                                    0% { width: 100%; }
-                                    100% { width: 0%; }
-                                }
-                                .toast-progress-bar {
-                                    animation: shrink-progress 1000ms linear forwards;
-                                }
-                            `}</style>
-                            <div
-                                className={`${
-                                    t.visible ? "scale-100" : "scale-95"
-                                } transition-all duration-200 max-w-sm w-full bg-white dark:bg-slate-900 shadow-2xl rounded-3xl overflow-hidden border border-slate-200 dark:border-slate-800 text-center p-8 flex flex-col items-center justify-center gap-5 relative`}
-                            >
-                                <div className="w-16 h-16 rounded-full bg-emerald-50 dark:bg-emerald-950/30 flex items-center justify-center text-emerald-500 shadow-inner relative">
-                                    <div className="absolute inset-0 rounded-full border-2 border-emerald-500/20 border-t-emerald-500 animate-spin" />
-                                    <svg className="w-7 h-7 relative z-10 animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
-                                    </svg>
-                                </div>
-                                
-                                <div className="pb-2">
-                                    <h3 className="text-lg font-black text-slate-900 dark:text-white uppercase tracking-wider">
-                                        Success
-                                    </h3>
-                                    <p className="mt-2 text-xs font-bold text-slate-500 dark:text-slate-400 leading-relaxed px-4">
-                                        {message}
-                                    </p>
-                                </div>
-
-                                {/* Animated countdown progress bar */}
-                                <div className="absolute bottom-0 left-0 h-1.5 bg-emerald-500 toast-progress-bar" />
-                            </div>
-                        </div>
-                    );
-
-                    if (typeof window !== "undefined" && document.body) {
-                        return createPortal(content, document.body);
-                    }
-                    return content;
-                },
-                { id: "global-success-toast", duration: 1000 }
-            );
-        }
-        return response;
-    },
+    (response) => response,
     (error) => {
         const message = error.response?.data?.message || "An unexpected error occurred";
         // Only show toast if it's not a 401/403 and we're in the browser
