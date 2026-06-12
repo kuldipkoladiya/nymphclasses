@@ -23,7 +23,9 @@ instance.interceptors.response.use(
             toast.custom(
                 (t) => {
                     const content = (
-                        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-[4px] p-4">
+                        <div className={`fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-[4px] p-4 transition-all duration-200 ${
+                            t.visible ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+                        }`}>
                             <style>{`
                                 @keyframes shrink-progress {
                                     0% { width: 100%; }
@@ -35,7 +37,7 @@ instance.interceptors.response.use(
                             `}</style>
                             <div
                                 className={`${
-                                    t.visible ? "scale-100 opacity-100" : "scale-95 opacity-0"
+                                    t.visible ? "scale-100" : "scale-95"
                                 } transition-all duration-200 max-w-sm w-full bg-white dark:bg-slate-900 shadow-2xl rounded-3xl overflow-hidden border border-slate-200 dark:border-slate-800 text-center p-8 flex flex-col items-center justify-center gap-5 relative`}
                             >
                                 <div className="w-16 h-16 rounded-full bg-emerald-50 dark:bg-emerald-950/30 flex items-center justify-center text-emerald-500 shadow-inner relative">
@@ -77,10 +79,12 @@ instance.interceptors.response.use(
             toast.custom(
                 (t) => {
                     const content = (
-                        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-[4px] p-4">
+                        <div className={`fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-[4px] p-4 transition-all duration-200 ${
+                            t.visible ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+                        }`}>
                             <div
                                 className={`${
-                                    t.visible ? "scale-100 opacity-100" : "scale-95 opacity-0"
+                                    t.visible ? "scale-100" : "scale-95"
                                 } transition-all duration-200 max-w-sm w-full bg-white dark:bg-slate-900 shadow-2xl rounded-3xl overflow-hidden border border-slate-200 dark:border-slate-800 text-center p-6 flex flex-col items-center justify-center gap-4`}
                             >
                                 <div className="w-16 h-16 rounded-full bg-red-50 dark:bg-red-950/30 flex items-center justify-center text-red-500 shadow-inner">
