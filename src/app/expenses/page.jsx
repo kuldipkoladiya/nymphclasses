@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import axios from "@/utils/axios";
 import { motion, AnimatePresence } from "framer-motion";
 import toast from "react-hot-toast";
@@ -48,6 +48,28 @@ export default function ExpensesPage() {
 
     const CATEGORIES = ["Rent", "Salaries", "Maintenance", "Electricity", "Internet", "Marketing", "Stationery", "Other"];
 
+    const loadExpenses = useCallback(async () => {
+        setLoading(true);
+        try {
+            const res = await axios.get(`/expenses/all?month=${month}&year=${year}`);
+            setExpenses(res.data?.expenses || []);
+        } catch {
+            toast.error("Failed to load expenses.");
+        } finally {
+            setLoading(false);
+        }
+    }, [month, year]);
+
+    const loadSummary = useCallback(async () => {
+        try {
+            const res = await axios.get("/expenses/summary");
+            setSummary(res.data?.summary || []);
+            setTotalExpenses(res.data?.totalExpenses || 0);
+        } catch {
+            console.error("Failed to load expenses summary.");
+        }
+    }, []);
+
     useEffect(() => {
         const d = new Date();
         setMonth(String(d.getMonth() + 1));
@@ -59,29 +81,7 @@ export default function ExpensesPage() {
             loadExpenses();
             loadSummary();
         }
-    }, [month, year]);
-
-    const loadExpenses = async () => {
-        setLoading(true);
-        try {
-            const res = await axios.get(`/expenses/all?month=${month}&year=${year}`);
-            setExpenses(res.data?.expenses || []);
-        } catch {
-            toast.error("Failed to load expenses.");
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const loadSummary = async () => {
-        try {
-            const res = await axios.get("/expenses/summary");
-            setSummary(res.data?.summary || []);
-            setTotalExpenses(res.data?.totalExpenses || 0);
-        } catch {
-            console.error("Failed to load expenses summary.");
-        }
-    };
+    }, [month, year, loadExpenses, loadSummary]);
 
     const handleOpenAdd = () => {
         setEditingExpense(null);

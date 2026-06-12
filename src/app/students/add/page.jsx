@@ -147,7 +147,7 @@ export default function AddStudent() {
 
                         {/* Father's Name */}
                         <div className="relative group">
-                            <label className="label-premium ml-1">Father's Name</label>
+                            <label className="label-premium ml-1">Father&apos;s Name</label>
                             <div className="relative">
                                 <MdFamilyRestroom className="input-icon top-1/2 -translate-y-1/2" size={18} />
                                 <input
@@ -163,7 +163,7 @@ export default function AddStudent() {
 
                         {/* Mother's Name */}
                         <div className="relative group">
-                            <label className="label-premium ml-1">Mother's Name</label>
+                            <label className="label-premium ml-1">Mother&apos;s Name</label>
                             <div className="relative">
                                 <MdFamilyRestroom className="input-icon top-1/2 -translate-y-1/2" size={18} />
                                 <input

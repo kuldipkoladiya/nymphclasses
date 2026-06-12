@@ -143,6 +143,7 @@ export default function WhatsAppConnectionPage() {
                         >
                             <div className="bg-white p-6 rounded-3xl shadow-2xl border border-slate-100 dark:border-slate-800/20 max-w-[320px]">
                                 {statusData.qrCodeUrl ? (
+                                    /* eslint-disable-next-line @next/next/no-img-element */
                                     <img 
                                         src={statusData.qrCodeUrl} 
                                         alt="WhatsApp QR Code" 
