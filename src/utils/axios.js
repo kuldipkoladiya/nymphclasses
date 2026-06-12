@@ -22,32 +22,38 @@ instance.interceptors.response.use(
             toast.custom(
                 (t) => (
                     <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-[4px] p-4">
+                        <style>{`
+                            @keyframes shrink-progress {
+                                0% { width: 100%; }
+                                100% { width: 0%; }
+                            }
+                            .toast-progress-bar {
+                                animation: shrink-progress 3000ms linear forwards;
+                            }
+                        `}</style>
                         <div
                             className={`${
                                 t.visible ? "scale-100 opacity-100" : "scale-95 opacity-0"
-                            } transition-all duration-200 max-w-sm w-full bg-white dark:bg-slate-900 shadow-2xl rounded-3xl overflow-hidden border border-slate-200 dark:border-slate-800 text-center p-6 flex flex-col items-center justify-center gap-4`}
+                            } transition-all duration-200 max-w-sm w-full bg-white dark:bg-slate-900 shadow-2xl rounded-3xl overflow-hidden border border-slate-200 dark:border-slate-800 text-center p-8 flex flex-col items-center justify-center gap-5 relative`}
                         >
-                            <div className="w-16 h-16 rounded-full bg-emerald-50 dark:bg-emerald-950/30 flex items-center justify-center text-emerald-500 shadow-inner animate-pulse">
-                                <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
+                            <div className="w-16 h-16 rounded-full bg-emerald-50 dark:bg-emerald-950/30 flex items-center justify-center text-emerald-500 shadow-inner relative">
+                                <div className="absolute inset-0 rounded-full border-2 border-emerald-500/20 border-t-emerald-500 animate-spin" />
+                                <svg className="w-7 h-7 relative z-10 animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
                                 </svg>
                             </div>
                             
-                            <div>
+                            <div className="pb-2">
                                 <h3 className="text-lg font-black text-slate-900 dark:text-white uppercase tracking-wider">
                                     Success
                                 </h3>
-                                <p className="mt-2 text-xs font-bold text-slate-500 dark:text-slate-400 leading-relaxed">
+                                <p className="mt-2 text-xs font-bold text-slate-500 dark:text-slate-400 leading-relaxed px-4">
                                     {message}
                                 </p>
                             </div>
 
-                            <button
-                                onClick={() => toast.dismiss(t.id)}
-                                className="mt-2 w-full py-3.5 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs uppercase tracking-widest transition-all shadow-lg shadow-emerald-500/20 active:scale-95 focus:outline-none"
-                            >
-                                Continue
-                            </button>
+                            {/* Animated countdown progress bar */}
+                            <div className="absolute bottom-0 left-0 h-1.5 bg-emerald-500 toast-progress-bar" />
                         </div>
                     </div>
                 ),
