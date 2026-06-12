@@ -4,7 +4,7 @@ import { useState } from "react";
 import axios from "@/utils/axios";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { MdArrowBack, MdSearch, MdSchool, MdAssignment, MdDelete, MdDownload, MdGrade, MdPercent, MdPerson, MdNumbers, MdClass, MdEdit, MdSave, MdCancel } from "react-icons/md";
+import { MdArrowBack, MdSearch, MdSchool, MdAssignment, MdDelete, MdDownload, MdGrade, MdPercent, MdPerson, MdNumbers, MdClass, MdEdit, MdSave, MdCancel, MdCalendarMonth } from "react-icons/md";
 import toast from "react-hot-toast";
 import Popup from "@/components/Popup";
 import { FaWhatsapp } from "react-icons/fa";
@@ -169,11 +169,18 @@ export default function ViewResultsPage() {
                         <p className="text-slate-500 dark:text-slate-400 font-bold text-[10px] uppercase tracking-widest mt-1">Class → Student → Exam Lifecycle</p>
                     </div>
                 </div>
-                <Link href="/results/whatsapp" className="mt-4 md:mt-0">
-                    <button className="px-6 py-4 rounded-2xl bg-green-50 dark:bg-green-950/20 text-green-600 dark:text-green-400 font-bold text-sm uppercase tracking-widest hover:bg-green-600 hover:text-white transition-all flex items-center gap-3 border border-green-500/10 hover:border-green-600">
-                        <FaWhatsapp size={20} /> Link Device
-                    </button>
-                </Link>
+                <div className="flex flex-wrap items-center gap-4 mt-4 md:mt-0">
+                    <Link href="/results/whatsapp">
+                        <button className="px-6 py-4 rounded-2xl bg-green-50 dark:bg-green-950/20 text-green-600 dark:text-green-400 font-bold text-sm uppercase tracking-widest hover:bg-green-600 hover:text-white transition-all flex items-center gap-3 border border-green-500/10 hover:border-green-600">
+                            <FaWhatsapp size={20} /> Link Device
+                        </button>
+                    </Link>
+                    <Link href="/results/monthly">
+                        <button className="px-6 py-4 rounded-2xl bg-blue-50 dark:bg-blue-950/20 text-blue-600 dark:text-blue-400 font-bold text-sm uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-all flex items-center gap-3 border border-blue-500/10 hover:border-blue-600">
+                            <MdCalendarMonth size={20} /> Monthly Report
+                        </button>
+                    </Link>
+                </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">

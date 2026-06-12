@@ -6,7 +6,7 @@ import axios from "@/utils/axios";
 import { motion, AnimatePresence } from "framer-motion";
 import toast from "react-hot-toast";
 import Link from "next/link";
-import { MdClass, MdEditDocument, MdDateRange, MdScore, MdCheckCircle, MdLibraryBooks, MdSave, MdGroup } from "react-icons/md";
+import { MdClass, MdEditDocument, MdDateRange, MdScore, MdCheckCircle, MdLibraryBooks, MdSave, MdGroup, MdCalendarMonth } from "react-icons/md";
 import { FaWhatsapp } from "react-icons/fa";
 
 /* =============================
@@ -112,6 +112,11 @@ export default function CreateResultPage() {
                     <Link href="/results/whatsapp">
                         <button className="px-6 py-4 rounded-2xl bg-green-50 dark:bg-green-950/20 text-green-600 dark:text-green-400 font-bold text-sm uppercase tracking-widest hover:bg-green-600 hover:text-white transition-all flex items-center gap-3 border border-green-500/10 hover:border-green-600">
                             <FaWhatsapp size={20} /> Link Device
+                        </button>
+                    </Link>
+                    <Link href="/results/monthly">
+                        <button className="px-6 py-4 rounded-2xl bg-blue-50 dark:bg-blue-950/20 text-blue-600 dark:text-blue-400 font-bold text-sm uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-all flex items-center gap-3 border border-blue-500/10 hover:border-blue-600">
+                            <MdCalendarMonth size={20} /> Monthly Report
                         </button>
                     </Link>
                     <Link href="/results/view">
