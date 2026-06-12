@@ -17,7 +17,8 @@ import {
     MdList,
     MdClose,
     MdPrint,
-    MdInfo
+    MdInfo,
+    MdDownload
 } from "react-icons/md";
 import { FaWhatsapp } from "react-icons/fa";
 
@@ -33,9 +34,32 @@ export default function MonthlyReportPage() {
     const [loading, setLoading] = useState(false);
     const [sendingWhatsAppId, setSendingWhatsAppId] = useState(null);
     const [sendingBulk, setSendingBulk] = useState(false);
+    const [downloadingPdf, setDownloadingPdf] = useState(false);
 
     // Detailed Modal state
     const [selectedReport, setSelectedReport] = useState(null);
+
+    const downloadMonthlyPdf = async (record) => {
+        setDownloadingPdf(true);
+        try {
+            const res = await axios.get(
+                `/results/monthly/pdf/${record.student._id}/${month}/${year}`,
+                { responseType: "blob" }
+            );
+            const url = window.URL.createObjectURL(res.data);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `${record.student.name}_Monthly_Report_${month}_${year}.pdf`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+            toast.success("Downloading PDF scorecard...");
+        } catch (error) {
+            console.error("PDF download error:", error);
+            toast.error("Failed to download PDF scorecard.");
+        } finally {
+            setDownloadingPdf(false);
+        }
+    };
 
     // Default to current month/year
     useEffect(() => {
@@ -416,10 +440,16 @@ export default function MonthlyReportPage() {
                                         Send WhatsApp
                                     </button>
                                     <button
-                                        onClick={() => window.print()}
-                                        className="px-5 py-3 rounded-xl bg-blue-600 text-white font-bold text-xs uppercase tracking-wider hover:bg-blue-700 transition-all flex items-center gap-2 shadow-md shadow-blue-600/15"
+                                        onClick={() => downloadMonthlyPdf(selectedReport)}
+                                        disabled={downloadingPdf}
+                                        className="px-5 py-3 rounded-xl bg-blue-600 text-white font-bold text-xs uppercase tracking-wider hover:bg-blue-700 transition-all flex items-center gap-2 shadow-md shadow-blue-600/15 disabled:opacity-50"
                                     >
-                                        <MdPrint size={16} /> Print Report
+                                        {downloadingPdf ? (
+                                            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                        ) : (
+                                            <MdDownload size={16} />
+                                        )}
+                                        Download PDF
                                     </button>
                                 </div>
                             </div>
