@@ -22,6 +22,7 @@ instance.interceptors.response.use(
             toast.dismiss();
             toast.custom(
                 (t) => {
+                    if (!t.visible) return null;
                     const content = (
                         <div className={`fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-[4px] p-4 transition-all duration-200 ${
                             t.visible ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
@@ -78,6 +79,7 @@ instance.interceptors.response.use(
         if (typeof window !== "undefined" && error.response?.status !== 401 && error.response?.status !== 403) {
             toast.custom(
                 (t) => {
+                    if (!t.visible) return null;
                     const content = (
                         <div className={`fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-[4px] p-4 transition-all duration-200 ${
                             t.visible ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
