@@ -30,7 +30,8 @@ export default function CreateResultPage() {
     const [sendWhatsApp, setSendWhatsApp] = useState(true);
 
     const SUBJECT_OPTIONS = [
-        "Maths", "Science", "English", "Gujarati", "Hindi", "Social Science", "Computer", "Sanskrit"
+        "Maths", "Science", "English", "Gujarati", "Hindi", "Social Science", "Computer", "Sanskrit",
+        "Paryavaran", "Economics", "Statistics", "B.A.", "Account"
     ];
 
     useEffect(() => {
