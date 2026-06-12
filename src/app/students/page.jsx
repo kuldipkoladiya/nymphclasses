@@ -143,7 +143,7 @@ export default function StudentsPage() {
                                     <tr key={s._id} className="hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-colors group">
                                         <td className="px-8 py-5 font-bold text-slate-900 dark:text-white">{s.name}</td>
                                         <td className="px-8 py-5 text-center">
-                                            <span className="px-3 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 font-bold text-[10px] text-slate-600 dark:text-slate-400">#{s.rollNumber}</span>
+                                            <span className="px-3 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 font-bold text-[10px] text-slate-600 dark:text-slate-400">{s.rollNumber}</span>
                                         </td>
                                         <td className="px-8 py-5 text-center font-bold text-blue-600 dark:text-blue-400 text-xs">Std {s.standard}</td>
                                         <td className="px-8 py-5">
