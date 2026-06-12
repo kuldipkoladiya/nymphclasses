@@ -30,7 +30,7 @@ instance.interceptors.response.use(
                                     100% { width: 0%; }
                                 }
                                 .toast-progress-bar {
-                                    animation: shrink-progress 3000ms linear forwards;
+                                    animation: shrink-progress 1000ms linear forwards;
                                 }
                             `}</style>
                             <div
@@ -65,7 +65,7 @@ instance.interceptors.response.use(
                     }
                     return content;
                 },
-                { id: "global-success-toast", duration: 3000 }
+                { id: "global-success-toast", duration: 1000 }
             );
         }
         return response;
