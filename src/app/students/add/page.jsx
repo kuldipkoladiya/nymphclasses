@@ -19,6 +19,7 @@ export default function AddStudent() {
         fatherName: "",
         motherName: "",
         phone: "",
+        secondPhone: "",
         address: "",
     });
 
@@ -43,16 +44,6 @@ export default function AddStudent() {
             setLoading(false);
         }
     };
-
-    const formFields = [
-        { name: "name", label: "Full Name", icon: MdPerson, placeholder: "John Doe", type: "text" },
-        { name: "rollNumber", label: "Roll Number", icon: MdNumbers, placeholder: "101", type: "text" },
-        { name: "standard", label: "Standard/Class", icon: MdClass, placeholder: "10", type: "text" },
-        { name: "section", label: "Section", icon: MdClass, placeholder: "A", type: "text" },
-        { name: "fatherName", label: "Father's Name", icon: MdFamilyRestroom, placeholder: "Richard Doe", type: "text" },
-        { name: "motherName", label: "Mother's Name", icon: MdFamilyRestroom, placeholder: "Jane Doe", type: "text" },
-        { name: "phone", label: "Contact Number", icon: MdPhone, placeholder: "+91 9876543210", type: "text" },
-    ];
 
     return (
         <motion.div 
@@ -83,31 +74,145 @@ export default function AddStudent() {
             <div className="glass-card p-6 sm:p-8">
                 <form onSubmit={handleSubmit} className="space-y-8">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-                        {formFields.map((field) => (
-                            <div key={field.name} className="relative group">
-                                <label className="label-premium ml-1">
-                                    {field.label}
-                                </label>
-                                <div className="relative">
-                                    <field.icon className="input-icon top-1/2 -translate-y-1/2" size={18} />
-                                    <input
-                                        type={field.type}
-                                        name={field.name}
-                                        value={form[field.name]}
-                                        onChange={handleChange}
-                                        required
-                                        placeholder={field.placeholder}
-                                        className="input-premium input-with-icon"
-                                    />
-                                </div>
+                        {/* Name */}
+                        <div className="relative group">
+                            <label className="label-premium ml-1">Full Name</label>
+                            <div className="relative">
+                                <MdPerson className="input-icon top-1/2 -translate-y-1/2" size={18} />
+                                <input
+                                    type="text"
+                                    name="name"
+                                    value={form.name}
+                                    onChange={handleChange}
+                                    required
+                                    placeholder="John Doe"
+                                    className="input-premium input-with-icon"
+                                />
                             </div>
-                        ))}
+                        </div>
 
-                        {/* ADDRESS */}
+                        {/* Roll Number */}
+                        <div className="relative group">
+                            <label className="label-premium ml-1">Roll Number</label>
+                            <div className="relative">
+                                <MdNumbers className="input-icon top-1/2 -translate-y-1/2" size={18} />
+                                <input
+                                    type="text"
+                                    name="rollNumber"
+                                    value={form.rollNumber}
+                                    onChange={handleChange}
+                                    required
+                                    placeholder="101"
+                                    className="input-premium input-with-icon"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Standard (Dropdown) */}
+                        <div className="relative group">
+                            <label className="label-premium ml-1">Standard/Class</label>
+                            <div className="relative">
+                                <MdClass className="input-icon top-1/2 -translate-y-1/2" size={18} />
+                                <select
+                                    name="standard"
+                                    value={form.standard}
+                                    onChange={handleChange}
+                                    required
+                                    className="input-premium input-with-icon appearance-none cursor-pointer"
+                                >
+                                    <option value="">Select Standard</option>
+                                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(s => <option key={s} value={s}>Standard {s}</option>)}
+                                </select>
+                            </div>
+                        </div>
+
+                        {/* Section (Dropdown) */}
+                        <div className="relative group">
+                            <label className="label-premium ml-1">Section / Batch</label>
+                            <div className="relative">
+                                <MdClass className="input-icon top-1/2 -translate-y-1/2" size={18} />
+                                <select
+                                    name="section"
+                                    value={form.section}
+                                    onChange={handleChange}
+                                    required
+                                    className="input-premium input-with-icon appearance-none cursor-pointer"
+                                >
+                                    <option value="">Select Section</option>
+                                    <option value="Morning">Morning</option>
+                                    <option value="Afternoon">Afternoon</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        {/* Father's Name */}
+                        <div className="relative group">
+                            <label className="label-premium ml-1">Father's Name</label>
+                            <div className="relative">
+                                <MdFamilyRestroom className="input-icon top-1/2 -translate-y-1/2" size={18} />
+                                <input
+                                    type="text"
+                                    name="fatherName"
+                                    value={form.fatherName}
+                                    onChange={handleChange}
+                                    placeholder="Richard Doe"
+                                    className="input-premium input-with-icon"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Mother's Name */}
+                        <div className="relative group">
+                            <label className="label-premium ml-1">Mother's Name</label>
+                            <div className="relative">
+                                <MdFamilyRestroom className="input-icon top-1/2 -translate-y-1/2" size={18} />
+                                <input
+                                    type="text"
+                                    name="motherName"
+                                    value={form.motherName}
+                                    onChange={handleChange}
+                                    placeholder="Jane Doe"
+                                    className="input-premium input-with-icon"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Primary Phone */}
+                        <div className="relative group">
+                            <label className="label-premium ml-1">Primary Contact Number</label>
+                            <div className="relative">
+                                <MdPhone className="input-icon top-1/2 -translate-y-1/2" size={18} />
+                                <input
+                                    type="text"
+                                    name="phone"
+                                    value={form.phone}
+                                    onChange={handleChange}
+                                    required
+                                    placeholder="+91 9876543210"
+                                    className="input-premium input-with-icon"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Second Phone (Optional) */}
+                        <div className="relative group">
+                            <label className="label-premium ml-1">Second Contact Number (Optional)</label>
+                            <div className="relative">
+                                <MdPhone className="input-icon top-1/2 -translate-y-1/2" size={18} />
+                                <input
+                                    type="text"
+                                    name="secondPhone"
+                                    value={form.secondPhone}
+                                    onChange={handleChange}
+                                    placeholder="+91 9876543211"
+                                    className="input-premium input-with-icon"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Address */}
                         <div className="md:col-span-2 relative group">
-                            <label className="label-premium ml-1">
-                                Current Address
-                            </label>
+                            <label className="label-premium ml-1">Current Address</label>
                             <div className="relative">
                                 <MdLocationOn className="input-icon top-5" size={18} />
                                 <textarea
@@ -126,24 +231,14 @@ export default function AddStudent() {
                         <button
                             type="button"
                             onClick={() => router.back()}
-                            className="
-                                px-6 py-3 rounded-xl font-semibold text-sm
-                                bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700
-                                text-gray-700 dark:text-gray-300
-                                hover:bg-gray-50 dark:hover:bg-slate-700/80 transition-all shadow-sm
-                            "
+                            className="px-6 py-3 rounded-xl font-semibold text-sm bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700/80 transition-all shadow-sm"
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
                             disabled={loading}
-                            className="
-                                px-8 py-3 rounded-xl font-bold text-sm inline-flex items-center justify-center gap-2
-                                bg-gradient-to-r from-indigo-600 to-purple-600 text-white
-                                shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/40 hover:-translate-y-0.5
-                                transition-all disabled:opacity-70 disabled:hover:translate-y-0 disabled:cursor-not-allowed
-                            "
+                            className="px-8 py-3 rounded-xl font-bold text-sm inline-flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/40 hover:-translate-y-0.5 transition-all disabled:opacity-70 disabled:hover:translate-y-0 disabled:cursor-not-allowed"
                         >
                             {loading ? (
                                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>

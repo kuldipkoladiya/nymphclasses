@@ -139,7 +139,11 @@ export default function CreateResultPage() {
                     </InputWrapper>
 
                     <InputWrapper label="Exam Name" icon={<MdEditDocument size={18} />}>
-                        <input placeholder="e.g. First Terminal" value={examName} onChange={(e) => setExamName(e.target.value)} className="input-premium input-with-icon" />
+                        <select value={examName} onChange={(e) => setExamName(e.target.value)} className="input-premium input-with-icon appearance-none cursor-pointer">
+                            <option value="">Select Exam</option>
+                            <option value="Weekly Test">Weekly Test</option>
+                            <option value="Round Test">Round Test</option>
+                        </select>
                     </InputWrapper>
 
                     <InputWrapper label="Exam Date" icon={<MdDateRange size={18} />}>
