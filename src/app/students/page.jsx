@@ -16,11 +16,35 @@ export default function StudentsPage() {
     const [deleteId, setDeleteId] = useState(null);
     const [loading, setLoading] = useState(true);
 
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [totalStudents, setTotalStudents] = useState(0);
+    const [debouncedSearch, setDebouncedSearch] = useState("");
+
+    // Debounce search query to avoid spamming requests
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearch(search);
+            setPage(1);
+        }, 300);
+        return () => clearTimeout(timer);
+    }, [search]);
+
+    // Reset to page 1 on standard filter change
+    useEffect(() => {
+        setPage(1);
+    }, [filterStd]);
+
     useEffect(() => {
         const fetchStudents = async () => {
+            setLoading(true);
             try {
-                const res = await axios.get("/students");
-                setStudents(res.data || []);
+                const res = await axios.get(
+                    `/students?paginate=true&page=${page}&limit=15&search=${debouncedSearch}&standard=${filterStd}`
+                );
+                setStudents(res.data.students || []);
+                setTotalPages(res.data.totalPages || 1);
+                setTotalStudents(res.data.totalStudents || 0);
             } catch (error) {
                 // Error already handled by axios interceptor toast
             } finally {
@@ -28,13 +52,9 @@ export default function StudentsPage() {
             }
         };
         fetchStudents();
-    }, []);
+    }, [page, debouncedSearch, filterStd]);
 
-    const filtered = students.filter((s) => {
-        const matchStd = filterStd ? s.standard === filterStd : true;
-        const matchSearch = s.name.toLowerCase().includes(search.toLowerCase()) || s.rollNumber?.includes(search);
-        return matchStd && matchSearch;
-    });
+    const filtered = students; // server-side filtered
 
     const openDeletePopup = (id) => {
         setDeleteId(id);
@@ -141,6 +161,31 @@ export default function StudentsPage() {
                     </table>
                 </div>
             </div>
+
+            {/* PAGINATION CONTROLS */}
+            {totalPages > 1 && (
+                <div className="glass-card p-4 flex justify-between items-center bg-white dark:bg-slate-900/60">
+                    <p className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest">
+                        Showing Page {page} of {totalPages} ({totalStudents} Students)
+                    </p>
+                    <div className="flex gap-2">
+                        <button
+                            disabled={page <= 1}
+                            onClick={() => setPage((p) => p - 1)}
+                            className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold text-xs uppercase tracking-wider hover:bg-slate-200 dark:hover:bg-slate-700 disabled:opacity-50 transition-all"
+                        >
+                            Previous
+                        </button>
+                        <button
+                            disabled={page >= totalPages}
+                            onClick={() => setPage((p) => p + 1)}
+                            className="px-4 py-2 rounded-xl bg-blue-600 text-white font-bold text-xs uppercase tracking-wider hover:bg-blue-700 disabled:opacity-50 transition-all shadow-md shadow-blue-600/10"
+                        >
+                            Next
+                        </button>
+                    </div>
+                </div>
+            )}
 
             {popup && <Popup open={true} {...popup} onClose={() => setPopup(null)} onConfirm={confirmDelete} />}
         </motion.div>
