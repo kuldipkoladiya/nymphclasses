@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-    baseURL: "https://nymph-be.vercel.app/api",
+    baseURL: process.env.NEXT_PUBLIC_API_URL || "https://api.nymphclasses.in/api",
 });
 
 export const setAuthToken = (token) => {

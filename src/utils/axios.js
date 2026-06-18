@@ -3,7 +3,7 @@ import toast from "react-hot-toast";
 import { createPortal } from "react-dom";
 
 const instance = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_URL || "https://nymph-be.vercel.app/api",
+    baseURL: process.env.NEXT_PUBLIC_API_URL || "https://api.nymphclasses.in/api",
 });
 
 instance.interceptors.request.use((config) => {
