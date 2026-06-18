@@ -15,7 +15,23 @@ export default function WhatsAppConnectionPage() {
         qrCodeUrl: null
     });
     const [loading, setLoading] = useState(false);
+    const [logoutLoading, setLogoutLoading] = useState(false);
     const intervalRef = useRef(null);
+
+    const handleLogout = async () => {
+        if (!window.confirm("Are you sure you want to disconnect your WhatsApp account?")) return;
+        setLogoutLoading(true);
+        try {
+            await axios.post("/results/whatsapp-logout");
+            toast.success("Logged out successfully!");
+            checkWhatsAppStatus();
+        } catch (error) {
+            console.error("Logout failed:", error);
+            toast.error("Failed to logout. Please try again.");
+        } finally {
+            setLogoutLoading(false);
+        }
+    };
 
     const checkWhatsAppStatus = async (showToast = false) => {
         setLoading(true);
@@ -146,6 +162,14 @@ export default function WhatsAppConnectionPage() {
                                         </div>
                                     </div>
                                 )}
+
+                                <button
+                                    onClick={handleLogout}
+                                    disabled={logoutLoading}
+                                    className="mt-8 px-6 py-3.5 rounded-2xl bg-red-50 dark:bg-red-950/20 hover:bg-red-500 hover:text-white border border-red-250/60 dark:border-red-900/30 text-red-500 dark:text-red-400 font-bold text-[10px] uppercase tracking-widest transition-all disabled:opacity-50 flex items-center justify-center gap-2 mx-auto shadow-sm active:scale-95"
+                                >
+                                    {logoutLoading ? "Logging out..." : "Disconnect WhatsApp"}
+                                </button>
                             </div>
                         </motion.div>
                     )}
