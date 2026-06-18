@@ -128,6 +128,24 @@ export default function WhatsAppConnectionPage() {
                                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-4 max-w-md">
                                     Your personal WhatsApp number has successfully authenticated. You can now publish results and send PDFs to students directly from the dashboard!
                                 </p>
+
+                                {statusData.deviceInfo && (
+                                    <div className="mt-6 p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-800/60 text-left max-w-sm w-full mx-auto space-y-2.5 text-xs">
+                                        <p className="font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest text-[9px] mb-1">Connected Device Info</p>
+                                        <div className="flex justify-between border-b border-slate-200/40 dark:border-slate-850 pb-2">
+                                            <span className="text-slate-450 dark:text-slate-400">Name:</span>
+                                            <span className="font-bold text-slate-750 dark:text-slate-250">{statusData.deviceInfo.pushname || "N/A"}</span>
+                                        </div>
+                                        <div className="flex justify-between border-b border-slate-200/40 dark:border-slate-850 pb-2">
+                                            <span className="text-slate-450 dark:text-slate-400">Phone Number:</span>
+                                            <span className="font-bold text-slate-750 dark:text-slate-250">+{statusData.deviceInfo.number}</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span className="text-slate-450 dark:text-slate-400">Platform:</span>
+                                            <span className="font-bold text-slate-750 dark:text-slate-250 capitalize">{statusData.deviceInfo.platform || "N/A"}</span>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         </motion.div>
                     )}
