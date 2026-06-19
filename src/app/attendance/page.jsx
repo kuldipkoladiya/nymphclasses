@@ -77,7 +77,7 @@ export default function AttendancePage() {
     const setStatus = (id, status) => setAttendance((p) => ({ ...p, [id]: status }));
 
     const toggleStatus = (id) => {
-        const current = attendance[id] || "Absent";
+        const current = attendance[id] || "Present";
         setStatus(id, current === "Present" ? "Absent" : "Present");
     };
 
@@ -95,7 +95,7 @@ export default function AttendancePage() {
                 students.map((s) => axios.post("/attendance", { 
                     studentId: s._id, 
                     date, 
-                    status: attendance[s._id] || "Absent",
+                    status: attendance[s._id] || "Present",
                     sendWhatsApp
                 }))
             );
@@ -119,7 +119,7 @@ export default function AttendancePage() {
             if (attendance[s._id]) {
                 markedCount++;
             }
-            if ((attendance[s._id] || "Absent") === "Present") {
+            if ((attendance[s._id] || "Present") === "Present") {
                 present++;
             }
         });
@@ -305,7 +305,7 @@ export default function AttendancePage() {
                 ) : (
                     // PREMIUM DUAL SELECTOR BUTTON GROUPS
                     filtered.map((s) => {
-                        const isPresent = (attendance[s._id] || "Absent") === "Present";
+                        const isPresent = (attendance[s._id] || "Present") === "Present";
                         const initialLetter = s.name ? s.name.charAt(0).toUpperCase() : "?";
                         
                         return (
