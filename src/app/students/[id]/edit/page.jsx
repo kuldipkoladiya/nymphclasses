@@ -63,13 +63,13 @@ export default function EditStudent({ params }) {
     };
 
     const formFields = [
-        { name: "name", label: "Full Name", icon: MdPerson, type: "text", placeholder: "e.g. Rahul Sharma" },
-        { name: "rollNumber", label: "Roll Number", icon: MdNumbers, type: "text", placeholder: "e.g. 101" },
-        { name: "standard", label: "Standard/Class", icon: MdClass, type: "text", placeholder: "e.g. 10" },
-        { name: "section", label: "Section", icon: MdClass, type: "text", placeholder: "e.g. A" },
+        { name: "name", label: "Full Name", icon: MdPerson, type: "text", placeholder: "e.g. Rahul Sharma", required: true },
+        { name: "rollNumber", label: "Roll Number", icon: MdNumbers, type: "text", placeholder: "e.g. 101", required: true },
+        { name: "standard", label: "Standard/Class", icon: MdClass, type: "text", placeholder: "e.g. 10", required: true },
+        { name: "section", label: "Section", icon: MdClass, type: "text", placeholder: "e.g. A", required: true },
         { name: "fatherName", label: "Father's Name", icon: MdFamilyRestroom, type: "text", placeholder: "e.g. Amit Sharma" },
         { name: "motherName", label: "Mother's Name", icon: MdFamilyRestroom, type: "text", placeholder: "e.g. Seema Sharma" },
-        { name: "phone", label: "Parent Contact Number", icon: MdPhone, type: "text", placeholder: "e.g. 9876543210" },
+        { name: "phone", label: "Parent Contact Number", icon: MdPhone, type: "text", placeholder: "e.g. 9876543210", required: true },
     ];
 
     if (fetching) {
@@ -180,7 +180,7 @@ export default function EditStudent({ params }) {
                                         value={form[field.name]}
                                         onChange={handleChange}
                                         placeholder={field.placeholder}
-                                        required
+                                        required={field.required}
                                         className="w-full px-4 py-3 bg-slate-50/50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-4 focus:ring-indigo-650/5 focus:border-indigo-600/45 transition-all outline-none font-medium text-slate-900 dark:text-white placeholder:text-slate-400 text-sm"
                                     />
                                 </div>
@@ -197,7 +197,6 @@ export default function EditStudent({ params }) {
                                     value={form.address}
                                     onChange={handleChange}
                                     placeholder="Enter current address..."
-                                    required
                                     className="w-full px-4 py-3 bg-slate-50/50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-4 focus:ring-indigo-650/5 focus:border-indigo-600/45 transition-all outline-none font-medium text-slate-900 dark:text-white placeholder:text-slate-400 text-sm resize-none min-h-[90px]"
                                 />
                             </div>
