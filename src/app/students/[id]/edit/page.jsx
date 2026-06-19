@@ -69,7 +69,7 @@ export default function EditStudent({ params }) {
         { name: "section", label: "Section", icon: MdClass, type: "text", placeholder: "e.g. A", required: true },
         { name: "fatherName", label: "Father's Name", icon: MdFamilyRestroom, type: "text", placeholder: "e.g. Amit Sharma" },
         { name: "motherName", label: "Mother's Name", icon: MdFamilyRestroom, type: "text", placeholder: "e.g. Seema Sharma" },
-        { name: "phone", label: "Parent Contact Number", icon: MdPhone, type: "text", placeholder: "e.g. 9876543210", required: true },
+        { name: "phone", label: "Parent Contact Number", icon: MdPhone, type: "text", placeholder: "e.g. 9876543210", required: true, pattern: "[0-9]{10}", maxLength: 10 },
     ];
 
     if (fetching) {
@@ -181,6 +181,8 @@ export default function EditStudent({ params }) {
                                         onChange={handleChange}
                                         placeholder={field.placeholder}
                                         required={field.required}
+                                        pattern={field.pattern}
+                                        maxLength={field.maxLength}
                                         className="w-full px-4 py-3 bg-slate-50/50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-4 focus:ring-indigo-650/5 focus:border-indigo-600/45 transition-all outline-none font-medium text-slate-900 dark:text-white placeholder:text-slate-400 text-sm"
                                     />
                                 </div>

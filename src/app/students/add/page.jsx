@@ -188,7 +188,9 @@ export default function AddStudent() {
                                     value={form.phone}
                                     onChange={handleChange}
                                     required
-                                    placeholder="+91 9876543210"
+                                    pattern="[0-9]{10}"
+                                    maxLength={10}
+                                    placeholder="9876543210"
                                     className="input-premium input-with-icon"
                                 />
                             </div>
@@ -204,7 +206,9 @@ export default function AddStudent() {
                                     name="secondPhone"
                                     value={form.secondPhone}
                                     onChange={handleChange}
-                                    placeholder="+91 9876543211"
+                                    pattern="[0-9]{10}"
+                                    maxLength={10}
+                                    placeholder="9876543211"
                                     className="input-premium input-with-icon"
                                 />
                             </div>
