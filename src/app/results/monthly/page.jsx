@@ -26,6 +26,7 @@ export default function MonthlyReportPage() {
     const router = useRouter();
 
     const [standard, setStandard] = useState("");
+    const [section, setSection] = useState("");
     const [month, setMonth] = useState("");
     const [year, setYear] = useState("");
     const [reportData, setReportData] = useState([]);
@@ -92,7 +93,7 @@ export default function MonthlyReportPage() {
         setLoading(true);
         try {
             const res = await axios.get(
-                `/results/monthly?standard=${standard}&month=${month}&year=${year}`
+                `/results/monthly?standard=${standard}&month=${month}&year=${year}&section=${section}`
             );
             setReportData(res.data?.report || []);
             toast.success("Loaded monthly performance report!");
@@ -134,7 +135,8 @@ export default function MonthlyReportPage() {
             const res = await axios.post("/results/monthly/send-whatsapp-bulk", {
                 standard,
                 month,
-                year
+                year,
+                section
             });
             if (res.data?.success) {
                 const succeeded = res.data.report.filter(r => r.success).length;
@@ -195,7 +197,7 @@ export default function MonthlyReportPage() {
                 </div>
 
                 {/* SELECTION PANELS */}
-                <div className="glass-card p-8 bg-white dark:bg-slate-900/60 grid grid-cols-1 md:grid-cols-4 gap-6 items-end">
+                <div className="glass-card p-8 bg-white dark:bg-slate-900/60 grid grid-cols-1 md:grid-cols-5 gap-6 items-end">
                     <div className="group">
                         <label className="label-premium ml-1">Standard</label>
                         <div className="relative">
@@ -203,6 +205,18 @@ export default function MonthlyReportPage() {
                             <select value={standard} onChange={(e) => setStandard(e.target.value)} className="input-premium input-with-icon appearance-none cursor-pointer">
                                 <option value="">Select Standard</option>
                                 {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(s => <option key={s} value={s}>Standard {s}</option>)}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div className="group">
+                        <label className="label-premium ml-1">Section</label>
+                        <div className="relative">
+                            <MdClass className="input-icon top-1/2 -translate-y-1/2" size={18} />
+                            <select value={section} onChange={(e) => setSection(e.target.value)} className="input-premium input-with-icon appearance-none cursor-pointer">
+                                <option value="">Select Section</option>
+                                <option value="Morning">Morning</option>
+                                <option value="Afternoon">Afternoon</option>
                             </select>
                         </div>
                     </div>
@@ -288,7 +302,7 @@ export default function MonthlyReportPage() {
                                             {/* Clicking student info or scores opens the modal */}
                                             <td onClick={() => setSelectedReport(record)} className="px-8 py-5">
                                                 <p className="font-bold text-slate-900 dark:text-white group-hover:text-blue-600 transition-colors">{record.student.name}</p>
-                                                <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Roll No: {record.student.rollNumber}</p>
+                                                <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Roll No: {record.student.rollNumber} {record.student.section ? `• ${record.student.section}` : ""}</p>
                                             </td>
                                             <td onClick={() => setSelectedReport(record)} className="px-8 py-5 text-center font-bold text-slate-700 dark:text-slate-300">{record.examCount} tests</td>
                                             <td onClick={() => setSelectedReport(record)} className="px-8 py-5 text-center">

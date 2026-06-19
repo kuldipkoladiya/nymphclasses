@@ -10,6 +10,7 @@ import Popup from "@/components/Popup";
 
 export default function AttendanceViewPage() {
     const [standard, setStandard] = useState("");
+    const [section, setSection] = useState("");
     const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
     const [attendanceData, setAttendanceData] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -22,7 +23,7 @@ export default function AttendanceViewPage() {
         if (!standard || !date) return toast.error("Select Standard and Date");
         setLoading(true);
         try {
-            const res = await axios.get(`/attendance/filter?standard=${standard}&date=${date}`);
+            const res = await axios.get(`/attendance/filter?standard=${standard}&date=${date}&section=${section}`);
             setAttendanceData(res.data || []);
         } catch (error) {
             // Toast handled by interceptor
@@ -77,12 +78,21 @@ export default function AttendanceViewPage() {
             </div>
 
             {/* CONTROLS */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div className="relative group">
                     <MdClass className="input-icon top-1/2 -translate-y-1/2" size={20} />
                     <select className="input-premium input-with-icon appearance-none cursor-pointer" value={standard} onChange={(e) => setStandard(e.target.value)}>
                         <option value="">Select Standard</option>
                         {["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"].map(s => <option key={s} value={s}>Standard {s}</option>)}
+                    </select>
+                </div>
+
+                <div className="relative group">
+                    <MdClass className="input-icon top-1/2 -translate-y-1/2" size={20} />
+                    <select className="input-premium input-with-icon appearance-none cursor-pointer" value={section} onChange={(e) => setSection(e.target.value)}>
+                        <option value="">Select Section</option>
+                        <option value="Morning">Morning</option>
+                        <option value="Afternoon">Afternoon</option>
                     </select>
                 </div>
 
@@ -146,7 +156,7 @@ export default function AttendanceViewPage() {
                                     <tr key={a._id} className="hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-colors group">
                                         <td className="px-8 py-5">
                                             <p className="font-bold text-slate-900 dark:text-white">{a.studentId?.name}</p>
-                                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Roll: {a.studentId?.rollNumber}</p>
+                                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Roll: {a.studentId?.rollNumber} {a.studentId?.section ? `(${a.studentId?.section})` : ""}</p>
                                         </td>
                                         <td className="px-8 py-5 text-center">
                                             <span className="px-3 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 font-bold text-[10px] text-slate-600 dark:text-slate-400 tracking-widest uppercase">Std {a.studentId?.standard}</span>

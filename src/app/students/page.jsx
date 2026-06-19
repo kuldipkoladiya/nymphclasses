@@ -12,6 +12,7 @@ export default function StudentsPage() {
     const [students, setStudents] = useState([]);
     const [search, setSearch] = useState("");
     const [filterStd, setFilterStd] = useState("");
+    const [filterSection, setFilterSection] = useState("");
     const [popup, setPopup] = useState(null);
     const [deleteId, setDeleteId] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -30,17 +31,17 @@ export default function StudentsPage() {
         return () => clearTimeout(timer);
     }, [search]);
 
-    // Reset to page 1 on standard filter change
+    // Reset to page 1 on standard or section filter change
     useEffect(() => {
         setPage(1);
-    }, [filterStd]);
+    }, [filterStd, filterSection]);
 
     useEffect(() => {
         const fetchStudents = async () => {
             setLoading(true);
             try {
                 const res = await axios.get(
-                    `/students?paginate=true&page=${page}&limit=15&search=${debouncedSearch}&standard=${filterStd}`
+                    `/students?paginate=true&page=${page}&limit=15&search=${debouncedSearch}&standard=${filterStd}&section=${filterSection}`
                 );
                 setStudents(res.data.students || []);
                 setTotalPages(res.data.totalPages || 1);
@@ -52,7 +53,7 @@ export default function StudentsPage() {
             }
         };
         fetchStudents();
-    }, [page, debouncedSearch, filterStd]);
+    }, [page, debouncedSearch, filterStd, filterSection]);
 
     const filtered = students;
 
@@ -161,7 +162,7 @@ export default function StudentsPage() {
             </div>
 
             {/* 3. FILTERS PANEL */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div className="md:col-span-2 relative group">
                     <MdSearch className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors pointer-events-none z-10" size={20} />
                     <input 
@@ -182,6 +183,18 @@ export default function StudentsPage() {
                         {["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"].map(s => (
                             <option key={s} value={s}>Standard {s}</option>
                         ))}
+                    </select>
+                </div>
+                <div className="relative group">
+                    <MdFilterList className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors pointer-events-none z-10" size={20} />
+                    <select 
+                        className="w-full pl-12 pr-5 py-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-4 focus:ring-indigo-600/5 focus:border-indigo-600/40 transition-all outline-none font-extrabold text-xs uppercase tracking-wider text-slate-700 dark:text-slate-200 appearance-none cursor-pointer" 
+                        value={filterSection} 
+                        onChange={(e) => setFilterSection(e.target.value)}
+                    >
+                        <option value="">All Sections</option>
+                        <option value="Morning">Morning</option>
+                        <option value="Afternoon">Afternoon</option>
                     </select>
                 </div>
             </div>
@@ -206,6 +219,7 @@ export default function StudentsPage() {
                                         <td className="px-8 py-6"><div className="h-4 w-48 bg-slate-100 dark:bg-slate-800 rounded-lg" /></td>
                                         <td className="px-8 py-6"><div className="h-4 w-12 bg-slate-100 dark:bg-slate-800 rounded-lg mx-auto" /></td>
                                         <td className="px-8 py-6"><div className="h-4 w-10 bg-slate-100 dark:bg-slate-800 rounded-lg mx-auto" /></td>
+                                        <td className="px-8 py-6"><div className="h-4 w-12 bg-slate-100 dark:bg-slate-800 rounded-lg mx-auto" /></td>
                                         <td className="px-8 py-6"><div className="h-4 w-20 bg-slate-100 dark:bg-slate-800 rounded-lg ml-auto" /></td>
                                     </tr>
                                 ))}
@@ -229,7 +243,7 @@ export default function StudentsPage() {
                                         <Link href={`/students/${s._id}`} className="font-black text-slate-900 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors text-base leading-snug">
                                             {s.name}
                                         </Link>
-                                        <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Student Registry</p>
+                                        <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Student Registry {s.section ? `• ${s.section}` : ""}</p>
                                     </div>
                                     <span className={`px-2.5 py-1 rounded-lg border font-extrabold text-[9px] uppercase tracking-wider ${getStandardBadgeStyle(s.standard)}`}>
                                         Std {s.standard}
@@ -264,6 +278,7 @@ export default function StudentsPage() {
                                         <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Student Name</th>
                                         <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 text-center">Roll Number</th>
                                         <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 text-center">Standard</th>
+                                        <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 text-center">Section</th>
                                         <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 text-right">Actions</th>
                                     </tr>
                                 </thead>
@@ -281,6 +296,11 @@ export default function StudentsPage() {
                                             <td className="px-8 py-5 text-center">
                                                 <span className={`px-2.5 py-1 rounded-lg border font-extrabold text-[9px] uppercase tracking-wider ${getStandardBadgeStyle(s.standard)}`}>
                                                     Std {s.standard}
+                                                </span>
+                                            </td>
+                                            <td className="px-8 py-5 text-center">
+                                                <span className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800/60 font-bold text-[10px] text-slate-600 dark:text-slate-400">
+                                                    {s.section || "—"}
                                                 </span>
                                             </td>
                                             <td className="px-8 py-5">

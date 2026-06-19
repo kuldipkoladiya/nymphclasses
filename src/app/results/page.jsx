@@ -17,6 +17,7 @@ export default function CreateResultPage() {
     const router = useRouter();
 
     const [standard, setStandard] = useState("");
+    const [section, setSection] = useState("");
     const [examName, setExamName] = useState("");
     const [examDate, setExamDate] = useState("");
     const [totalMaximum, setTotalMaximum] = useState(100);
@@ -56,7 +57,7 @@ export default function CreateResultPage() {
 
         setLoading(true);
         try {
-            const res = await axios.get(`/students/by-standard/${standard}`);
+            const res = await axios.get(`/students/by-standard/${standard}?section=${section}`);
             const list = res.data?.students || res.data || [];
             if (!list.length) {
                 toast.error(`No students found in Class ${standard}`);
@@ -130,11 +131,19 @@ export default function CreateResultPage() {
 
             {/* CONFIG PANEL */}
             <div className="glass-card p-8 bg-white dark:bg-slate-900/60">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
                     <InputWrapper label="Standard" icon={<MdClass size={18} />}>
                         <select value={standard} onChange={(e) => setStandard(e.target.value)} className="input-premium input-with-icon appearance-none cursor-pointer">
                             <option value="">Select Level</option>
                             {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(s => <option key={s} value={s}>Standard {s}</option>)}
+                        </select>
+                    </InputWrapper>
+
+                    <InputWrapper label="Section" icon={<MdClass size={18} />}>
+                        <select value={section} onChange={(e) => setSection(e.target.value)} className="input-premium input-with-icon appearance-none cursor-pointer">
+                            <option value="">Select Section</option>
+                            <option value="Morning">Morning</option>
+                            <option value="Afternoon">Afternoon</option>
                         </select>
                     </InputWrapper>
 
@@ -223,7 +232,7 @@ export default function CreateResultPage() {
                                         <tr key={stu._id} className="hover:bg-blue-600/[0.02] transition-colors group">
                                             <td className="px-8 py-5 sticky left-0 bg-white dark:bg-slate-900 group-hover:bg-slate-50 dark:group-hover:bg-slate-800 transition-colors">
                                                 <p className="font-bold text-slate-900 dark:text-white">{stu.name}</p>
-                                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">UID: {stu.rollNumber}</p>
+                                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">UID: {stu.rollNumber} {stu.section ? `(${stu.section})` : ""}</p>
                                             </td>
                                             {marks[stu._id]?.map((m, idx) => (
                                                 <td key={idx} className="px-4 py-4 border-l border-slate-50 dark:border-slate-800">

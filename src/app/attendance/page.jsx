@@ -10,6 +10,7 @@ import { FaWhatsapp } from "react-icons/fa";
 
 export default function AttendancePage() {
     const [standard, setStandard] = useState("");
+    const [section, setSection] = useState("");
     const [date, setDate] = useState("");
     const [students, setStudents] = useState([]);
     const [attendance, setAttendance] = useState({});
@@ -31,7 +32,7 @@ export default function AttendancePage() {
             if (!standard || !date) return;
             setLoading(true);
             try {
-                const sRes = await axios.get(`/students/by-standard/${standard}`);
+                const sRes = await axios.get(`/students/by-standard/${standard}?section=${section}`);
                 const list = sRes.data?.students || sRes.data || [];
                 
                 // Sort students numerically by roll number
@@ -43,7 +44,7 @@ export default function AttendancePage() {
                 setStudents(sortedList);
 
                 try {
-                    const aRes = await axios.get(`/attendance/filter?standard=${standard}&date=${date}`);
+                    const aRes = await axios.get(`/attendance/filter?standard=${standard}&date=${date}&section=${section}`);
                     const map = {};
                     const attendanceData = aRes.data?.attendance || aRes.data || [];
                     attendanceData.forEach((a) => {
@@ -64,7 +65,7 @@ export default function AttendancePage() {
             }
         };
         loadData();
-    }, [standard, date]);
+    }, [standard, date, section]);
 
     const filtered = useMemo(() => {
         if (!search) return students;
@@ -195,7 +196,7 @@ export default function AttendancePage() {
             )}
 
             {/* 3. FILTERS & SEARCH */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
                 <div className="relative group">
                     <MdClass className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors pointer-events-none z-10" size={20} />
                     <select 
@@ -207,6 +208,19 @@ export default function AttendancePage() {
                         {["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"].map(s => (
                             <option key={s} value={s}>Standard {s}</option>
                         ))}
+                    </select>
+                </div>
+
+                <div className="relative group">
+                    <MdClass className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors pointer-events-none z-10" size={20} />
+                    <select 
+                        className="w-full pl-12 pr-5 py-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-4 focus:ring-indigo-650/5 focus:border-indigo-600/40 transition-all outline-none font-extrabold text-xs uppercase tracking-wider text-slate-700 dark:text-slate-200 appearance-none cursor-pointer" 
+                        value={section} 
+                        onChange={(e) => setSection(e.target.value)}
+                    >
+                        <option value="">Select Section</option>
+                        <option value="Morning">Morning</option>
+                        <option value="Afternoon">Afternoon</option>
                     </select>
                 </div>
 
@@ -321,7 +335,7 @@ export default function AttendancePage() {
                                         <p className="font-extrabold text-sm leading-snug">{s.name}</p>
                                         <div className="flex items-center gap-2 mt-0.5">
                                             <span className="text-[9px] font-black uppercase text-slate-400 tracking-wider">
-                                                Roll No: #{s.rollNumber}
+                                                Roll No: #{s.rollNumber} {s.section ? `(${s.section})` : ""}
                                             </span>
                                             <span className="w-1 h-1 rounded-full bg-slate-350 dark:bg-slate-700" />
                                             <span className={`text-[8px] font-black uppercase tracking-wider ${isPresent ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>

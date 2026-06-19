@@ -14,6 +14,7 @@ export default function ViewResultsPage() {
     const router = useRouter();
 
     const [standard, setStandard] = useState("");
+    const [section, setSection] = useState("");
     const [students, setStudents] = useState([]);
     const [selectedStudent, setSelectedStudent] = useState(null);
     const [results, setResults] = useState([]);
@@ -36,7 +37,7 @@ export default function ViewResultsPage() {
         if (!standard) return toast.error("Enter standard first.");
         setLoadingStudents(true);
         try {
-            const res = await axios.get(`/students/by-standard/${standard}`);
+            const res = await axios.get(`/students/by-standard/${standard}?section=${section}`);
             const list = res.data?.students || res.data || [];
             setStudents(list);
             setSelectedStudent(null);
@@ -188,16 +189,25 @@ export default function ViewResultsPage() {
                 <div className="lg:col-span-4 space-y-6">
                     <div className="glass-card p-6 bg-white dark:bg-slate-900/60">
                         <h3 className="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-4">Step 1: Identity Selection</h3>
-                        <div className="flex gap-2">
-                            <div className="relative flex-1 group">
-                                <MdClass className="input-icon top-1/2 -translate-y-1/2" />
-                                <input className="input-premium input-with-icon" placeholder="Std (e.g. 10)" value={standard} onChange={(e) => setStandard(e.target.value)} />
+                        <div className="flex flex-col gap-3">
+                            <div className="flex gap-2">
+                                <div className="relative flex-1 group">
+                                    <MdClass className="input-icon top-1/2 -translate-y-1/2" />
+                                    <input className="input-premium input-with-icon" placeholder="Std (e.g. 10)" value={standard} onChange={(e) => setStandard(e.target.value)} />
+                                </div>
+                                <div className="relative flex-1 group">
+                                    <MdClass className="input-icon top-1/2 -translate-y-1/2" />
+                                    <select className="input-premium input-with-icon appearance-none cursor-pointer py-3" value={section} onChange={(e) => setSection(e.target.value)}>
+                                        <option value="">All Sections</option>
+                                        <option value="Morning">Morning</option>
+                                        <option value="Afternoon">Afternoon</option>
+                                    </select>
+                                </div>
                             </div>
-                            <button onClick={loadStudents} disabled={loadingStudents} className="px-4 rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/20">
-                                {loadingStudents ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <MdSearch size={20} />}
+                            <button onClick={loadStudents} disabled={loadingStudents} className="w-full py-3.5 rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/20 flex items-center justify-center gap-2 font-bold text-xs uppercase">
+                                {loadingStudents ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <><MdSearch size={20} /> Search Students</>}
                             </button>
                         </div>
-
                         <div className="mt-6 space-y-2 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
                             {students.map(s => (
                                 <button 
@@ -207,7 +217,7 @@ export default function ViewResultsPage() {
                                 >
                                     <div className="text-left">
                                         <p className="text-xs font-black tracking-tight">{s.name}</p>
-                                        <p className={`text-[9px] font-bold uppercase tracking-widest mt-0.5 ${selectedStudent?._id === s._id ? 'text-white/70' : 'text-slate-400'}`}>Roll: {s.rollNumber}</p>
+                                        <p className={`text-[9px] font-bold uppercase tracking-widest mt-0.5 ${selectedStudent?._id === s._id ? 'text-white/70' : 'text-slate-400'}`}>Roll: {s.rollNumber} {s.section ? `• ${s.section}` : ""}</p>
                                     </div>
                                     <MdPerson className={selectedStudent?._id === s._id ? 'text-white/40' : 'text-slate-300'} />
                                 </button>
