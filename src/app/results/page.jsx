@@ -28,7 +28,7 @@ export default function CreateResultPage() {
 
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
-    const [sendWhatsApp, setSendWhatsApp] = useState(true);
+    const [sendWhatsApp, setSendWhatsApp] = useState(false);
 
     const SUBJECT_OPTIONS = [
         "Maths", "Science", "English", "Gujarati", "Hindi", "Social Science", "Computer", "Sanskrit",

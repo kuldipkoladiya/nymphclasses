@@ -18,7 +18,7 @@ export default function AttendancePage() {
     const [search, setSearch] = useState("");
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
-    const [sendWhatsApp, setSendWhatsApp] = useState(true);
+    const [sendWhatsApp, setSendWhatsApp] = useState(false);
 
     useEffect(() => {
         if (!date) {
