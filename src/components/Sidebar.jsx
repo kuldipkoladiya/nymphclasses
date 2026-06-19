@@ -118,7 +118,7 @@ function SidebarContent({ dark, toggle, setSidebarOpen }) {
 
     const allNavItems = [
         { href: "/dashboard", icon: MdDashboard, label: "Dashboard", permission: "dashboard" },
-        { href: "/students", icon: MdPeople, label: "Student Roster", permission: "students" },
+        { href: "/students", icon: MdPeople, label: "Register Student", permission: "students" },
         { href: "/results", icon: MdSchool, label: "Results", permission: "results" },
         { href: "/fees", icon: MdMoney, label: "Fee Config", permission: "fees" },
         { href: "/attendance", icon: MdList, label: "Attendance", permission: "attendance" },

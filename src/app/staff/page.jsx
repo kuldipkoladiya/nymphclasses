@@ -19,7 +19,7 @@ import {
 
 const permissionsList = [
     { key: "dashboard", label: "Dashboard", icon: MdDashboard, desc: "Access standard dashboard analytics" },
-    { key: "students", label: "Student Roster", icon: MdPeople, desc: "Add, edit, or remove student profiles" },
+    { key: "students", label: "Register Student", icon: MdPeople, desc: "Add, edit, or remove student profiles" },
     { key: "results", label: "Results", icon: MdSchool, desc: "Manage marks and publish WhatsApp results" },
     { key: "fees", label: "Fee Config", icon: MdMoney, desc: "Set yearly fees and record payments" },
     { key: "attendance", label: "Attendance", icon: MdList, desc: "Mark daily attendance and send alerts" },

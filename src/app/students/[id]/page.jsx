@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import axios from "@/utils/axios";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
-import { MdEdit, MdDelete, MdArrowBack, MdPerson, MdPhone, MdLocationOn, MdFamilyRestroom, MdClass, MdNumbers } from "react-icons/md";
+import { motion } from "framer-motion";
+import { MdEdit, MdDelete, MdArrowBack, MdPerson, MdPhone, MdLocationOn, MdFamilyRestroom, MdClass, MdNumbers, MdAssignmentInd } from "react-icons/md";
 import toast from "react-hot-toast";
 import Popup from "@/components/Popup";
 
@@ -35,7 +35,7 @@ export default function StudentDetails({ params }) {
         setPopup({
             type: "confirm",
             title: "Delete Student Profile",
-            message: "This action is irreversible. All data associated with this student will be permanently deleted.",
+            message: "Warning: This action is irreversible. All records (attendance, results, fee logs) for this student will be lost.",
         });
     };
 
@@ -57,27 +57,26 @@ export default function StudentDetails({ params }) {
 
     if (loading) {
         return (
-            <div className="max-w-4xl mx-auto space-y-6 animate-pulse">
-                <div className="h-40 bg-gray-200 dark:bg-slate-800 rounded-3xl w-full"></div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="h-64 bg-gray-200 dark:bg-slate-800 rounded-3xl"></div>
-                    <div className="h-64 bg-gray-200 dark:bg-slate-800 rounded-3xl"></div>
-                </div>
+            <div className="max-w-5xl mx-auto space-y-6 animate-pulse px-4">
+                <div className="h-16 bg-gray-200 dark:bg-slate-800 rounded-2xl w-full"></div>
+                <div className="h-96 bg-gray-200 dark:bg-slate-800 rounded-3xl w-full mt-6"></div>
             </div>
         );
     }
 
     if (!student) {
         return (
-            <div className="flex flex-col items-center justify-center min-h-[50vh]">
-                <MdPerson size={64} className="text-gray-300 dark:text-gray-600 mb-4" />
-                <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200">Profile Not Found</h2>
-                <p className="text-gray-500 mt-2 mb-6">The student record you are looking for does not exist or was deleted.</p>
+            <div className="flex flex-col items-center justify-center min-h-[50vh] px-4">
+                <div className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-slate-900 flex items-center justify-center text-slate-400 mb-4">
+                    <MdPerson size={36} />
+                </div>
+                <h2 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">Student Profile Not Found</h2>
+                <p className="text-sm text-slate-500 mt-2 mb-6 text-center max-w-sm">The student record you are looking for does not exist or has been removed from the registry.</p>
                 <button
-                    onClick={() => router.back()}
-                    className="px-6 py-2.5 bg-indigo-600 text-white rounded-xl shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/40 transition-all font-semibold"
+                    onClick={() => router.push("/students")}
+                    className="px-6 py-3 bg-indigo-600 hover:bg-indigo-755 text-white rounded-2xl shadow-md transition-all font-extrabold text-xs uppercase tracking-widest"
                 >
-                    Go Back
+                    Return to Registry
                 </button>
             </div>
         );
@@ -85,114 +84,124 @@ export default function StudentDetails({ params }) {
 
     const initialLetter = student.name ? student.name.charAt(0).toUpperCase() : "?";
 
-    const detailSections = [
-        {
-            title: "Academic Information",
-            icon: MdClass,
-            color: "text-indigo-500 flex items-center gap-2",
-            fields: [
-                { label: "Roll Number", value: student.rollNumber, icon: MdNumbers },
-                { label: "Standard", value: `Std ${student.standard}`, icon: MdClass },
-                { label: "Section", value: student.section || "N/A", icon: MdClass },
-            ],
-        },
-        {
-            title: "Personal Information",
-            icon: MdPerson,
-            color: "text-emerald-500 flex items-center gap-2",
-            fields: [
-                { label: "Father's Name", value: student.fatherName, icon: MdFamilyRestroom },
-                { label: "Mother's Name", value: student.motherName, icon: MdFamilyRestroom },
-                { label: "Contact No.", value: student.phone, icon: MdPhone },
-                { label: "Address", value: student.address, icon: MdLocationOn },
-            ],
-        },
-    ];
+    const getStandardBadgeStyle = (std) => {
+        const num = parseInt(std);
+        if (num <= 4) return "bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400 border-blue-100 dark:border-blue-500/20";
+        if (num <= 8) return "bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400 border-emerald-100 dark:border-emerald-500/20";
+        if (num <= 10) return "bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400 border-indigo-100 dark:border-indigo-500/20";
+        return "bg-rose-50 text-rose-600 dark:bg-rose-500/10 dark:text-rose-400 border-rose-100 dark:border-rose-500/20";
+    };
 
     return (
         <motion.div 
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            className="max-w-[1100px] mx-auto space-y-6"
+            className="max-w-5xl mx-auto space-y-6 px-4 sm:px-6"
         >
-            {/* HEADER & PROFILE OVERVIEW */}
-            <div className="glass-card relative overflow-hidden bg-gradient-to-br from-white to-gray-50 dark:from-[#131C31] dark:to-slate-900 border border-gray-100 dark:border-white/5">
-                {/* Decorative Background Blur */}
-                <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-indigo-500/10 dark:bg-indigo-500/5 blur-3xl rounded-full -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
+            
+            {/* UNIFIED DOSSIER DOSSIER SHEET */}
+            <div className="rounded-[2rem] bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800/60 shadow-sm p-6 md:p-8 space-y-8 relative overflow-hidden">
+                <div className="absolute right-0 top-0 w-64 h-64 bg-indigo-600/5 rounded-full blur-3xl pointer-events-none" />
                 
-                <div className="p-6 md:p-8 relative z-10 flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-8">
-                    <div className="flex-shrink-0 relative group">
-                        <div className="absolute inset-0 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-full blur opacity-40 group-hover:opacity-60 transition-opacity duration-300"></div>
-                        <div className="h-32 w-32 md:h-40 md:w-40 relative bg-gradient-to-br from-white to-indigo-50 dark:from-slate-800 dark:to-indigo-900/40 rounded-full flex items-center justify-center border-4 border-white dark:border-slate-800 shadow-xl z-10">
-                            <span className="text-5xl md:text-6xl font-black bg-clip-text text-transparent bg-gradient-to-br from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400">
-                                {initialLetter}
-                            </span>
+                {/* 1. TOP DOSSIER HEADER PROFILE ROW */}
+                <div className="flex flex-col md:flex-row items-center justify-between gap-6 pb-6 border-b border-slate-100 dark:border-slate-800 relative z-10">
+                    <div className="flex flex-col sm:flex-row items-center gap-5 text-center sm:text-left">
+                        <div className="h-16 w-16 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-white rounded-2xl flex items-center justify-center font-black text-2xl border border-slate-150 dark:border-slate-700 shadow-inner flex-shrink-0">
+                            {initialLetter}
+                        </div>
+                        <div>
+                            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-1">
+                                <span className={`px-2 py-0.5 rounded-lg border font-black text-[9px] uppercase tracking-wider ${getStandardBadgeStyle(student.standard)}`}>
+                                    Std {student.standard}
+                                </span>
+                                <span className="px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-850 text-slate-500 font-extrabold text-[9px] uppercase tracking-wider">
+                                    Roll No: {student.rollNumber}
+                                </span>
+                            </div>
+                            <h1 className="text-xl sm:text-2xl font-black text-slate-950 dark:text-white tracking-tight">{student.name}</h1>
                         </div>
                     </div>
-                    
-                    <div className="flex-1 text-center md:text-left flex flex-col justify-center h-full pt-2">
-                        <div className="inline-flex items-center gap-2 mb-2 font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-500/10 px-3 py-1 rounded-full text-sm">
-                            <MdPerson size={16} /> Student Profile
-                        </div>
-                        <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2 tracking-tight">
-                            {student.name}
-                        </h1>
-                        <p className="text-lg text-gray-500 dark:text-gray-400 flex items-center justify-center md:justify-start gap-2">
-                            <MdNumbers className="text-gray-400" />
-                            Roll No: <span className="font-semibold text-gray-700 dark:text-gray-200">{student.rollNumber}</span> • Standard <span className="font-semibold text-gray-700 dark:text-gray-200">{student.standard}</span>
-                        </p>
-                        
-                        <div className="flex items-center justify-center md:justify-start gap-3 mt-6">
-                            <button
-                                onClick={() => router.back()}
-                                className="px-5 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 font-semibold text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-800 transition-all shadow-sm flex items-center gap-2"
-                            >
-                                <MdArrowBack size={18} /> Back
+
+                    {/* Quick action bar */}
+                    <div className="flex gap-2 items-center w-full sm:w-auto justify-center">
+                        <button
+                            onClick={() => router.push("/students")}
+                            className="p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-500 hover:text-indigo-600 hover:bg-slate-50 dark:hover:bg-slate-850 transition-all shadow-sm"
+                            title="Back to Registry"
+                        >
+                            <MdArrowBack size={18} />
+                        </button>
+                        <Link href={`/students/${id}/edit`} className="flex-1 sm:flex-initial">
+                            <button className="w-full px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs uppercase tracking-widest shadow-md transition-all flex items-center justify-center gap-1.5">
+                                <MdEdit size={16} /> Edit Profile
                             </button>
-                            <Link
-                                href={`/students/${id}/edit`}
-                                className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-indigo-500 text-white font-semibold text-sm shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/40 transition-all flex items-center gap-2"
-                            >
-                                <MdEdit size={18} /> Edit Profile
-                            </Link>
-                            <button
-                                onClick={openDeletePopup}
-                                className="px-5 py-2.5 rounded-xl bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 font-semibold text-sm hover:bg-red-100 dark:hover:bg-red-500/20 transition-all flex items-center gap-2 border border-transparent dark:border-red-500/20"
-                            >
-                                <MdDelete size={18} /> Delete
-                            </button>
-                        </div>
+                        </Link>
+                        <button
+                            onClick={openDeletePopup}
+                            className="p-2.5 rounded-xl bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white dark:bg-rose-500/10 dark:text-rose-400 transition-colors flex items-center justify-center"
+                            title="Delete Profile"
+                        >
+                            <MdDelete size={18} />
+                        </button>
                     </div>
                 </div>
-            </div>
 
-            {/* DETAILS GRID */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {detailSections.map((section, idx) => (
-                    <div key={idx} className="glass-card p-6 md:p-8">
-                        <h2 className={`text-lg font-bold mb-6 tracking-tight ${section.color}`}>
-                            <section.icon size={22} />
-                            {section.title}
-                        </h2>
+                {/* 2. TWO COLUMN DETAILS DECK */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8 relative z-10">
+                    
+                    {/* LEFT COLUMN: ACADEMIC CREDENTIALS */}
+                    <div className="space-y-6">
+                        <h3 className="text-xs font-black uppercase tracking-widest text-slate-400 flex items-center gap-2">
+                            <MdAssignmentInd size={16} className="text-indigo-500" /> Academic Dossier
+                        </h3>
                         
                         <div className="space-y-4">
-                            {section.fields.map((field, fIdx) => (
-                                <div key={fIdx} className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-gray-100 dark:border-white/5 pb-4 last:border-0 last:pb-0">
-                                    <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 text-sm font-medium mb-1 sm:mb-0">
-                                        <field.icon size={16} />
-                                        {field.label}
-                                    </div>
-                                    <div className="text-gray-800 dark:text-gray-100 font-semibold text-right max-w-xs break-words">
-                                        {field.value || "-"}
-                                    </div>
-                                </div>
-                            ))}
+                            <div className="flex justify-between items-center py-2.5 border-b border-slate-50 dark:border-slate-800/40">
+                                <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Class standard</span>
+                                <span className="font-extrabold text-slate-800 dark:text-slate-200 text-sm">Standard {student.standard}</span>
+                            </div>
+                            <div className="flex justify-between items-center py-2.5 border-b border-slate-50 dark:border-slate-800/40">
+                                <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Roll Assignment</span>
+                                <span className="font-extrabold text-slate-800 dark:text-slate-200 text-sm">{student.rollNumber}</span>
+                            </div>
+                            <div className="flex justify-between items-center py-2.5 border-b border-slate-50 dark:border-slate-800/40">
+                                <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Class Section</span>
+                                <span className="font-extrabold text-slate-800 dark:text-slate-200 text-sm">{student.section || "Section A"}</span>
+                            </div>
                         </div>
                     </div>
-                ))}
+
+                    {/* RIGHT COLUMN: PERSONAL & PARENT LEDGER */}
+                    <div className="space-y-6 md:border-l md:border-slate-100 md:dark:border-slate-800 md:pl-12">
+                        <h3 className="text-xs font-black uppercase tracking-widest text-slate-400 flex items-center gap-2">
+                            <MdPerson size={16} className="text-emerald-500" /> Parents & Contacts
+                        </h3>
+                        
+                        <div className="space-y-4">
+                            <div className="flex justify-between items-center py-2.5 border-b border-slate-50 dark:border-slate-800/40">
+                                <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider flex items-center gap-1"><MdFamilyRestroom size={12} /> {"Father's Name"}</span>
+                                <span className="font-bold text-slate-800 dark:text-slate-200 text-sm">{student.fatherName || "—"}</span>
+                            </div>
+                            <div className="flex justify-between items-center py-2.5 border-b border-slate-50 dark:border-slate-800/40">
+                                <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider flex items-center gap-1"><MdFamilyRestroom size={12} /> {"Mother's Name"}</span>
+                                <span className="font-bold text-slate-800 dark:text-slate-200 text-sm">{student.motherName || "—"}</span>
+                            </div>
+                            <div className="flex justify-between items-center py-2.5 border-b border-slate-50 dark:border-slate-800/40">
+                                <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider flex items-center gap-1"><MdPhone size={12} /> Contact Number</span>
+                                <span className="font-extrabold text-indigo-600 dark:text-indigo-400 text-sm">{student.phone || "—"}</span>
+                            </div>
+                            <div className="flex flex-col py-2.5 gap-1.5">
+                                <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider flex items-center gap-1"><MdLocationOn size={12} /> Address details</span>
+                                <span className="font-semibold text-slate-650 dark:text-slate-350 text-xs leading-relaxed">{student.address || "—"}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
             </div>
 
-            {/* POPUP CONFIRMATION */}
+            {/* CONFIRMATION POPUP */}
             {popup && (
                 <Popup
                     open={true}

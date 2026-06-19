@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { MdMenu, MdNotifications, MdSearch, MdSecurity, MdLogout } from "react-icons/md";
+import { MdMenu, MdNotifications, MdSearch, MdSecurity, MdLogout, MdCheckCircle, MdInfoOutline, MdCampaign } from "react-icons/md";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Logo from "../assets/logo.png";
@@ -10,6 +10,7 @@ import axios from "../utils/axios";
 export default function Navbar({ setSidebarOpen }) {
     const [admin, setAdmin] = useState(null);
     const [profileOpen, setProfileOpen] = useState(false);
+    const [notificationsOpen, setNotificationsOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
     const [greeting, setGreeting] = useState("Welcome");
 
@@ -170,13 +171,90 @@ export default function Navbar({ setSidebarOpen }) {
                     </AnimatePresence>
                 </div>
 
-                <motion.button 
-                    whileTap={{ scale: 0.95 }}
-                    className="relative p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 shadow-sm hover:border-blue-600/30 transition-all"
-                >
-                    <MdNotifications size={20} />
-                    <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-blue-600 rounded-full border-2 border-white dark:border-slate-900"></span>
-                </motion.button>
+                {/* NOTIFICATIONS */}
+                <div className="relative">
+                    <motion.button 
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => setNotificationsOpen(!notificationsOpen)}
+                        className={`relative p-2.5 rounded-xl border shadow-sm transition-all ${notificationsOpen ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 hover:border-blue-600/30'}`}
+                    >
+                        <MdNotifications size={20} />
+                        {!notificationsOpen && (
+                            <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-blue-600 rounded-full border-2 border-white dark:border-slate-900"></span>
+                        )}
+                    </motion.button>
+
+                    <AnimatePresence>
+                        {notificationsOpen && (
+                            <>
+                                <motion.div 
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    exit={{ opacity: 0 }}
+                                    className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100]" 
+                                    onClick={() => setNotificationsOpen(false)} 
+                                />
+                                
+                                <motion.div 
+                                    initial={{ y: "100%", opacity: 0 }}
+                                    animate={{ y: 0, opacity: 1 }}
+                                    exit={{ y: "100%", opacity: 0 }}
+                                    transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                                    className="
+                                        fixed bottom-0 left-0 right-0 rounded-t-[2.5rem] bg-white dark:bg-slate-900 z-[101] p-6 pb-10 shadow-2xl border-t border-blue-600/10
+                                        md:absolute md:top-full md:bottom-auto md:left-auto md:right-0 md:mt-4 md:w-[360px] md:rounded-3xl md:origin-top-right md:translate-y-0
+                                    "
+                                >
+                                    <div className="w-12 h-1.5 bg-slate-200 dark:bg-slate-800 rounded-full mx-auto mb-6 md:hidden" />
+                                    
+                                    <div className="flex items-center justify-between mb-5 border-b border-slate-100 dark:border-slate-800/80 pb-3">
+                                        <h3 className="font-black text-slate-900 dark:text-white text-base uppercase tracking-tight flex items-center gap-2">
+                                            <MdCampaign className="text-rose-500 animate-pulse" size={20} /> Notice Board
+                                        </h3>
+                                        <span className="text-[9px] font-black uppercase tracking-wider text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full">
+                                            Recent alerts
+                                        </span>
+                                    </div>
+
+                                    <div className="space-y-4 max-h-[350px] overflow-y-auto pr-1">
+                                        {/* WhatsApp GATEWAY */}
+                                        <div className="flex gap-3 items-start border-b border-slate-100 dark:border-slate-800/80 pb-4">
+                                            <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/25 text-emerald-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                                <MdCheckCircle size={16} />
+                                            </div>
+                                            <div className="space-y-1">
+                                                <span className="text-xs font-bold text-slate-900 dark:text-slate-200 block">WhatsApp Gateway Connected</span>
+                                                <span className="text-[10px] text-slate-500 dark:text-slate-400 block font-medium leading-relaxed">Automatic PDF scorecards and absentee alerts will dispatch successfully.</span>
+                                            </div>
+                                        </div>
+
+                                        {/* FEE DEFAULTERS */}
+                                        <div className="flex gap-3 items-start border-b border-slate-100 dark:border-slate-800/80 pb-4">
+                                            <div className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/25 text-amber-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                                <MdInfoOutline size={16} />
+                                            </div>
+                                            <div className="space-y-1">
+                                                <span className="text-xs font-bold text-slate-900 dark:text-slate-200 block">Fee Defaulters Checked</span>
+                                                <span className="text-[10px] text-slate-500 dark:text-slate-400 block font-medium leading-relaxed">Check the Dues and Deficits page to review pending payments for this term.</span>
+                                            </div>
+                                        </div>
+
+                                        {/* NEW RESULTS */}
+                                        <div className="flex gap-3 items-start pb-2">
+                                            <div className="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/25 text-blue-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                                <MdCampaign size={16} />
+                                            </div>
+                                            <div className="space-y-1">
+                                                <span className="text-xs font-bold text-slate-900 dark:text-slate-200 block">New Results Redesign Ready</span>
+                                                <span className="text-[10px] text-slate-500 dark:text-slate-400 block font-medium leading-relaxed">Visual PDF scorecards now feature Nymph logo and detailed breakdown.</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            </>
+                        )}
+                    </AnimatePresence>
+                </div>
             </div>
         </header>
     );

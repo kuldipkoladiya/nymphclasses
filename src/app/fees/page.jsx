@@ -64,7 +64,6 @@ export default function FeesDashboard() {
                 </div>
             </div>
 
-            {/* ACTIONS */}
             <motion.div
                 variants={containerVariants}
                 initial="hidden"
@@ -74,40 +73,40 @@ export default function FeesDashboard() {
                 <ActionCard
                     variants={itemVariants}
                     icon={<MdPayments size={28} />}
-                    title="Collection"
-                    subtitle="Global Registry"
+                    title="All Transactions"
+                    subtitle="View collected fees"
                     color="emerald"
                     onClick={() => router.push("/fees/collection")}
                 />
                 <ActionCard
                     variants={itemVariants}
                     icon={<MdAccountBalance size={28} />}
-                    title="Payments"
-                    subtitle="New Entry"
+                    title="Record Payment"
+                    subtitle="Add new fee entry"
                     color="blue"
                     onClick={() => router.push("/fees/payments")}
                 />
                 <ActionCard
                     variants={itemVariants}
                     icon={<MdPendingActions size={28} />}
-                    title="Deficits"
-                    subtitle="Pending Fees"
+                    title="Pending Dues"
+                    subtitle="Unpaid fees & deficits"
                     color="rose"
                     onClick={() => router.push("/fees/pending")}
                 />
                 <ActionCard
                     variants={itemVariants}
                     icon={<MdPeopleAlt size={28} />}
-                    title="Fee Config"
-                    subtitle="Edit Prices"
+                    title="Fee Structure"
+                    subtitle="Configure class fees"
                     color="blue"
                     onClick={() => router.push("/fees/structure")}
                 />
                 <ActionCard
                     variants={itemVariants}
                     icon={<MdInsights size={28} />}
-                    title="Reports"
-                    subtitle="Fee Stats"
+                    title="Income Reports"
+                    subtitle="Analytics & statistics"
                     color="slate"
                     onClick={() => router.push("/fees/reports")}
                 />
