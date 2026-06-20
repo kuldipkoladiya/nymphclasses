@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { MdArrowBack, MdPerson, MdPhone, MdLocationOn, MdFamilyRestroom, MdClass, MdNumbers, MdSave } from "react-icons/md";
 import toast from "react-hot-toast";
+import { STANDARDS } from "@/utils/standards";
 
 export default function EditStudent({ params }) {
     const { id } = params;
@@ -174,17 +175,46 @@ export default function EditStudent({ params }) {
                                     <label className="text-[9px] font-black uppercase text-slate-400 tracking-wider flex items-center gap-1">
                                         <field.icon size={12} className="text-slate-400 group-focus-within:text-indigo-600 transition-colors" /> {field.label}
                                     </label>
-                                    <input
-                                        type={field.type}
-                                        name={field.name}
-                                        value={form[field.name]}
-                                        onChange={handleChange}
-                                        placeholder={field.placeholder}
-                                        required={field.required}
-                                        pattern={field.pattern}
-                                        maxLength={field.maxLength}
-                                        className="w-full px-4 py-3 bg-slate-50/50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-4 focus:ring-indigo-650/5 focus:border-indigo-600/45 transition-all outline-none font-medium text-slate-900 dark:text-white placeholder:text-slate-400 text-sm"
-                                    />
+                                    {field.name === "standard" ? (
+                                        <select
+                                            name="standard"
+                                            value={form.standard}
+                                            onChange={handleChange}
+                                            required
+                                            className="w-full px-4 py-3 bg-slate-50/50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-4 focus:ring-indigo-650/5 focus:border-indigo-600/45 transition-all outline-none font-medium text-slate-900 dark:text-white placeholder:text-slate-400 text-sm appearance-none cursor-pointer"
+                                        >
+                                            <option value="">Select Standard</option>
+                                            {STANDARDS.filter(s => s !== "Graduated").map(s => (
+                                                <option key={s} value={s}>
+                                                    {isNaN(Number(s)) ? s : `Standard ${s}`}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    ) : field.name === "section" ? (
+                                        <select
+                                            name="section"
+                                            value={form.section}
+                                            onChange={handleChange}
+                                            required
+                                            className="w-full px-4 py-3 bg-slate-50/50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-4 focus:ring-indigo-650/5 focus:border-indigo-600/45 transition-all outline-none font-medium text-slate-900 dark:text-white placeholder:text-slate-400 text-sm appearance-none cursor-pointer"
+                                        >
+                                            <option value="">Select Section</option>
+                                            <option value="Morning">Morning</option>
+                                            <option value="Afternoon">Afternoon</option>
+                                        </select>
+                                    ) : (
+                                        <input
+                                            type={field.type}
+                                            name={field.name}
+                                            value={form[field.name]}
+                                            onChange={handleChange}
+                                            placeholder={field.placeholder}
+                                            required={field.required}
+                                            pattern={field.pattern}
+                                            maxLength={field.maxLength}
+                                            className="w-full px-4 py-3 bg-slate-50/50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-4 focus:ring-indigo-650/5 focus:border-indigo-600/45 transition-all outline-none font-medium text-slate-900 dark:text-white placeholder:text-slate-400 text-sm"
+                                        />
+                                    )}
                                 </div>
                             ))}
 

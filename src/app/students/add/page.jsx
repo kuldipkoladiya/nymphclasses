@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { MdArrowBack, MdPerson, MdPhone, MdLocationOn, MdFamilyRestroom, MdClass, MdNumbers, MdCheckCircle } from "react-icons/md";
 import toast from "react-hot-toast";
+import { STANDARDS } from "@/utils/standards";
 
 export default function AddStudent() {
     const router = useRouter();
@@ -121,7 +122,11 @@ export default function AddStudent() {
                                     className="input-premium input-with-icon appearance-none cursor-pointer"
                                 >
                                     <option value="">Select Standard</option>
-                                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(s => <option key={s} value={s}>Standard {s}</option>)}
+                                    {STANDARDS.filter(s => s !== "Graduated").map(s => (
+                                        <option key={s} value={s}>
+                                            {isNaN(Number(s)) ? s : `Standard ${s}`}
+                                        </option>
+                                    ))}
                                 </select>
                             </div>
                         </div>
