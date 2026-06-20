@@ -7,6 +7,7 @@ import toast from "react-hot-toast";
 import Link from "next/link";
 import { MdSearch, MdCalendarMonth, MdClass, MdCheckCircle, MdCancel, MdSave, MdTrendingUp, MdPeople, MdFactCheck, MdAssignmentTurnedIn } from "react-icons/md";
 import { FaWhatsapp } from "react-icons/fa";
+import { STANDARDS } from "../../utils/standards";
 
 export default function AttendancePage() {
     const [standard, setStandard] = useState("");
@@ -205,7 +206,7 @@ export default function AttendancePage() {
                         onChange={(e) => setStandard(e.target.value)}
                     >
                         <option value="">Select Standard</option>
-                        {["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"].map(s => (
+                        {STANDARDS.map(s => (
                             <option key={s} value={s}>Standard {s}</option>
                         ))}
                     </select>

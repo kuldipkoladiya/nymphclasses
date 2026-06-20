@@ -7,6 +7,7 @@ import { MdDelete, MdEdit, MdAdd, MdSearch, MdFilterList, MdPeople, MdSchool, Md
 import Popup from "@/components/Popup";
 import { motion, AnimatePresence } from "framer-motion";
 import toast from "react-hot-toast";
+import { STANDARDS } from "@/utils/standards";
 
 export default function StudentsPage() {
     const [students, setStudents] = useState([]);
@@ -104,11 +105,18 @@ export default function StudentsPage() {
                             <p className="text-slate-400 dark:text-slate-500 font-bold text-[9px] uppercase tracking-widest mt-2">Manage profiles, standards, and contact details</p>
                         </div>
                     </div>
-                    <Link href="/students/add">
-                        <button className="px-6 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs uppercase tracking-widest shadow-md shadow-indigo-600/15 hover:shadow-indigo-600/25 transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center gap-2">
-                            <MdAdd size={18} /> Add New Student
-                        </button>
-                    </Link>
+                    <div className="flex flex-wrap gap-3">
+                        <Link href="/students/promote">
+                            <button className="px-6 py-3 rounded-2xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-805 text-slate-750 dark:text-slate-200 font-extrabold text-xs uppercase tracking-widest transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center gap-2">
+                                <MdSchool size={18} className="text-indigo-600" /> Promote Students
+                            </button>
+                        </Link>
+                        <Link href="/students/add">
+                            <button className="px-6 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs uppercase tracking-widest shadow-md shadow-indigo-600/15 hover:shadow-indigo-600/25 transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center gap-2">
+                                <MdAdd size={18} /> Add New Student
+                            </button>
+                        </Link>
+                    </div>
                 </div>
             </div>
 
@@ -180,7 +188,7 @@ export default function StudentsPage() {
                         onChange={(e) => setFilterStd(e.target.value)}
                     >
                         <option value="">All Standards</option>
-                        {["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"].map(s => (
+                        {STANDARDS.map(s => (
                             <option key={s} value={s}>Standard {s}</option>
                         ))}
                     </select>

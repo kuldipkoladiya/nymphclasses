@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { MdArrowBack, MdWarning, MdSearch, MdFilterList, MdPayments, MdPerson, MdEmail } from "react-icons/md";
 import toast from "react-hot-toast";
+import { STANDARDS } from "@/utils/standards";
 
 export default function PendingFeesPage() {
     const router = useRouter();
@@ -62,7 +63,7 @@ export default function PendingFeesPage() {
                     <MdFilterList className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-rose-500 transition-colors" size={20} />
                     <select className="input-premium pl-14 appearance-none cursor-pointer" value={standard} onChange={(e) => setStandard(e.target.value)}>
                         <option value="">Select Class</option>
-                        {["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"].map(s => <option key={s} value={s}>Standard {s}</option>)}
+                        {STANDARDS.map(s => <option key={s} value={s}>Standard {s}</option>)}
                     </select>
                 </div>
                 <div className="md:col-span-6 relative group">

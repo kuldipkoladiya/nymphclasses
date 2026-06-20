@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { MdArrowBack, MdSettings, MdClass, MdCurrencyRupee, MdSave, MdDelete, MdInfo, MdAddCircle } from "react-icons/md";
 import toast from "react-hot-toast";
 import Popup from "@/components/Popup";
+import { STANDARDS } from "@/utils/standards";
 
 export default function FeeStructurePage() {
     const router = useRouter();
@@ -94,13 +95,16 @@ export default function FeeStructurePage() {
                                 <label className="label-premium ml-1">Standard / Class</label>
                                 <div className="relative group">
                                     <MdClass className="input-icon top-1/2 -translate-y-1/2" size={18} />
-                                    <input
-                                        type="number"
-                                        placeholder="e.g. 10"
-                                        className="input-premium input-with-icon"
+                                    <select
+                                        className="input-premium input-with-icon appearance-none cursor-pointer"
                                         value={standard}
                                         onChange={(e) => setStandard(e.target.value)}
-                                    />
+                                    >
+                                        <option value="">Select Standard</option>
+                                        {STANDARDS.filter(s => s !== "Graduated").map(s => (
+                                            <option key={s} value={s}>Standard {s}</option>
+                                        ))}
+                                    </select>
                                 </div>
                             </div>
 

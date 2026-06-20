@@ -7,6 +7,7 @@ import toast from "react-hot-toast";
 import { MdSearch, MdCalendarMonth, MdClass, MdArrowBack, MdFilterList, MdDelete, MdCheckCircle, MdCancel, MdPending, MdUpdate } from "react-icons/md";
 import Link from "next/link";
 import Popup from "@/components/Popup";
+import { STANDARDS } from "@/utils/standards";
 
 export default function AttendanceViewPage() {
     const [standard, setStandard] = useState("");
@@ -83,7 +84,7 @@ export default function AttendanceViewPage() {
                     <MdClass className="input-icon top-1/2 -translate-y-1/2" size={20} />
                     <select className="input-premium input-with-icon appearance-none cursor-pointer" value={standard} onChange={(e) => setStandard(e.target.value)}>
                         <option value="">Select Standard</option>
-                        {["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"].map(s => <option key={s} value={s}>Standard {s}</option>)}
+                        {STANDARDS.map(s => <option key={s} value={s}>Standard {s}</option>)}
                     </select>
                 </div>
 

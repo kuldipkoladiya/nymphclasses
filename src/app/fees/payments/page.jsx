@@ -165,12 +165,13 @@ export default function FeePaymentsPage() {
     };
 
     const payFee = async () => {
-        if (!selectedStudent || !amount) return toast.error("Amount is required.");
+        if (!selectedStudent) return toast.error("Please select a student first.");
+        if (!amount) return toast.error("Amount is required.");
         setPaying(true);
         try {
             const res = await axios.post("/fees/pay", {
                 studentId: selectedStudent._id,
-                amount,
+                amount: Number(amount),
                 paymentMode: mode,
                 note,
             });
@@ -251,7 +252,7 @@ export default function FeePaymentsPage() {
                 {/* LEFT: SEARCH & PAYMENT */}
                 <div className="lg:col-span-4 space-y-6">
                     {/* SEARCH BOX */}
-                    <div className="glass-card p-6 bg-white dark:bg-slate-900/60 relative">
+                    <div className="glass-card p-6 bg-white dark:bg-slate-900/60 relative z-30">
                         <h3 className="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-4">Find Student</h3>
                         <div className="relative group">
                             <MdSearch className="input-icon top-1/2 -translate-y-1/2" size={20} />
