@@ -17,7 +17,7 @@ export default function AddStudent() {
         rollNumber: "",
         standard: "",
         section: "",
-        academicYear: "",
+        academicYear: "2026-27",
         fatherName: "",
         motherName: "",
         phone: "",
