@@ -14,6 +14,7 @@ export default function StudentsPage() {
     const [search, setSearch] = useState("");
     const [filterStd, setFilterStd] = useState("");
     const [filterSection, setFilterSection] = useState("");
+    const [filterAcademicYear, setFilterAcademicYear] = useState("");
     const [popup, setPopup] = useState(null);
     const [deleteId, setDeleteId] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -32,17 +33,17 @@ export default function StudentsPage() {
         return () => clearTimeout(timer);
     }, [search]);
 
-    // Reset to page 1 on standard or section filter change
+    // Reset to page 1 on standard, section or academic year filter change
     useEffect(() => {
         setPage(1);
-    }, [filterStd, filterSection]);
+    }, [filterStd, filterSection, filterAcademicYear]);
 
     useEffect(() => {
         const fetchStudents = async () => {
             setLoading(true);
             try {
                 const res = await axios.get(
-                    `/students?paginate=true&page=${page}&limit=15&search=${debouncedSearch}&standard=${filterStd}&section=${filterSection}`
+                    `/students?paginate=true&page=${page}&limit=15&search=${debouncedSearch}&standard=${filterStd}&section=${filterSection}&academicYear=${filterAcademicYear}`
                 );
                 setStudents(res.data.students || []);
                 setTotalPages(res.data.totalPages || 1);
@@ -54,7 +55,7 @@ export default function StudentsPage() {
             }
         };
         fetchStudents();
-    }, [page, debouncedSearch, filterStd, filterSection]);
+    }, [page, debouncedSearch, filterStd, filterSection, filterAcademicYear]);
 
     const filtered = students;
 
@@ -170,7 +171,7 @@ export default function StudentsPage() {
             </div>
 
             {/* 3. FILTERS PANEL */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
                 <div className="md:col-span-2 relative group">
                     <MdSearch className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors pointer-events-none z-10" size={20} />
                     <input 
@@ -204,6 +205,15 @@ export default function StudentsPage() {
                         <option value="Morning">Morning</option>
                         <option value="Afternoon">Afternoon</option>
                     </select>
+                </div>
+                <div className="relative group">
+                    <MdFilterList className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors pointer-events-none z-10" size={20} />
+                    <input 
+                        className="w-full pl-12 pr-5 py-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-4 focus:ring-indigo-600/5 focus:border-indigo-600/40 transition-all outline-none font-extrabold text-xs uppercase tracking-wider text-slate-700 dark:text-slate-200" 
+                        placeholder="Academic Year (e.g. 2026-27)" 
+                        value={filterAcademicYear} 
+                        onChange={(e) => setFilterAcademicYear(e.target.value)} 
+                    />
                 </div>
             </div>
 

@@ -17,6 +17,7 @@ export default function AddStudent() {
         rollNumber: "",
         standard: "",
         section: "",
+        academicYear: "",
         fatherName: "",
         motherName: "",
         phone: "",
@@ -147,6 +148,23 @@ export default function AddStudent() {
                                     <option value="Morning">Morning</option>
                                     <option value="Afternoon">Afternoon</option>
                                 </select>
+                            </div>
+                        </div>
+
+                        {/* Academic Year */}
+                        <div className="relative group">
+                            <label className="label-premium ml-1">Academic Year</label>
+                            <div className="relative">
+                                <MdNumbers className="input-icon top-1/2 -translate-y-1/2" size={18} />
+                                <input
+                                    type="text"
+                                    name="academicYear"
+                                    value={form.academicYear}
+                                    onChange={handleChange}
+                                    required
+                                    placeholder="e.g. 2026-27"
+                                    className="input-premium input-with-icon"
+                                />
                             </div>
                         </div>
 
