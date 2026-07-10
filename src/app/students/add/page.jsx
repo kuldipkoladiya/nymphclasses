@@ -26,11 +26,14 @@ export default function AddStudent() {
     });
 
     useEffect(() => {
-        if (!form.standard || !form.section) return;
+        if (!form.standard) return;
 
         const fetchNextRollNumber = async () => {
             try {
-                const res = await axios.get(`/students/by-standard/${form.standard}?section=${form.section}`);
+                const url = form.section 
+                    ? `/students/by-standard/${form.standard}?section=${form.section}` 
+                    : `/students/by-standard/${form.standard}`;
+                const res = await axios.get(url);
                 const list = res.data?.students || res.data || [];
                 if (list.length > 0) {
                     const rollNumbers = list.map(s => parseInt(s.rollNumber)).filter(r => !isNaN(r));
