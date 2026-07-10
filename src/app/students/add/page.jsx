@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "@/utils/axios";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
@@ -24,6 +24,28 @@ export default function AddStudent() {
         secondPhone: "",
         address: "",
     });
+
+    useEffect(() => {
+        if (!form.standard || !form.section) return;
+
+        const fetchNextRollNumber = async () => {
+            try {
+                const res = await axios.get(`/students/by-standard/${form.standard}?section=${form.section}`);
+                const list = res.data?.students || res.data || [];
+                if (list.length > 0) {
+                    const rollNumbers = list.map(s => parseInt(s.rollNumber)).filter(r => !isNaN(r));
+                    const maxRoll = rollNumbers.length > 0 ? Math.max(...rollNumbers) : 0;
+                    setForm(prev => ({ ...prev, rollNumber: String(maxRoll + 1) }));
+                } else {
+                    setForm(prev => ({ ...prev, rollNumber: "1" }));
+                }
+            } catch (err) {
+                console.error("Failed to fetch next roll number", err);
+            }
+        };
+
+        fetchNextRollNumber();
+    }, [form.standard, form.section]);
 
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
