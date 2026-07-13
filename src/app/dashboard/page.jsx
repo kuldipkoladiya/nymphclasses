@@ -3,93 +3,73 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "../../utils/axios";
-import { motion, AnimatePresence } from "framer-motion";
-import * as MdIcons from "react-icons/md";
-import { FaGraduationCap, FaUserSlash, FaPercent } from "react-icons/fa";
-import ChartComponent from "./ChartComponent";
+import { motion } from "framer-motion";
+import { 
+    MdPeopleAlt, 
+    MdCheckCircle, 
+    MdTrendingUp, 
+    MdArrowForward,
+    MdSchool,
+    MdList,
+    MdClass,
+    MdAccountBalanceWallet,
+    MdCalendarToday,
+    MdAdminPanelSettings
+} from "react-icons/md";
+import { FaWhatsapp } from "react-icons/fa";
 
-const colorMap = {
-    blue: {
-        bg: "bg-blue-600 dark:bg-blue-500",
-        borderAccent: "border-l-4 border-l-blue-600 dark:border-l-blue-500",
-        lightBg: "bg-blue-50 dark:bg-blue-950/20",
-        text: "text-blue-600 dark:text-blue-400",
-        gradient: "from-blue-500/10 to-transparent"
-    },
-    emerald: {
-        bg: "bg-emerald-600 dark:bg-emerald-500",
-        borderAccent: "border-l-4 border-l-emerald-600 dark:border-l-emerald-500",
-        lightBg: "bg-emerald-50 dark:bg-emerald-950/20",
-        text: "text-emerald-600 dark:text-emerald-400",
-        gradient: "from-emerald-500/10 to-transparent"
-    },
-    amber: {
-        bg: "bg-amber-600 dark:bg-amber-500",
-        borderAccent: "border-l-4 border-l-amber-600 dark:border-l-amber-500",
-        lightBg: "bg-amber-50 dark:bg-amber-950/20",
-        text: "text-amber-600 dark:text-amber-400",
-        gradient: "from-amber-500/10 to-transparent"
-    },
-    purple: {
-        bg: "bg-purple-600 dark:bg-purple-500",
-        borderAccent: "border-l-4 border-l-purple-600 dark:border-l-purple-500",
-        lightBg: "bg-purple-50 dark:bg-purple-950/20",
-        text: "text-purple-600 dark:text-purple-400",
-        gradient: "from-purple-500/10 to-transparent"
+// Entry Animation Variants
+const dashboardContainerVariants = {
+    hidden: { opacity: 0, scale: 0.98 },
+    visible: {
+        opacity: 1,
+        scale: 1,
+        transition: {
+            duration: 0.6,
+            ease: [0.16, 1, 0.3, 1],
+            staggerChildren: 0.05
+        }
     }
 };
 
-const PremiumStatCard = ({ title, value, icon: Icon, color = "blue", suffix = "", trend = "" }) => {
-    const c = colorMap[color] || colorMap.blue;
-
-    return (
-        <motion.div
-            whileHover={{ y: -5, scale: 1.02 }}
-            transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            className={`glass-card p-6 bg-gradient-to-br ${c.gradient} bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 ${c.borderAccent} shadow-md hover:shadow-xl transition-all duration-300 rounded-2xl flex justify-between items-center relative overflow-hidden`}
-        >
-            <div className="space-y-3 z-10">
-                <div>
-                    <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">{title}</p>
-                    <h3 className="text-3xl font-black text-slate-900 dark:text-white mt-1 tracking-tight">
-                        {value ?? "0"}<span className="text-sm font-bold text-slate-400 dark:text-slate-500 ml-1">{suffix}</span>
-                    </h3>
-                </div>
-                {trend && (
-                    <div className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider ${c.lightBg} ${c.text}`}>
-                        <span className="w-1.5 h-1.5 rounded-full bg-current" />
-                        {trend}
-                    </div>
-                )}
-            </div>
-            <div className={`w-12 h-12 rounded-2xl ${c.bg} text-white flex items-center justify-center flex-shrink-0 shadow-lg shadow-black/10 z-10`}>
-                <Icon size={22} />
-            </div>
-        </motion.div>
-    );
+const cellFadeInVariants = {
+    hidden: { opacity: 0, y: 15 },
+    visible: { 
+        opacity: 1, 
+        y: 0, 
+        transition: { type: "spring", stiffness: 100, damping: 15 } 
+    }
 };
 
-export default function Dashboard() {
+// Premium hover animation variants for the Operations Hub cards
+const operationCardHover = {
+    rest: { scale: 1, y: 0, boxShadow: "0 1px 3px 0 rgba(0, 0, 0, 0.05)" },
+    hover: { 
+        scale: 1.04, 
+        y: -6, 
+        boxShadow: "0 12px 24px -6px rgba(59, 130, 246, 0.15)",
+        transition: { type: "spring", stiffness: 400, damping: 20 }
+    }
+};
+
+export default function PremiumGlassConsoleDashboard() {
     const router = useRouter();
     const [loading, setLoading] = useState(true);
     const [main, setMain] = useState({});
     const [feesAnalytics, setFeesAnalytics] = useState({});
-    const [greeting, setGreeting] = useState("Welcome");
+    const [whatsappStatus, setWhatsappStatus] = useState("checking");
 
     useEffect(() => {
-        const hour = new Date().getHours();
-        if (hour < 12) setGreeting("Good Morning");
-        else if (hour < 17) setGreeting("Good Afternoon");
-        else setGreeting("Good Evening");
-
         async function load() {
             try {
-                const [d1, d2] = await Promise.all([
+                const [d1, d2, d3] = await Promise.all([
                     axios.get("/dashboard"),
                     axios.get("/fees/analytics"),
+                    axios.get("/results/whatsapp-status").catch(() => ({ data: { status: "offline" } }))
                 ]);
                 setMain(d1.data);
                 setFeesAnalytics(d2.data || {});
+                setWhatsappStatus(d3.data?.status || "offline");
             } catch (err) {
                 console.error("Dashboard error:", err);
             } finally {
@@ -99,284 +79,202 @@ export default function Dashboard() {
         load();
     }, []);
 
-    // Chart configs
-    const barChartData = {
-        labels: main.classWise ? main.classWise.map(c => `Std ${c._id}`) : [],
-        datasets: [
-            {
-                label: "Students",
-                data: main.classWise ? main.classWise.map(c => c.count) : [],
-                backgroundColor: "rgba(59, 130, 246, 0.75)",
-                borderColor: "rgb(59, 130, 246)",
-                borderWidth: 1.5,
-                borderRadius: 6,
-            }
-        ]
-    };
+    // Action button lists with custom hover border glows
+    const actions = [
+        { label: "Register Student", path: "/students", icon: MdPeopleAlt, desc: "Add and manage student registry", color: "text-blue-500", glow: "hover:border-blue-500/50 hover:shadow-blue-500/10", iconBg: "bg-blue-500/10", borderL: "border-l-4 border-l-blue-500", cardBg: "bg-blue-50/20 dark:bg-blue-950/10" },
+        { label: "Mark Attendance", path: "/attendance", icon: MdList, desc: "Record daily student presence", color: "text-emerald-500", glow: "hover:border-emerald-500/50 hover:shadow-emerald-500/10", iconBg: "bg-emerald-500/10", borderL: "border-l-4 border-l-emerald-500", cardBg: "bg-emerald-50/20 dark:bg-emerald-950/10" },
+        { label: "Record Fees", path: "/fees", icon: MdAccountBalanceWallet, desc: "Collect payments & track dues", color: "text-amber-500", glow: "hover:border-amber-500/50 hover:shadow-amber-500/10", iconBg: "bg-amber-500/10", borderL: "border-l-4 border-l-amber-500", cardBg: "bg-amber-50/20 dark:bg-amber-950/10" },
+        { label: "Publish Results", path: "/results", icon: MdSchool, desc: "Upload and broadcast mark sheets", color: "text-purple-500", glow: "hover:border-purple-500/50 hover:shadow-purple-500/10", iconBg: "bg-purple-500/10", borderL: "border-l-4 border-l-purple-500", cardBg: "bg-purple-50/20 dark:bg-purple-950/10" },
+    ];
 
-    const attendanceDoughnutData = {
-        labels: ["Present", "Absent"],
-        datasets: [
-            {
-                data: [main.presentToday || 0, main.absentToday || 0],
-                backgroundColor: [
-                    "rgba(16, 185, 129, 0.8)",
-                    "rgba(239, 68, 68, 0.8)",
-                ],
-                borderColor: [
-                    "rgb(16, 185, 129)",
-                    "rgb(239, 68, 68)",
-                ],
-                borderWidth: 1,
-            }
-        ]
+    // WhatsApp configuration mapping
+    const waConfig = {
+        authenticated: { text: "Connected", style: "border-emerald-500/10 text-emerald-500 bg-emerald-500/5", glow: "shadow-emerald-500/5" },
+        scan_required: { text: "Scan QR", style: "border-amber-500/10 text-amber-500 bg-amber-500/5", glow: "shadow-amber-500/5" },
+        initializing: { text: "Connecting...", style: "border-blue-500/10 text-blue-500 bg-blue-500/5", glow: "shadow-blue-500/5" },
+        offline: { text: "Offline", style: "border-rose-500/10 text-rose-600 dark:text-rose-455 border-rose-500/25", glow: "shadow-rose-500/5" }
     };
+    const wa = waConfig[whatsappStatus] || { text: "Offline", style: "border-slate-850 text-slate-500 bg-slate-900/10" };
 
     return (
-        <div className="space-y-8 max-w-[1450px] mx-auto pb-16 px-4 md:px-0 text-slate-800 dark:text-slate-100">
+        <motion.div 
+            variants={dashboardContainerVariants}
+            initial="hidden"
+            animate="visible"
+            className="max-w-[1400px] mx-auto pb-16 px-4 md:px-0 text-slate-800 dark:text-slate-100 space-y-10"
+        >
             
-            {/* DYNAMIC WELCOME HERO BANNER */}
-            <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-950 text-white p-8 md:p-10 shadow-xl border border-slate-200/10 dark:border-slate-800/80">
-                <div className="absolute top-0 right-0 w-80 h-80 bg-blue-500/10 rounded-full blur-[70px] -z-10" />
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10">
-                    <div className="space-y-2">
-                        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-500/20 border border-blue-500/30 text-blue-300 font-semibold text-[10px] uppercase tracking-wider">
-                            <MdIcons.MdFlashOn className="text-yellow-400" size={12} /> Management Portal
-                        </div>
-                        <h1 className="text-3xl md:text-5xl font-black tracking-tight flex items-center gap-2">
-                            {greeting}, Admin <MdIcons.MdWavingHand className="text-amber-400 text-3xl md:text-4xl inline" />
-                        </h1>
-                        <p className="text-slate-300 text-sm max-w-xl">
-                            Overview and control console for Nymph Classes. Manage student records, mark daily attendance, configure fee structure, and review assessments.
-                        </p>
-                    </div>
-                    
-                    <div className="flex flex-col text-left md:text-right font-medium text-xs text-slate-400 gap-1.5 md:border-l md:border-slate-800 md:pl-8">
-                        <p className="uppercase tracking-widest font-bold text-blue-400 text-[10px]">Academic Calendar</p>
-                        <p className="text-white text-base font-bold tracking-tight">
-                            {new Date().toLocaleDateString("en-IN", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
-                        </p>
-                        <p className="text-emerald-400 font-semibold flex items-center gap-1.5 md:justify-end">
-                            <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-ping" /> Connection active
-                        </p>
+            {/* PREMIUM TYPOGRAPHY-DRIVEN HEADER */}
+            <motion.div 
+                variants={cellFadeInVariants}
+                className="flex flex-row justify-between items-center gap-6 pt-6"
+            >
+                <div className="space-y-1">
+                    <span className="text-[9px] font-black tracking-widest uppercase text-blue-600 dark:text-blue-400 block leading-none">System Panel</span>
+                    <h1 className="text-2xl md:text-4xl font-black tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-slate-900 via-indigo-950 to-indigo-900 dark:from-white dark:to-indigo-200">
+                        Nymph Classes Console
+                    </h1>
+                </div>
+
+                <div className="flex items-center flex-shrink-0">
+                    {/* Calendar Badge */}
+                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-900 text-xs font-bold text-slate-700 dark:text-slate-300 border border-slate-200/20">
+                        <MdCalendarToday className="text-blue-500" />
+                        <span>
+                            {new Date().toLocaleDateString("en-IN", { weekday: 'short', day: 'numeric', month: 'short' })}
+                        </span>
                     </div>
                 </div>
-            </div>
+            </motion.div>
 
-            {/* KEY METRICS GRID */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* KEY METRICS DOCK (4 GLOWING CARDS) - INCLUDES WHATSAPP CLIENT */}
+            <motion.div 
+                variants={dashboardContainerVariants}
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
+            >
                 {loading ? (
                     Array.from({ length: 4 }).map((_, i) => <StatSkeleton key={i} />)
                 ) : (
                     <>
-                        <PremiumStatCard title="Total Students" value={main.totalStudents} icon={MdIcons.MdPeopleAlt} color="blue" trend="Active Profiles" />
-                        <PremiumStatCard title="Present Today" value={main.presentToday} icon={MdIcons.MdCheckCircle} color="emerald" trend={`${main.attendancePercent || 0}% present today`} />
-                        <PremiumStatCard title="Collected Today" value={`${feesAnalytics.todayCollected || 0}`} icon={MdIcons.MdTrendingUp} color="amber" suffix=" INR" trend="Daily Earnings" />
-                        <PremiumStatCard title="Total Collected" value={`${feesAnalytics.totalCollected || 0}`} icon={MdIcons.MdAccountBalanceWallet} color="purple" suffix=" INR" trend="Overall Fees" />
+                        <GlassStatCard title="Enrolled Students" value={main.totalStudents} icon={MdPeopleAlt} color="blue" subtitle="Active roster profiles" />
+                        <GlassStatCard title="Daily Attendance" value={main.presentToday} icon={MdCheckCircle} color="emerald" suffix={` / ${main.totalStudents}`} subtitle={`${main.attendancePercent || 0}% marked present`} />
+                        <GlassStatCard title="Today Collected" value={feesAnalytics.todayCollected || 0} icon={MdTrendingUp} color="amber" prefix="₹" subtitle="Collected fee registers" />
+                        <GlassStatCard title="WhatsApp Client" value={wa.text} icon={FaWhatsapp} color={whatsappStatus === "authenticated" ? "green" : "red"} subtitle="Automated messages Gateway" isWa onClick={() => router.push("/results/whatsapp")} statusBadgeStyle={wa.style} />
                     </>
                 )}
-            </div>
+            </motion.div>
 
-            {/* VISUAL DATA & METRICS ROW */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                
-                {/* ENROLLMENT CHART CARD */}
-                <div className="lg:col-span-2 glass-card p-6 md:p-8 bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 shadow-md rounded-3xl flex flex-col justify-between">
+            {/* OPERATIONS HUB - DISPLAYED IMMEDIATELY AFTER STATS WITH ADVANCED HOVER ANIMATION */}
+            <motion.div 
+                variants={cellFadeInVariants}
+                className="bg-white/75 dark:bg-slate-900/50 backdrop-blur-xl p-6 md:p-8 rounded-[2rem] shadow-premium space-y-6"
+            >
+                <div>
+                    <h2 className="text-lg font-black text-slate-900 dark:text-white uppercase tracking-tight">Operations Hub</h2>
+                    <p className="text-xs text-slate-400 dark:text-slate-500 font-medium">Quick actions console</p>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {actions.map((act, i) => {
+                        const Icon = act.icon;
+                        return (
+                            <motion.div
+                                key={i}
+                                variants={operationCardHover}
+                                initial="rest"
+                                whileHover="hover"
+                                onClick={() => router.push(act.path)}
+                                className={`p-5 ${act.cardBg} rounded-2xl flex flex-col justify-between items-start cursor-pointer min-h-[140px] text-left ${act.glow} ${act.borderL}`}
+                            >
+                                <div className={`w-10 h-10 rounded-xl ${act.iconBg} ${act.color} flex items-center justify-center shadow-inner`}>
+                                    <Icon size={20} />
+                                </div>
+                                <div className="w-full flex justify-between items-end mt-4">
+                                    <div>
+                                        <span className="font-black text-xs text-slate-900 dark:text-white tracking-tight block">{act.label}</span>
+                                        <span className="text-[9px] text-slate-400 dark:text-slate-500 font-medium block mt-0.5">{act.desc}</span>
+                                    </div>
+                                    <MdArrowForward className={`text-slate-400 ${act.color}`} size={16} />
+                                </div>
+                            </motion.div>
+                        );
+                    })}
+                </div>
+            </motion.div>
+
+            {/* CLASS DENSITY LIST - NOW DISPLAYED AT THE BOTTOM IN A CLEAN MINIMAL PILLS LIST */}
+            <motion.div 
+                variants={cellFadeInVariants}
+                className="bg-white/75 dark:bg-slate-900/50 backdrop-blur-xl p-6 md:p-8 rounded-[2rem] shadow-premium space-y-6"
+            >
+                <div className="flex items-center justify-between">
                     <div>
-                        <h2 className="text-lg font-black text-slate-900 dark:text-white uppercase tracking-tight flex items-center gap-2 mb-1">
-                            <MdIcons.MdOutlineClass className="text-blue-500" /> Class Roster Density
+                        <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                            <MdClass className="text-blue-500" /> Class Density
                         </h2>
-                        <p className="text-slate-500 dark:text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-6">Student roster density across standard tiers</p>
+                        <p className="text-xs text-slate-400 dark:text-slate-500 font-medium">Headcount logs sorted per standard</p>
                     </div>
-                    <div className="h-64 flex items-end justify-center w-full">
-                        {!loading && main.classWise && main.classWise.length > 0 ? (
-                            <div className="w-full h-full relative">
-                                <ChartComponent type="bar" data={barChartData} />
-                            </div>
-                        ) : (
-                            <div className="text-slate-400 text-xs font-bold uppercase py-10">No Class Data Loaded</div>
-                        )}
-                    </div>
+                    <span className="text-[9px] font-black tracking-widest uppercase bg-blue-500/10 text-blue-600 dark:text-blue-400 px-3 py-1 rounded-full border border-blue-500/20">
+                        Standards
+                    </span>
                 </div>
 
-                {/* TODAY'S ATTENDANCE SUMMARY CARD */}
-                <div className="glass-card p-6 md:p-8 bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 shadow-md rounded-3xl flex flex-col justify-between">
-                    <div>
-                        <h2 className="text-lg font-black text-slate-900 dark:text-white uppercase tracking-tight flex items-center gap-2 mb-1">
-                            <MdIcons.MdCheckCircle className="text-emerald-500" /> Attendance Overview
-                        </h2>
-                        <p className="text-slate-500 dark:text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-6">Today&apos;s present vs absent tracking</p>
-                    </div>
-                    <div className="h-48 flex items-center justify-center relative">
-                        {!loading && (main.presentToday || main.absentToday) ? (
-                            <div className="w-40 h-40">
-                                <ChartComponent type="doughnut" data={attendanceDoughnutData} />
-                            </div>
-                        ) : (
-                            <div className="text-slate-400 text-xs font-bold uppercase py-10">Attendance not logged today</div>
-                        )}
-                    </div>
-                    <div className="mt-4 flex justify-around text-center border-t border-slate-100 dark:border-slate-800/80 pt-4">
-                        <div>
-                            <span className="text-[10px] font-bold text-slate-400 uppercase">Present</span>
-                            <p className="text-lg font-black text-emerald-500">{main.presentToday || 0}</p>
-                        </div>
-                        <div className="w-px bg-slate-200 dark:bg-slate-800" />
-                        <div>
-                            <span className="text-[10px] font-bold text-slate-400 uppercase">Absent</span>
-                            <p className="text-lg font-black text-rose-500">{main.absentToday || 0}</p>
-                        </div>
-                    </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                    {!loading && main.classWise && main.classWise.length > 0 ? (
+                        main.classWise.map((c, i) => (
+                            <motion.div 
+                                whileHover={{ y: -2, scale: 1.02 }}
+                                key={i} 
+                                className="p-3 bg-blue-50/20 dark:bg-blue-950/10 rounded-2xl flex items-center justify-between gap-3 transition-colors duration-300"
+                            >
+                                <div className="flex items-center gap-2">
+                                    <div className="w-7 h-7 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center font-black text-xs">
+                                        {c._id}
+                                    </div>
+                                    <span className="font-bold text-[10px] text-slate-400 uppercase tracking-wider">Std</span>
+                                </div>
+                                <span className="font-black text-xs text-slate-900 dark:text-white">
+                                    {c.count} Students
+                                </span>
+                            </motion.div>
+                        ))
+                    ) : (
+                        <div className="col-span-6 text-center text-xs text-slate-400 py-10 font-bold uppercase tracking-widest">No standard profiles found</div>
+                    )}
                 </div>
+            </motion.div>
 
-            </div>
-
-            {/* PERFORMANCE & QUICK ACTIONS CONTAINER */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
-                {/* TOP ACADEMIC PERFORMERS */}
-                <div className="lg:col-span-2 glass-card p-6 md:p-8 bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 shadow-md rounded-3xl">
-                    <div className="flex items-center justify-between mb-6">
-                        <div>
-                            <h2 className="text-lg font-black text-slate-900 dark:text-white uppercase tracking-tight flex items-center gap-2">
-                                <FaGraduationCap className="text-yellow-500 text-xl" /> Top Performers
-                            </h2>
-                            <p className="text-slate-500 dark:text-slate-400 text-[10px] font-bold uppercase tracking-widest mt-1">Leading exam scorers by percentage</p>
-                        </div>
-                        <span className="text-[10px] font-bold px-3 py-1 bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 rounded-full border border-yellow-500/20 uppercase">
-                            Academic Stars
-                        </span>
-                    </div>
-
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left border-collapse">
-                            <thead>
-                                <tr className="border-b border-slate-100 dark:border-slate-800 text-[9px] font-black text-slate-400 uppercase tracking-widest">
-                                    <th className="py-3 px-2">Rank</th>
-                                    <th className="py-3 px-2">Student Name</th>
-                                    <th className="py-3 px-2">Standard</th>
-                                    <th className="py-3 px-2 text-right">Percentage</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-slate-50 dark:divide-slate-800/60">
-                                {!loading && main.topStudents && main.topStudents.length > 0 ? (
-                                    main.topStudents.map((item, idx) => {
-                                        const rankColors = ["text-yellow-500", "text-slate-400", "text-amber-600"];
-                                        return (
-                                            <tr key={item._id} className="hover:bg-slate-50/50 dark:hover:bg-slate-950/20 transition-colors">
-                                                <td className="py-3.5 px-2 font-black text-sm">
-                                                    <span className={idx < 3 ? rankColors[idx] : "text-slate-400"}>
-                                                        #{idx + 1}
-                                                    </span>
-                                                </td>
-                                                <td className="py-3.5 px-2">
-                                                    <div className="font-bold text-slate-900 dark:text-white text-sm">
-                                                        {item.studentId?.name || "Unknown Student"}
-                                                    </div>
-                                                    <div className="text-[9px] text-slate-400 font-medium">Roll No: {item.studentId?.rollNumber || "N/A"}</div>
-                                                </td>
-                                                <td className="py-3.5 px-2">
-                                                    <span className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-[10px] font-bold text-slate-600 dark:text-slate-300">
-                                                        Std {item.studentId?.standard || "N/A"}
-                                                    </span>
-                                                </td>
-                                                <td className="py-3.5 px-2 text-right">
-                                                    <div className="font-black text-sm text-blue-600 dark:text-blue-400 flex items-center justify-end gap-1">
-                                                        {item.percentage}% <FaPercent className="text-[10px]" />
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        );
-                                    })
-                                ) : (
-                                    <tr>
-                                        <td colSpan="4" className="text-center py-8 text-slate-400 text-xs font-bold uppercase tracking-widest">
-                                            No assessment results published yet
-                                        </td>
-                                    </tr>
-                                )}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                {/* DOCK OF SHORTCUT ACTIONS */}
-                <div className="glass-card p-6 md:p-8 bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 shadow-md rounded-3xl flex flex-col justify-between">
-                    <div>
-                        <h2 className="text-lg font-black text-slate-900 dark:text-white uppercase tracking-tight flex items-center gap-2 mb-1">
-                            <MdIcons.MdFlashOn className="text-amber-500 animate-pulse" /> Direct Actions
-                        </h2>
-                        <p className="text-slate-500 dark:text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-6">Access key operations instantly</p>
-                    </div>
-                    
-                    <div className="space-y-3.5">
-                        <ActionButton 
-                            title="Register Student" 
-                            desc="Add and manage student profiles" 
-                            color="blue" 
-                            icon={MdIcons.MdPeopleAlt} 
-                            onClick={() => router.push("/students")} 
-                        />
-                        <ActionButton 
-                            title="Mark Attendance" 
-                            desc="Record daily student attendance" 
-                            color="emerald" 
-                            icon={MdIcons.MdList} 
-                            onClick={() => router.push("/attendance")} 
-                        />
-                        <ActionButton 
-                            title="Record Fees" 
-                            desc="Collect payments and view dues" 
-                            color="amber" 
-                            icon={MdIcons.MdMonetizationOn} 
-                            onClick={() => router.push("/fees")} 
-                        />
-                        <ActionButton 
-                            title="Publish Results" 
-                            desc="Upload and share academic marks" 
-                            color="purple" 
-                            icon={MdIcons.MdSchool} 
-                            onClick={() => router.push("/results")} 
-                        />
-                    </div>
-                </div>
-
-            </div>
-
-        </div>
+        </motion.div>
     );
 }
 
-function ActionButton({ title, desc, icon: Icon, color, onClick }) {
-    const c = colorMap[color] || colorMap.blue;
+// Glass Stat Card Component with no light mode border
+function GlassStatCard({ title, value, icon: Icon, color, prefix = "", suffix = "", subtitle = "", isWa = false, onClick, statusBadgeStyle = "" }) {
+    const cardColors = {
+        blue: { text: "text-blue-500 dark:text-blue-400", bg: "bg-blue-500/10", border: "border-l-4 border-l-blue-500", cardBg: "bg-blue-50/20 dark:bg-blue-950/10" },
+        emerald: { text: "text-emerald-500 dark:text-emerald-400", bg: "bg-emerald-500/10", border: "border-l-4 border-l-emerald-500", cardBg: "bg-emerald-50/20 dark:bg-emerald-950/10" },
+        amber: { text: "text-amber-500 dark:text-amber-400", bg: "bg-amber-500/10", border: "border-l-4 border-l-amber-600", cardBg: "bg-amber-50/20 dark:bg-amber-950/10" },
+        purple: { text: "text-purple-500 dark:text-purple-400", bg: "bg-purple-500/10", border: "border-l-4 border-l-purple-500", cardBg: "bg-purple-50/20 dark:bg-purple-950/10" },
+        green: { text: "text-green-500 dark:text-green-400", bg: "bg-green-500/10", border: "border-l-4 border-l-green-500", cardBg: "bg-green-50/20 dark:bg-green-950/10" },
+        red: { text: "text-rose-500 dark:text-rose-455", bg: "bg-rose-500/10", border: "border-l-4 border-l-rose-500", cardBg: "bg-rose-50/20 dark:bg-rose-955/10" },
+    };
+
+    const c = cardColors[color] || cardColors.blue;
+
     return (
-        <motion.button
-            whileHover={{ scale: 1.01, x: 3 }}
+        <motion.div 
+            whileHover={{ y: -4, scale: 1.02 }}
             onClick={onClick}
-            className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/20 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-between transition-all duration-200 text-slate-800 dark:text-slate-200"
+            className={`p-6 ${c.cardBg} backdrop-blur-xl rounded-3xl flex justify-between items-center transition-all duration-300 shadow-sm hover:shadow-md ${c.border} ${isWa ? 'cursor-pointer hover:border-green-500/50' : ''}`}
         >
-            <div className="flex items-center gap-4">
-                <div className={`w-10 h-10 rounded-xl ${c.lightBg} ${c.text} flex items-center justify-center flex-shrink-0`}>
-                    <Icon size={20} />
-                </div>
-                <div className="text-left">
-                    <span className="font-bold text-sm tracking-tight text-slate-950 dark:text-white block">{title}</span>
-                    <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium block mt-0.5">{desc}</span>
-                </div>
+            <div className="space-y-1">
+                <span className="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest block leading-none">{title}</span>
+                <h3 className={`text-xl md:text-2xl font-black text-slate-900 dark:text-white tracking-tight leading-none mt-1.5 ${isWa ? 'text-sm' : ''}`}>
+                    {prefix}{value ?? 0}{suffix}
+                </h3>
+                {isWa ? (
+                    <span className={`inline-block text-[8px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md border mt-1.5 ${statusBadgeStyle}`}>
+                        Configured
+                    </span>
+                ) : (
+                    <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 block leading-none mt-1">{subtitle}</span>
+                )}
             </div>
-            <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">Open →</span>
-        </motion.button>
+            <div className={`w-11 h-11 rounded-2xl flex items-center justify-center flex-shrink-0 ${c.bg} ${c.text} shadow-sm`}>
+                <Icon size={20} className={isWa ? 'animate-pulse' : ''} />
+            </div>
+        </motion.div>
     );
 }
 
 function StatSkeleton() {
     return (
-        <div className="glass-card p-6 h-[120px] bg-white dark:bg-slate-900 animate-pulse border border-slate-200 dark:border-slate-800 rounded-2xl flex justify-between items-center">
-            <div className="space-y-3 flex-1">
-                <div className="h-2 w-16 bg-slate-200 dark:bg-slate-800 rounded-full" />
-                <div className="h-8 w-24 bg-slate-200 dark:bg-slate-800 rounded-xl" />
+        <div className="p-6 h-[106px] bg-white dark:bg-slate-900/50 animate-pulse dark:border dark:border-slate-800 rounded-3xl flex justify-between items-center shadow-sm">
+            <div className="space-y-2 flex-1">
+                <div className="h-2 w-14 bg-slate-200 dark:bg-slate-850 rounded-full" />
+                <div className="h-6 w-20 bg-slate-200 dark:bg-slate-850 rounded-xl" />
             </div>
-            <div className="w-12 h-12 bg-slate-200 dark:bg-slate-800 rounded-xl" />
+            <div className="w-11 h-11 bg-slate-200 dark:bg-slate-850 rounded-2xl animate-pulse" />
         </div>
     );
 }
