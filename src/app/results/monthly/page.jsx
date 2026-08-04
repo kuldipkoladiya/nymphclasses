@@ -36,9 +36,19 @@ export default function MonthlyReportPage() {
     const [sendingWhatsAppId, setSendingWhatsAppId] = useState(null);
     const [sendingBulk, setSendingBulk] = useState(false);
     const [downloadingPdf, setDownloadingPdf] = useState(false);
-
     // Detailed Modal state
     const [selectedReport, setSelectedReport] = useState(null);
+    // WhatsApp manual chat modal state
+    const [whatsappFailureInfo, setWhatsappFailureInfo] = useState(null);
+
+    const getWhatsAppChatLink = (phone) => {
+        if (!phone) return "#";
+        let cleaned = phone.replace(/\D/g, "");
+        if (cleaned.length === 10) {
+            cleaned = "91" + cleaned;
+        }
+        return `https://wa.me/${cleaned}`;
+    };
 
     const downloadMonthlyPdf = async (record) => {
         setDownloadingPdf(true);
@@ -122,7 +132,16 @@ export default function MonthlyReportPage() {
             }
         } catch (error) {
             const msg = error.response?.data?.error || "Failed to send WhatsApp.";
-            toast.error(msg);
+            if (msg.includes("active") || msg.includes("registered") || msg.includes("response from WhatsApp")) {
+                setWhatsappFailureInfo({
+                    isBulk: false,
+                    studentName: record.student.name,
+                    phone: record.student.phone,
+                    error: msg
+                });
+            } else {
+                toast.error(msg);
+            }
         } finally {
             setSendingWhatsAppId(null);
         }
@@ -140,7 +159,25 @@ export default function MonthlyReportPage() {
             });
             if (res.data?.success) {
                 const succeeded = res.data.report.filter(r => r.success).length;
+                const failedNoWhatsApp = res.data.report.filter(
+                    r => !r.success && (r.error?.includes("active") || r.error?.includes("registered") || r.error?.includes("response from WhatsApp"))
+                );
+                const otherFailures = res.data.report.filter(
+                    r => !r.success && !failedNoWhatsApp.some(f => f.student === r.student)
+                );
+
                 toast.success(`Successfully sent ${succeeded} / ${res.data.report.length} WhatsApp reports!`);
+
+                if (failedNoWhatsApp.length > 0) {
+                    setWhatsappFailureInfo({
+                        isBulk: true,
+                        failures: failedNoWhatsApp
+                    });
+                }
+
+                if (otherFailures.length > 0) {
+                    toast.error(`Failed to send to ${otherFailures.length} students due to connection/server issues.`);
+                }
             }
         } catch (error) {
             const msg = error.response?.data?.error || "Failed to send bulk WhatsApp reports.";
@@ -149,7 +186,6 @@ export default function MonthlyReportPage() {
             setSendingBulk(false);
         }
     };
-
     const filtered = reportData.filter((r) =>
         r.student?.name?.toLowerCase().includes(search.toLowerCase()) ||
         String(r.student?.rollNumber || "").includes(search)
@@ -466,6 +502,99 @@ export default function MonthlyReportPage() {
                                         Download PDF
                                     </button>
                                 </div>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+
+                {whatsappFailureInfo && (
+                    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 print:hidden">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.95 }}
+                            className="glass-card w-full max-w-lg bg-white dark:bg-slate-900 overflow-hidden shadow-2xl flex flex-col max-h-[85vh] border-t-[8px] border-t-amber-500"
+                        >
+                            {/* Modal Header */}
+                            <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
+                                <div className="flex items-center gap-3">
+                                    <div className="p-2 rounded-xl bg-amber-100 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400">
+                                        <FaWhatsapp size={24} />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-lg font-black text-slate-900 dark:text-white">
+                                            {whatsappFailureInfo.isBulk ? "Unregistered WhatsApp Numbers" : "WhatsApp Number Unregistered"}
+                                        </h3>
+                                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">
+                                            Action Required for Failed Message Delivery
+                                        </p>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={() => setWhatsappFailureInfo(null)}
+                                    className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl text-slate-400 dark:text-slate-500 transition-colors"
+                                >
+                                    <MdClose size={24} />
+                                </button>
+                            </div>
+
+                            {/* Modal Content */}
+                            <div className="p-6 overflow-y-auto space-y-4 flex-1 custom-scrollbar">
+                                <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                                    The automated WhatsApp message could not be sent because the phone number is not active or registered on WhatsApp. You can manually chat with the contact using the link below:
+                                </p>
+
+                                {whatsappFailureInfo.isBulk ? (
+                                    <div className="space-y-3 divide-y divide-slate-100 dark:divide-slate-800">
+                                        {whatsappFailureInfo.failures.map((fail, idx) => (
+                                            <div key={idx} className="flex justify-between items-center pt-3 first:pt-0">
+                                                <div>
+                                                    <p className="text-sm font-black text-slate-900 dark:text-white">{fail.student}</p>
+                                                    <p className="text-xs text-slate-400 font-bold">{fail.phone || "No phone number"}</p>
+                                                </div>
+                                                {fail.phone && (
+                                                    <a
+                                                        href={getWhatsAppChatLink(fail.phone)}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="px-4 py-2 rounded-xl bg-green-600 text-white font-bold text-xs uppercase tracking-wider hover:bg-green-700 transition-all flex items-center gap-1.5 shadow-md shadow-green-600/15"
+                                                    >
+                                                        <FaWhatsapp size={14} />
+                                                        Chat
+                                                    </a>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800 flex justify-between items-center">
+                                        <div>
+                                            <p className="text-base font-black text-slate-900 dark:text-white">{whatsappFailureInfo.studentName}</p>
+                                            <p className="text-sm text-slate-400 font-bold mt-0.5">{whatsappFailureInfo.phone}</p>
+                                        </div>
+                                        {whatsappFailureInfo.phone && (
+                                            <a
+                                                href={getWhatsAppChatLink(whatsappFailureInfo.phone)}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="px-5 py-3 rounded-xl bg-green-600 text-white font-bold text-xs uppercase tracking-wider hover:bg-green-700 transition-all flex items-center gap-2 shadow-md shadow-green-600/15"
+                                            >
+                                                <FaWhatsapp size={16} />
+                                                Open Chat
+                                            </a>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Modal Footer */}
+                            <div className="p-6 border-t border-slate-100 dark:border-slate-800 flex justify-end">
+                                <button
+                                    onClick={() => setWhatsappFailureInfo(null)}
+                                    className="px-5 py-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold text-xs uppercase tracking-wider hover:bg-slate-200 dark:hover:bg-slate-700 transition-all"
+                                >
+                                    Dismiss
+                                </button>
                             </div>
                         </motion.div>
                     </div>
