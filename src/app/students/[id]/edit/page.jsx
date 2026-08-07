@@ -23,6 +23,7 @@ export default function EditStudent({ params }) {
         fatherName: "",
         motherName: "",
         phone: "",
+        secondPhone: "",
         address: "",
     });
 
@@ -32,7 +33,18 @@ export default function EditStudent({ params }) {
             const authHeader = { headers: { Authorization: `Bearer ${token}` } };
             try {
                 const res = await axios.get(`/students/${id}`, authHeader);
-                setForm(res.data);
+                setForm({
+                    name: res.data.name || "",
+                    rollNumber: res.data.rollNumber || "",
+                    standard: res.data.standard || "",
+                    section: res.data.section || "",
+                    academicYear: res.data.academicYear || "",
+                    fatherName: res.data.fatherName || "",
+                    motherName: res.data.motherName || "",
+                    phone: res.data.phone || "",
+                    secondPhone: res.data.secondPhone || "",
+                    address: res.data.address || "",
+                });
             } catch (err) {
                 toast.error("Failed to load student details.");
             } finally {
@@ -72,7 +84,8 @@ export default function EditStudent({ params }) {
         { name: "academicYear", label: "Academic Year", icon: MdNumbers, type: "text", placeholder: "e.g. 2026-27", required: true },
         { name: "fatherName", label: "Father's Name", icon: MdFamilyRestroom, type: "text", placeholder: "e.g. Amit Sharma" },
         { name: "motherName", label: "Mother's Name", icon: MdFamilyRestroom, type: "text", placeholder: "e.g. Seema Sharma" },
-        { name: "phone", label: "Parent Contact Number", icon: MdPhone, type: "text", placeholder: "e.g. 9876543210", required: true, pattern: "[0-9]{10}", maxLength: 10 },
+        { name: "phone", label: "Primary Contact Number", icon: MdPhone, type: "text", placeholder: "e.g. 9876543210", required: true, pattern: "[0-9]{10}", maxLength: 10 },
+        { name: "secondPhone", label: "Second Contact Number (Optional)", icon: MdPhone, type: "text", placeholder: "e.g. 9876543211", required: false, pattern: "[0-9]{10}", maxLength: 10 },
     ];
 
     if (fetching) {

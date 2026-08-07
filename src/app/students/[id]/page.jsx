@@ -187,9 +187,15 @@ export default function StudentDetails({ params }) {
                                 <span className="font-bold text-slate-800 dark:text-slate-200 text-sm">{student.motherName || "—"}</span>
                             </div>
                             <div className="flex justify-between items-center py-2.5 border-b border-slate-50 dark:border-slate-800/40">
-                                <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider flex items-center gap-1"><MdPhone size={12} /> Contact Number</span>
+                                <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider flex items-center gap-1"><MdPhone size={12} /> Primary Contact</span>
                                 <span className="font-extrabold text-indigo-600 dark:text-indigo-400 text-sm">{student.phone || "—"}</span>
                             </div>
+                            {student.secondPhone && (
+                                <div className="flex justify-between items-center py-2.5 border-b border-slate-50 dark:border-slate-800/40">
+                                    <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider flex items-center gap-1"><MdPhone size={12} /> Secondary Contact</span>
+                                    <span className="font-extrabold text-indigo-650 dark:text-indigo-400/80 text-sm">{student.secondPhone}</span>
+                                </div>
+                            )}
                             <div className="flex flex-col py-2.5 gap-1.5">
                                 <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider flex items-center gap-1"><MdLocationOn size={12} /> Address details</span>
                                 <span className="font-semibold text-slate-650 dark:text-slate-350 text-xs leading-relaxed">{student.address || "—"}</span>

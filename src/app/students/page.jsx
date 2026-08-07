@@ -107,6 +107,11 @@ export default function StudentsPage() {
                         </div>
                     </div>
                     <div className="flex flex-wrap gap-3">
+                        <Link href="/students/bulk-edit">
+                            <button className="px-6 py-3 rounded-2xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-850 text-slate-750 dark:text-slate-200 font-extrabold text-xs uppercase tracking-widest transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center gap-2">
+                                <MdEdit size={18} className="text-indigo-600" /> Bulk Edit Class
+                            </button>
+                        </Link>
                         <Link href="/students/promote">
                             <button className="px-6 py-3 rounded-2xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-805 text-slate-750 dark:text-slate-200 font-extrabold text-xs uppercase tracking-widest transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center gap-2">
                                 <MdSchool size={18} className="text-indigo-600" /> Promote Students
