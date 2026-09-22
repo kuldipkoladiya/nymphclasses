@@ -92,12 +92,14 @@ export default function BulkEditStudentsPage() {
         }
 
         // Quick validation for required fields locally
+        const seenRolls = new Map();
         for (const item of updatedStudents) {
             if (!item.name.trim()) {
                 toast.error(`Student name cannot be empty.`);
                 return;
             }
-            if (!item.rollNumber.trim()) {
+            const roll = item.rollNumber.trim();
+            if (!roll) {
                 toast.error(`Roll number for student "${item.name}" cannot be empty.`);
                 return;
             }
@@ -113,6 +115,17 @@ export default function BulkEditStudentsPage() {
                 toast.error(`Secondary contact for "${item.name}" must be exactly 10 digits.`);
                 return;
             }
+
+            // Check duplicate roll number within the same class section
+            const origStudent = students.find(s => s._id === item._id);
+            const sec = origStudent?.section || "";
+            const key = `${sec}__${roll}`;
+            if (seenRolls.has(key)) {
+                const prevName = seenRolls.get(key);
+                toast.error(`Duplicate roll number "${roll}" entered for "${item.name}" and "${prevName}"${sec ? ` in ${sec} section` : ""}. Each student must have a unique roll number.`);
+                return;
+            }
+            seenRolls.set(key, item.name);
         }
 
         setSaving(true);
