@@ -155,7 +155,12 @@ export default function CreateSingleResultPage() {
                         <p className="text-slate-500 dark:text-slate-400 font-bold text-[10px] uppercase tracking-widest mt-1">Publish Individual Scorecard</p>
                     </div>
                 </div>
-                <div className="mt-4 md:mt-0">
+                <div className="flex items-center gap-3 mt-4 md:mt-0">
+                    <Link href="/results/round-test">
+                        <button className="px-6 py-4 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold text-sm uppercase tracking-widest hover:opacity-90 shadow-lg shadow-blue-500/25 transition-all flex items-center gap-3">
+                            Round Test
+                        </button>
+                    </Link>
                     <Link href="/results/view">
                         <button className="px-6 py-4 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold text-sm uppercase tracking-widest hover:bg-slate-200 dark:hover:bg-slate-700 transition-all flex items-center gap-3">
                             <MdLibraryBooks size={20} /> View Results

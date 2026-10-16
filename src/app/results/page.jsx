@@ -111,6 +111,11 @@ export default function CreateResultPage() {
                     </div>
                 </div>
                 <div className="flex flex-wrap items-center gap-4 mt-4 md:mt-0">
+                    <Link href="/results/round-test">
+                        <button className="px-6 py-4 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold text-sm uppercase tracking-widest hover:opacity-90 shadow-lg shadow-blue-500/25 transition-all flex items-center gap-3">
+                            <MdScore size={20} /> Round Test
+                        </button>
+                    </Link>
                     <Link href="/results/whatsapp">
                         <button className="px-6 py-4 rounded-2xl bg-green-50 dark:bg-green-950/20 text-green-600 dark:text-green-400 font-bold text-sm uppercase tracking-widest hover:bg-green-600 hover:text-white transition-all flex items-center gap-3 border border-green-500/10 hover:border-green-600">
                             <FaWhatsapp size={20} /> Link Device

@@ -214,8 +214,13 @@ export default function MonthlyReportPage() {
                             <p className="text-slate-500 dark:text-slate-400 font-bold text-[10px] uppercase tracking-widest mt-1">Aggregated Student Results & Alerts</p>
                         </div>
                     </div>
-                    {reportData.length > 0 && (
-                        <div className="flex items-center gap-4 mt-4 md:mt-0">
+                    <div className="flex flex-wrap items-center gap-3 mt-4 md:mt-0">
+                        <Link href="/results/round-test">
+                            <button className="px-5 py-3 rounded-2xl bg-blue-50 dark:bg-blue-950/20 text-blue-600 dark:text-blue-400 font-bold text-xs uppercase tracking-wider hover:bg-blue-600 hover:text-white transition-all flex items-center gap-2 border border-blue-500/10">
+                                Round Test
+                            </button>
+                        </Link>
+                        {reportData.length > 0 && (
                             <button
                                 onClick={sendBulkWhatsApp}
                                 disabled={sendingBulk}
@@ -228,8 +233,8 @@ export default function MonthlyReportPage() {
                                 )}
                                 {sendingBulk ? "SENDING BULK..." : "SEND BULK WHATSAPP"}
                             </button>
-                        </div>
-                    )}
+                        )}
+                    </div>
                 </div>
 
                 {/* SELECTION PANELS */}
