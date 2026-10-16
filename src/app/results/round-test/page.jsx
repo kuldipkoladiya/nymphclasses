@@ -22,7 +22,8 @@ import {
     MdSearch,
     MdCheck,
     MdTune,
-    MdFilterList
+    MdFilterList,
+    MdBlock
 } from "react-icons/md";
 import { FaWhatsapp, FaFilePdf } from "react-icons/fa";
 import Popup from "@/components/Popup";
@@ -48,8 +49,11 @@ const ROUND_PRESETS = [
     "Custom"
 ];
 
-/* Helper for grade calculation */
-function getGrade(pct) {
+/* Helper for grade calculation (handles AB as Absent) */
+function getGrade(pct, isAllAbsent = false) {
+    if (isAllAbsent) {
+        return { label: "AB", color: "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20" };
+    }
     if (pct >= 90) return { label: "A+", color: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20" };
     if (pct >= 80) return { label: "A", color: "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20" };
     if (pct >= 70) return { label: "B+", color: "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border-cyan-500/20" };
@@ -203,17 +207,56 @@ export default function RoundTestPage() {
         }
     };
 
-    /* Handle mark input changes */
+    /* Handle mark input changes - supports numeric marks or "AB" (Absent) */
     const handleMarkInput = (studentId, subIndex, val) => {
-        if (val !== "" && (+val > totalMaximum || +val < 0)) {
-            return toast.error(`Marks must be between 0 and ${totalMaximum}`);
+        const raw = val.trim().toUpperCase();
+        let finalVal = val;
+        if (raw === "AB" || raw === "A") {
+            finalVal = "AB";
+        } else if (raw !== "" && !isNaN(Number(raw))) {
+            if (+raw > totalMaximum || +raw < 0) {
+                return toast.error(`Marks must be between 0 and ${totalMaximum}`);
+            }
+            finalVal = raw;
+        } else if (raw !== "") {
+            return;
         }
         setMarks((prev) => ({
             ...prev,
-            [studentId]: prev[studentId].map((m, idx) =>
-                idx === subIndex ? { ...m, marksObtained: val } : m
+            [studentId]: (prev[studentId] || []).map((m, idx) =>
+                idx === subIndex ? { ...m, marksObtained: finalVal } : m
             ),
         }));
+    };
+
+    /* Mark single subject as AB */
+    const toggleCellAB = (studentId, subIndex) => {
+        setMarks((prev) => {
+            const current = prev[studentId]?.[subIndex]?.marksObtained;
+            const nextVal = current === "AB" ? "" : "AB";
+            return {
+                ...prev,
+                [studentId]: (prev[studentId] || []).map((m, idx) =>
+                    idx === subIndex ? { ...m, marksObtained: nextVal } : m
+                ),
+            };
+        });
+    };
+
+    /* Mark entire student absent (all subjects AB) */
+    const markStudentAbsent = (studentId) => {
+        setMarks((prev) => {
+            const currentAllAB = (prev[studentId] || []).every((m) => m.marksObtained === "AB");
+            const nextVal = currentAllAB ? "" : "AB";
+            return {
+                ...prev,
+                [studentId]: (prev[studentId] || []).map((m) => ({
+                    ...m,
+                    marksObtained: nextVal,
+                })),
+            };
+        });
+        toast("Updated student absent status", { icon: "ℹ️" });
     };
 
     /* Quick Fill helper */
@@ -222,18 +265,38 @@ export default function RoundTestPage() {
         setMarks((prev) => {
             const next = {};
             students.forEach((stu) => {
-                next[stu._id] = (prev[stu._id] || []).map((m) => ({
-                    ...m,
-                    marksObtained: type === "full" ? totalMaximum : type === "zero" ? 0 : "",
-                }));
+                next[stu._id] = (prev[stu._id] || []).map((m) => {
+                    if (type === "ab-blank") {
+                        return {
+                            ...m,
+                            marksObtained: (m.marksObtained === "" || m.marksObtained === null || m.marksObtained === undefined) ? "AB" : m.marksObtained,
+                        };
+                    }
+                    return {
+                        ...m,
+                        marksObtained: 
+                            type === "full" 
+                                ? totalMaximum 
+                                : type === "zero" 
+                                ? 0 
+                                : type === "ab" 
+                                ? "AB" 
+                                : "",
+                    };
+                });
             });
             return next;
         });
+
         toast.success(
             type === "full" 
                 ? `Set all marks to ${totalMaximum}` 
                 : type === "zero" 
                 ? "Set all marks to 0" 
+                : type === "ab" 
+                ? "Marked all students as AB (Absent)" 
+                : type === "ab-blank"
+                ? "Filled empty entries with AB"
                 : "Cleared all marks"
         );
     };
@@ -243,7 +306,7 @@ export default function RoundTestPage() {
         if (!students.length) return toast.error("No student records loaded.");
         if (!effectiveExamName) return toast.error("Exam name is required.");
 
-        // Build array of result payloads
+        // Build array of result payloads (marksObtained can be number or "AB")
         const payloadResults = students.map((stu) => ({
             studentId: stu._id,
             examName: effectiveExamName,
@@ -260,7 +323,6 @@ export default function RoundTestPage() {
                     sendWhatsApp,
                 });
             } catch (batchErr) {
-                // Graceful fallback to individual post
                 console.warn("Batch endpoint fallback, saving individually:", batchErr);
                 const savePromises = payloadResults.map((item) =>
                     axios.post("/results", {
@@ -277,7 +339,7 @@ export default function RoundTestPage() {
                     : `Published Round Test results for ${students.length} students!`
             );
 
-            // Automatically load in manage tab
+            // Automatically switch to view results tab
             setManageStandard(standard);
             setManageSection(section);
             setManageRoundName(effectiveExamName);
@@ -428,12 +490,15 @@ export default function RoundTestPage() {
                             <MdScore size={32} />
                         </div>
                         <div>
-                            <div className="flex items-center gap-3">
+                            <div className="flex flex-wrap items-center gap-3">
                                 <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
                                     Round Test Exam
                                 </h1>
                                 <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
                                     No Date Required
+                                </span>
+                                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
+                                    AB (Absent) Supported
                                 </span>
                             </div>
                             <p className="text-slate-500 dark:text-slate-400 font-bold text-xs uppercase tracking-widest mt-1">
@@ -444,6 +509,11 @@ export default function RoundTestPage() {
 
                     {/* Right Action Links */}
                     <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 w-full lg:w-auto">
+                        <Link href="/results">
+                            <button className="px-4 py-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs uppercase tracking-wider hover:bg-slate-200 dark:hover:bg-slate-700 transition-all flex items-center gap-2">
+                                <MdEditDocument size={16} /> Results Hub
+                            </button>
+                        </Link>
                         <Link href="/results/whatsapp">
                             <button className="px-4 py-3 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold text-xs uppercase tracking-wider hover:bg-emerald-600 hover:text-white transition-all flex items-center gap-2 border border-emerald-500/20">
                                 <FaWhatsapp size={16} />
@@ -454,11 +524,6 @@ export default function RoundTestPage() {
                         <Link href="/results/monthly">
                             <button className="px-4 py-3 rounded-xl bg-blue-50 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400 font-bold text-xs uppercase tracking-wider hover:bg-blue-600 hover:text-white transition-all flex items-center gap-2 border border-blue-500/10">
                                 <MdCalendarMonth size={16} /> Monthly
-                            </button>
-                        </Link>
-                        <Link href="/results/single">
-                            <button className="px-4 py-3 rounded-xl bg-indigo-50 dark:bg-indigo-950/30 text-indigo-600 dark:text-indigo-400 font-bold text-xs uppercase tracking-wider hover:bg-indigo-600 hover:text-white transition-all flex items-center gap-2 border border-indigo-500/10">
-                                <MdPerson size={16} /> Single
                             </button>
                         </Link>
                         <Link href="/results/view">
@@ -745,7 +810,7 @@ export default function RoundTestPage() {
                                     </div>
 
                                     {/* Quick Fill & Filter Tools */}
-                                    <div className="flex flex-wrap items-center gap-2.5">
+                                    <div className="flex flex-wrap items-center gap-2">
                                         <div className="relative">
                                             <MdSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
                                             <input
@@ -753,28 +818,39 @@ export default function RoundTestPage() {
                                                 value={searchStudent}
                                                 onChange={(e) => setSearchStudent(e.target.value)}
                                                 placeholder="Filter student..."
-                                                className="pl-9 pr-3 py-1.5 rounded-xl text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 outline-none focus:border-blue-600 w-44"
+                                                className="pl-9 pr-3 py-1.5 rounded-xl text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 outline-none focus:border-blue-600 w-36 sm:w-44"
                                             />
                                         </div>
 
                                         <button
                                             type="button"
                                             onClick={() => handleQuickFill("full")}
-                                            className="px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-blue-600 hover:text-white transition-all"
+                                            className="px-2.5 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-blue-600 hover:text-white transition-all"
+                                            title={`Set all marks to ${totalMaximum}`}
                                         >
                                             Max All
                                         </button>
                                         <button
                                             type="button"
-                                            onClick={() => handleQuickFill("zero")}
-                                            className="px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-amber-600 hover:text-white transition-all"
+                                            onClick={() => handleQuickFill("ab")}
+                                            className="px-2.5 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 border border-rose-300 dark:border-rose-800/60 hover:bg-rose-600 hover:text-white transition-all"
+                                            title="Mark all as AB (Absent)"
                                         >
-                                            Zero All
+                                            All AB
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => handleQuickFill("ab-blank")}
+                                            className="px-2.5 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 border border-amber-300 dark:border-amber-800/60 hover:bg-amber-600 hover:text-white transition-all"
+                                            title="Fill unentered marks with AB"
+                                        >
+                                            AB for Blank
                                         </button>
                                         <button
                                             type="button"
                                             onClick={() => handleQuickFill("clear")}
-                                            className="px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-rose-600 hover:text-white transition-all"
+                                            className="px-2.5 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider bg-slate-100 dark:bg-slate-800 text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all"
+                                            title="Clear all fields"
                                         >
                                             Clear
                                         </button>
@@ -786,13 +862,13 @@ export default function RoundTestPage() {
                                     <table className="w-full text-left border-collapse">
                                         <thead className="sticky top-0 z-20 bg-slate-100 dark:bg-slate-800/90 backdrop-blur-md">
                                             <tr className="border-b border-slate-200 dark:border-slate-700">
-                                                <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest sticky left-0 bg-slate-100 dark:bg-slate-800 z-30 min-w-[200px]">
+                                                <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest sticky left-0 bg-slate-100 dark:bg-slate-800 z-30 min-w-[220px]">
                                                     Student Identity
                                                 </th>
                                                 {selectedSubjects.map((sub) => (
                                                     <th
                                                         key={sub}
-                                                        className="px-4 py-4 text-center text-[10px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest border-l border-slate-200 dark:border-slate-700 min-w-[110px]"
+                                                        className="px-4 py-4 text-center text-[10px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest border-l border-slate-200 dark:border-slate-700 min-w-[120px]"
                                                     >
                                                         <div>{sub}</div>
                                                         <div className="text-[9px] text-slate-400 font-bold mt-0.5">
@@ -800,13 +876,13 @@ export default function RoundTestPage() {
                                                         </div>
                                                     </th>
                                                 ))}
-                                                <th className="px-4 py-4 text-center text-[10px] font-black text-slate-600 dark:text-slate-300 uppercase tracking-widest border-l border-slate-200 dark:border-slate-700 min-w-[100px]">
+                                                <th className="px-4 py-4 text-center text-[10px] font-black text-slate-600 dark:text-slate-300 uppercase tracking-widest border-l border-slate-200 dark:border-slate-700 min-w-[110px]">
                                                     Total
                                                 </th>
                                                 <th className="px-4 py-4 text-center text-[10px] font-black text-slate-600 dark:text-slate-300 uppercase tracking-widest border-l border-slate-200 dark:border-slate-700 min-w-[90px]">
                                                     Percentage
                                                 </th>
-                                                <th className="px-4 py-4 text-center text-[10px] font-black text-slate-600 dark:text-slate-300 uppercase tracking-widest border-l border-slate-200 dark:border-slate-700 min-w-[80px]">
+                                                <th className="px-4 py-4 text-center text-[10px] font-black text-slate-600 dark:text-slate-300 uppercase tracking-widest border-l border-slate-200 dark:border-slate-700 min-w-[90px]">
                                                     Grade
                                                 </th>
                                             </tr>
@@ -816,11 +892,19 @@ export default function RoundTestPage() {
                                                 const studentMarks = marks[stu._id] || [];
                                                 let totalObtained = 0;
                                                 const totalMax = selectedSubjects.length * totalMaximum;
+                                                let abCount = 0;
+
                                                 studentMarks.forEach((m) => {
-                                                    totalObtained += Number(m.marksObtained || 0);
+                                                    if (m.marksObtained === "AB") {
+                                                        abCount++;
+                                                    } else {
+                                                        totalObtained += Number(m.marksObtained || 0);
+                                                    }
                                                 });
+
+                                                const isAllAbsent = studentMarks.length > 0 && abCount === studentMarks.length;
                                                 const pct = totalMax > 0 ? ((totalObtained / totalMax) * 100).toFixed(1) : 0;
-                                                const grade = getGrade(pct);
+                                                const grade = getGrade(pct, isAllAbsent);
 
                                                 return (
                                                     <tr
@@ -829,52 +913,94 @@ export default function RoundTestPage() {
                                                     >
                                                         {/* Sticky Student Identity */}
                                                         <td className="px-6 py-3.5 sticky left-0 bg-white dark:bg-slate-900 group-hover:bg-slate-50 dark:group-hover:bg-slate-800/80 transition-colors z-10 border-r border-slate-100 dark:border-slate-800">
-                                                            <p className="font-bold text-sm text-slate-900 dark:text-white leading-tight">
-                                                                {stu.name}
-                                                            </p>
-                                                            <div className="flex items-center gap-2 mt-1">
-                                                                <span className="text-[10px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-wider">
-                                                                    UID: {stu.rollNumber}
-                                                                </span>
-                                                                {stu.section && (
-                                                                    <span className="text-[9px] px-1.5 py-0.2 rounded bg-slate-100 dark:bg-slate-800 text-slate-500 font-bold uppercase">
-                                                                        {stu.section}
-                                                                    </span>
-                                                                )}
+                                                            <div className="flex justify-between items-start gap-2">
+                                                                <div>
+                                                                    <p className="font-bold text-sm text-slate-900 dark:text-white leading-tight">
+                                                                        {stu.name}
+                                                                    </p>
+                                                                    <div className="flex items-center gap-2 mt-1">
+                                                                        <span className="text-[10px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-wider">
+                                                                            UID: {stu.rollNumber}
+                                                                        </span>
+                                                                        {stu.section && (
+                                                                            <span className="text-[9px] px-1.5 py-0.2 rounded bg-slate-100 dark:bg-slate-800 text-slate-500 font-bold uppercase">
+                                                                                {stu.section}
+                                                                            </span>
+                                                                        )}
+                                                                    </div>
+                                                                </div>
+
+                                                                {/* Quick Student-Level Absent Button */}
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => markStudentAbsent(stu._id)}
+                                                                    className={`px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all border ${
+                                                                        isAllAbsent
+                                                                            ? "bg-rose-600 border-rose-600 text-white shadow-sm"
+                                                                            : "bg-slate-100 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 text-slate-500 hover:text-rose-600 hover:border-rose-300"
+                                                                    }`}
+                                                                    title={isAllAbsent ? "Student is marked Absent" : "Mark Student Absent (All AB)"}
+                                                                >
+                                                                    {isAllAbsent ? "ABSENT" : "Mark AB"}
+                                                                </button>
                                                             </div>
                                                         </td>
 
                                                         {/* Subject Input Cells */}
                                                         {selectedSubjects.map((sub, idx) => {
                                                             const cellMark = studentMarks[idx]?.marksObtained ?? "";
+                                                            const isAB = cellMark === "AB";
                                                             return (
                                                                 <td
                                                                     key={sub}
                                                                     className="px-3 py-3 border-l border-slate-100 dark:border-slate-800 text-center"
                                                                 >
-                                                                    <input
-                                                                        type="number"
-                                                                        min="0"
-                                                                        max={totalMaximum}
-                                                                        value={cellMark}
-                                                                        onChange={(e) =>
-                                                                            handleMarkInput(stu._id, idx, e.target.value)
-                                                                        }
-                                                                        placeholder="—"
-                                                                        className="w-16 sm:w-20 text-center py-2 rounded-xl font-black text-sm bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 transition-all outline-none text-slate-900 dark:text-white"
-                                                                    />
+                                                                    <div className="flex items-center justify-center gap-1.5">
+                                                                        <input
+                                                                            type="text"
+                                                                            value={cellMark}
+                                                                            onChange={(e) =>
+                                                                                handleMarkInput(stu._id, idx, e.target.value)
+                                                                            }
+                                                                            placeholder="—"
+                                                                            className={`w-16 sm:w-20 text-center py-2 rounded-xl font-black text-sm border transition-all outline-none ${
+                                                                                isAB
+                                                                                    ? "bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 border-rose-300 dark:border-rose-800 font-extrabold"
+                                                                                    : "bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 text-slate-900 dark:text-white"
+                                                                            }`}
+                                                                        />
+                                                                        {/* Quick toggle AB for this subject */}
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={() => toggleCellAB(stu._id, idx)}
+                                                                            className={`w-6 h-6 rounded-md text-[9px] font-black transition-all flex items-center justify-center border ${
+                                                                                isAB
+                                                                                    ? "bg-rose-500 text-white border-rose-500"
+                                                                                    : "bg-slate-100 dark:bg-slate-800 text-slate-400 hover:text-rose-500 border-slate-200 dark:border-slate-700"
+                                                                            }`}
+                                                                            title={isAB ? "Clear AB" : "Set AB (Absent)"}
+                                                                        >
+                                                                            AB
+                                                                        </button>
+                                                                    </div>
                                                                 </td>
                                                             );
                                                         })}
 
                                                         {/* Total Score */}
                                                         <td className="px-4 py-3 border-l border-slate-100 dark:border-slate-800 text-center font-black text-sm text-slate-900 dark:text-white">
-                                                            {totalObtained} <span className="text-[10px] text-slate-400 font-bold">/ {totalMax}</span>
+                                                            {isAllAbsent ? (
+                                                                <span className="text-rose-500 font-bold text-xs uppercase">AB (Absent)</span>
+                                                            ) : (
+                                                                <>
+                                                                    {totalObtained} <span className="text-[10px] text-slate-400 font-bold">/ {totalMax}</span>
+                                                                </>
+                                                            )}
                                                         </td>
 
                                                         {/* Percentage */}
                                                         <td className="px-4 py-3 border-l border-slate-100 dark:border-slate-800 text-center font-bold text-xs text-blue-600 dark:text-blue-400">
-                                                            {pct}%
+                                                            {isAllAbsent ? "—" : `${pct}%`}
                                                         </td>
 
                                                         {/* Grade */}
@@ -1070,7 +1196,8 @@ export default function RoundTestPage() {
                                     <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                                         {filteredPublishedResults.map((item) => {
                                             const stu = item.studentId || {};
-                                            const gradeInfo = getGrade(item.percentage || 0);
+                                            const isAllAbsent = item.grade === "AB" || (Array.isArray(item.subjects) && item.subjects.length > 0 && item.subjects.every(s => s.marksObtained === "AB"));
+                                            const gradeInfo = getGrade(item.percentage || 0, isAllAbsent);
                                             const isSendingThis = sendingWhatsAppId === item._id;
                                             const isDownloadingThis = downloadingId === item._id;
 
@@ -1102,9 +1229,13 @@ export default function RoundTestPage() {
                                                             {item.subjects?.map((s, idx) => (
                                                                 <span
                                                                     key={idx}
-                                                                    className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-[10px]"
+                                                                    className={`px-2 py-0.5 rounded-md font-bold text-[10px] ${
+                                                                        s.marksObtained === "AB"
+                                                                            ? "bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-800"
+                                                                            : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300"
+                                                                    }`}
                                                                 >
-                                                                    {s.name}: <strong className="text-blue-600 dark:text-blue-400">{s.marksObtained}</strong>/{s.totalMarks}
+                                                                    {s.name}: <strong className={s.marksObtained === "AB" ? "text-rose-600 dark:text-rose-400 font-black" : "text-blue-600 dark:text-blue-400"}>{s.marksObtained === "AB" ? "AB" : s.marksObtained}</strong>/{s.totalMarks}
                                                                 </span>
                                                             ))}
                                                         </div>
@@ -1112,18 +1243,24 @@ export default function RoundTestPage() {
 
                                                     {/* Total Score */}
                                                     <td className="px-6 py-4 text-center">
-                                                        <p className="font-black text-sm text-slate-900 dark:text-white">
-                                                            {item.totalObtained} <span className="text-slate-400 text-xs">/ {item.totalMaximum}</span>
-                                                        </p>
-                                                        <p className="text-[10px] font-bold text-blue-600 dark:text-blue-400">
-                                                            {item.percentage}%
-                                                        </p>
+                                                        {isAllAbsent ? (
+                                                            <span className="text-rose-500 font-extrabold text-xs uppercase">AB (Absent)</span>
+                                                        ) : (
+                                                            <>
+                                                                <p className="font-black text-sm text-slate-900 dark:text-white">
+                                                                    {item.totalObtained} <span className="text-slate-400 text-xs">/ {item.totalMaximum}</span>
+                                                                </p>
+                                                                <p className="text-[10px] font-bold text-blue-600 dark:text-blue-400">
+                                                                    {item.percentage}%
+                                                                </p>
+                                                            </>
+                                                        )}
                                                     </td>
 
                                                     {/* Grade */}
                                                     <td className="px-6 py-4 text-center">
                                                         <span className={`inline-block px-2.5 py-1 rounded-lg text-xs font-black border ${gradeInfo.color}`}>
-                                                            {item.grade || gradeInfo.label}
+                                                            {isAllAbsent ? "AB" : (item.grade || gradeInfo.label)}
                                                         </span>
                                                     </td>
 

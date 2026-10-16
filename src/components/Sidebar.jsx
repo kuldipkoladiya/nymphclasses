@@ -9,7 +9,8 @@ import {
     MdMoney,
     MdList,
     MdSecurity,
-    MdLogout
+    MdLogout,
+    MdScore
 } from "react-icons/md";
 import { FiSun, FiMoon } from "react-icons/fi";
 import Image from "next/image";
@@ -120,6 +121,7 @@ function SidebarContent({ dark, toggle, setSidebarOpen }) {
         { href: "/dashboard", icon: MdDashboard, label: "Dashboard", permission: "dashboard" },
         { href: "/students", icon: MdPeople, label: "Register Student", permission: "students" },
         { href: "/results", icon: MdSchool, label: "Results", permission: "results" },
+        { href: "/results/round-test", icon: MdScore, label: "Round Test", permission: "results" },
         { href: "/fees", icon: MdMoney, label: "Fee Config", permission: "fees" },
         { href: "/attendance", icon: MdList, label: "Attendance", permission: "attendance" },
         { href: "/expenses", icon: MdMoney, label: "Expenses", permission: "expenses" },
@@ -136,6 +138,13 @@ function SidebarContent({ dark, toggle, setSidebarOpen }) {
     if (admin && admin.role === "superadmin") {
         navItems.push({ href: "/staff", icon: MdSecurity, label: "Staff Accounts" });
     }
+
+    const isItemActive = (href) => {
+        if (href === "/results") {
+            return pathname === "/results" || (pathname.startsWith("/results/") && !pathname.startsWith("/results/round-test"));
+        }
+        return pathname.startsWith(href);
+    };
 
     const handleLogout = () => {
         if (typeof window !== "undefined") {
@@ -173,7 +182,7 @@ function SidebarContent({ dark, toggle, setSidebarOpen }) {
                         href={item.href}
                         icon={item.icon}
                         label={item.label}
-                        isActive={pathname.startsWith(item.href)}
+                        isActive={isItemActive(item.href)}
                         setSidebarOpen={setSidebarOpen}
                     />
                 ))}

@@ -158,10 +158,20 @@ export default function CreateResultPage() {
                     </InputWrapper>
 
                     <InputWrapper label="Exam Name" icon={<MdEditDocument size={18} />}>
-                        <select value={examName} onChange={(e) => setExamName(e.target.value)} className="input-premium input-with-icon appearance-none cursor-pointer">
+                        <select
+                            value={examName}
+                            onChange={(e) => {
+                                if (e.target.value === "Round Test") {
+                                    router.push("/results/round-test");
+                                    return;
+                                }
+                                setExamName(e.target.value);
+                            }}
+                            className="input-premium input-with-icon appearance-none cursor-pointer"
+                        >
                             <option value="">Select Exam</option>
                             <option value="Weekly Test">Weekly Test</option>
-                            <option value="Round Test">Round Test</option>
+                            <option value="Round Test">Round Test (Dedicated Section ➔)</option>
                         </select>
                     </InputWrapper>
 
@@ -247,14 +257,30 @@ export default function CreateResultPage() {
                                             {marks[stu._id]?.map((m, idx) => (
                                                 <td key={idx} className="px-4 py-4 border-l border-slate-50 dark:border-slate-800">
                                                     <div className="flex justify-center">
-                                                        <input type="number" max={totalMaximum} value={m.marksObtained} onChange={(e) => {
-                                                            const val = e.target.value;
-                                                            if (+val > totalMaximum) return toast.error(`Max is ${totalMaximum}`);
-                                                            setMarks(p => ({
-                                                                ...p,
-                                                                [stu._id]: p[stu._id].map((x, subIdx) => subIdx === idx ? { ...x, marksObtained: val } : x)
-                                                            }));
-                                                        }} className="w-20 text-center py-2 rounded-xl font-bold bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:border-blue-600 transition-all outline-none text-slate-900 dark:text-white" placeholder="---" />
+                                                        <input
+                                                            type="text"
+                                                            value={m.marksObtained}
+                                                            onChange={(e) => {
+                                                                const raw = e.target.value.trim().toUpperCase();
+                                                                let val = e.target.value;
+                                                                if (raw === "AB" || raw === "A") {
+                                                                    val = "AB";
+                                                                } else if (raw !== "" && !isNaN(Number(raw))) {
+                                                                    if (+raw > totalMaximum) return toast.error(`Max is ${totalMaximum}`);
+                                                                    val = raw;
+                                                                }
+                                                                setMarks(p => ({
+                                                                    ...p,
+                                                                    [stu._id]: p[stu._id].map((x, subIdx) => subIdx === idx ? { ...x, marksObtained: val } : x)
+                                                                }));
+                                                            }}
+                                                            className={`w-20 text-center py-2 rounded-xl font-bold border transition-all outline-none ${
+                                                                m.marksObtained === "AB"
+                                                                    ? "bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 border-rose-300 dark:border-rose-800"
+                                                                    : "bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:border-blue-600 text-slate-900 dark:text-white"
+                                                            }`}
+                                                            placeholder="---"
+                                                        />
                                                     </div>
                                                 </td>
                                             ))}
