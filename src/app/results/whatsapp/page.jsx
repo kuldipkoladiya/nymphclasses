@@ -16,15 +16,41 @@ export default function WhatsAppConnectionPage() {
     });
     const [loading, setLoading] = useState(false);
     const [logoutLoading, setLogoutLoading] = useState(false);
+    const [restarting, setRestarting] = useState(false);
     const intervalRef = useRef(null);
+
+    const handleRestartClient = async (clean = true) => {
+        setRestarting(true);
+        toast.loading("Restarting WhatsApp engine and generating fresh QR...", { id: "wa-restart", duration: 4000 });
+        try {
+            await axios.post("/results/whatsapp-restart", { clean });
+            toast.success("WhatsApp client restarted! Fetching new QR code...", { id: "wa-restart" });
+            // Poll for fresh QR
+            setTimeout(() => {
+                checkWhatsAppStatus(true);
+            }, 3000);
+        } catch (error) {
+            console.error("Restart failed:", error);
+            // Fallback: try logout endpoint which triggers cleanup
+            try {
+                await axios.post("/results/whatsapp-logout");
+                toast.success("Reset session. Refreshing in a few seconds...", { id: "wa-restart" });
+                setTimeout(() => checkWhatsAppStatus(true), 3000);
+            } catch {
+                toast.error("Failed to restart. Please check backend terminal.", { id: "wa-restart" });
+            }
+        } finally {
+            setRestarting(false);
+        }
+    };
 
     const handleLogout = async () => {
         if (!window.confirm("Are you sure you want to disconnect your WhatsApp account?")) return;
         setLogoutLoading(true);
         try {
             await axios.post("/results/whatsapp-logout");
-            toast.success("Logged out successfully!");
-            checkWhatsAppStatus();
+            toast.success("Logged out successfully! Generating new QR...");
+            setTimeout(() => checkWhatsAppStatus(true), 2500);
         } catch (error) {
             console.error("Logout failed:", error);
             toast.error("Failed to logout. Please try again.");
@@ -121,6 +147,23 @@ export default function WhatsAppConnectionPage() {
                                     The server is launching the WhatsApp container. This can take up to 20 seconds. Please wait...
                                 </p>
                             </div>
+                            <div className="flex flex-col sm:flex-row items-center gap-3 pt-2">
+                                <button
+                                    onClick={() => handleRestartClient(true)}
+                                    disabled={restarting}
+                                    className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-md flex items-center gap-2 disabled:opacity-50"
+                                >
+                                    <FaSync className={restarting ? "animate-spin" : ""} size={12} />
+                                    {restarting ? "Resetting Engine..." : "⚡ Force Generate QR"}
+                                </button>
+                                <button
+                                    onClick={() => checkWhatsAppStatus(true)}
+                                    disabled={loading}
+                                    className="px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs hover:bg-slate-200 transition-all flex items-center gap-1.5"
+                                >
+                                    <FaSync className={loading ? "animate-spin" : ""} size={12} /> Refresh
+                                </button>
+                            </div>
                         </motion.div>
                     )}
 
@@ -211,6 +254,23 @@ export default function WhatsAppConnectionPage() {
                                 <p className="text-[10px] text-slate-400 italic mt-2 animate-pulse">
                                     The status page will automatically update once authenticated.
                                 </p>
+
+                                <div className="flex items-center justify-center gap-3 pt-2">
+                                    <button
+                                        onClick={() => checkWhatsAppStatus(true)}
+                                        disabled={loading}
+                                        className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs hover:bg-slate-200 transition-all flex items-center gap-1.5"
+                                    >
+                                        <FaSync className={loading ? "animate-spin" : ""} size={12} /> Refresh
+                                    </button>
+                                    <button
+                                        onClick={() => handleRestartClient(true)}
+                                        disabled={restarting}
+                                        className="px-4 py-2 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 font-bold text-xs hover:bg-amber-500 hover:text-white transition-all flex items-center gap-1.5"
+                                    >
+                                        <FaSync className={restarting ? "animate-spin" : ""} size={12} /> Reset & New QR
+                                    </button>
+                                </div>
                             </div>
                         </motion.div>
                     )}
@@ -233,12 +293,22 @@ export default function WhatsAppConnectionPage() {
                                     {statusData.message}
                                 </p>
                             </div>
-                            <button 
-                                onClick={() => checkWhatsAppStatus(true)}
-                                className="px-6 py-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs uppercase tracking-wider hover:bg-blue-600 hover:text-white transition-all"
-                            >
-                                Retry Connection
-                            </button>
+                            <div className="flex items-center gap-3">
+                                <button 
+                                    onClick={() => checkWhatsAppStatus(true)}
+                                    className="px-5 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs uppercase tracking-wider hover:bg-blue-600 hover:text-white transition-all"
+                                >
+                                    Retry Connection
+                                </button>
+                                <button 
+                                    onClick={() => handleRestartClient(true)}
+                                    disabled={restarting}
+                                    className="px-5 py-2.5 rounded-xl bg-blue-600 text-white font-bold text-xs uppercase tracking-wider hover:bg-blue-700 transition-all shadow-md flex items-center gap-2 disabled:opacity-50"
+                                >
+                                    <FaSync className={restarting ? "animate-spin" : ""} size={12} />
+                                    {restarting ? "Restarting..." : "⚡ Force Restart WhatsApp"}
+                                </button>
+                            </div>
                         </motion.div>
                     )}
                 </AnimatePresence>
