@@ -91,12 +91,19 @@ export default function CreateSingleResultPage() {
     };
 
     const handleMarkChange = (sub, value) => {
-        if (+value > totalMaximum) {
-            return toast.error(`Marks cannot exceed total maximum (${totalMaximum})`);
+        const raw = value.trim().toUpperCase();
+        let val = value;
+        if (raw === "AB" || raw === "A") {
+            val = "AB";
+        } else if (raw !== "" && !isNaN(Number(raw))) {
+            if (+raw > totalMaximum) {
+                return toast.error(`Marks cannot exceed total maximum (${totalMaximum})`);
+            }
+            val = raw;
         }
         setSubjectMarks((prev) => ({
             ...prev,
-            [sub]: value
+            [sub]: val
         }));
     };
 
@@ -117,7 +124,7 @@ export default function CreateSingleResultPage() {
         try {
             const formattedSubjects = selectedSubjects.map((sub) => ({
                 name: sub,
-                marksObtained: Number(subjectMarks[sub]),
+                marksObtained: subjectMarks[sub] === "AB" ? "AB" : Number(subjectMarks[sub]),
                 totalMarks: totalMaximum
             }));
 
@@ -262,11 +269,15 @@ export default function CreateSingleResultPage() {
                                     <span className="font-bold text-sm text-slate-700 dark:text-slate-300">{sub}</span>
                                     <div className="flex items-center gap-2">
                                         <input 
-                                            type="number" 
+                                            type="text" 
                                             value={subjectMarks[sub] || ""} 
                                             onChange={(e) => handleMarkChange(sub, e.target.value)}
                                             placeholder="Score"
-                                            className="w-20 text-center py-2 px-3 rounded-xl font-bold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:border-blue-600 transition-all outline-none text-slate-900 dark:text-white"
+                                            className={`w-20 text-center py-2 px-3 rounded-xl font-bold border transition-all outline-none ${
+                                                subjectMarks[sub] === "AB"
+                                                    ? "bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 border-rose-300 dark:border-rose-800"
+                                                    : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 focus:border-blue-600 text-slate-900 dark:text-white"
+                                            }`}
                                         />
                                         <span className="text-xs font-bold text-slate-400">/ {totalMaximum}</span>
                                     </div>
